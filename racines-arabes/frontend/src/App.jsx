@@ -1,0 +1,58 @@
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+
+import Navbar from '@/components/layout/Navbar.jsx';
+import Footer from '@/components/layout/Footer.jsx';
+import PrivateRoute from '@/routes/PrivateRoute.jsx';
+
+import Home from '@/pages/Home.jsx';
+import RootExplorer from '@/pages/RootExplorer.jsx';
+import RootDetail from '@/pages/RootDetail.jsx';
+import Login from '@/pages/Login.jsx';
+import Register from '@/pages/Register.jsx';
+import Profile from '@/pages/Profile.jsx';
+import Favorites from '@/pages/Favorites.jsx';
+import About from '@/pages/About.jsx';
+import NotFound from '@/pages/NotFound.jsx';
+
+const App = () => {
+  const location = useLocation();
+
+  return (
+    <div className="flex min-h-screen flex-col bg-neutral-0 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-50">
+      <Navbar />
+      <main className="flex-1">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<Home />} />
+            <Route path="/explorer" element={<RootExplorer />} />
+            <Route path="/roots/:slug" element={<RootDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/favorites"
+              element={
+                <PrivateRoute>
+                  <Favorites />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/about" element={<About />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AnimatePresence>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default App;
