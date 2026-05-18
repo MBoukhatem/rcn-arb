@@ -1,10 +1,8 @@
-// Modal — fenêtre modale maison (overlay, focus-trap, Esc, scroll lock).
-// Design System §5.4. Pas de bibliothèque externe.
+// Modal — surface graphique : bordures nettes, sans border-radius, overlay opaque.
 import { useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import Button from '@/components/ui/Button';
 
 const SIZES = {
   sm: 'max-w-md',
@@ -12,19 +10,9 @@ const SIZES = {
   lg: 'max-w-2xl',
 };
 
-// Sélecteur des éléments focusables internes (focus-trap).
 const FOCUSABLE =
   'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
-/**
- * @param {object} props
- * @param {boolean} props.isOpen
- * @param {Function} props.onClose
- * @param {string} [props.title]
- * @param {React.ReactNode} props.children
- * @param {React.ReactNode} [props.footer]
- * @param {'sm'|'md'|'lg'} [props.size='md']
- */
 const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
   const { t } = useTranslation();
   const shouldReduce = useReducedMotion();
@@ -32,7 +20,6 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
   const triggerRef = useRef(null);
   const titleId = useRef(`modal-title-${Math.random().toString(36).slice(2)}`);
 
-  // Blocage du scroll du body tant que la modale est ouverte.
   useEffect(() => {
     if (!isOpen) return undefined;
     triggerRef.current = document.activeElement;
@@ -40,21 +27,18 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = previousOverflow;
-      // Restitue le focus à l'élément déclencheur à la fermeture.
       if (triggerRef.current instanceof HTMLElement) {
         triggerRef.current.focus();
       }
     };
   }, [isOpen]);
 
-  // Focus initial sur la surface à l'ouverture.
   useEffect(() => {
     if (isOpen && surfaceRef.current) {
       surfaceRef.current.focus();
     }
   }, [isOpen]);
 
-  // Fermeture Esc + focus-trap par Tab.
   const handleKeyDown = useCallback(
     (event) => {
       if (event.key === 'Escape') {
@@ -89,8 +73,8 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
   const surfaceVariants = shouldReduce
     ? { hidden: { opacity: 0 }, visible: { opacity: 1 } }
     : {
-        hidden: { opacity: 0, scale: 0.96 },
-        visible: { opacity: 1, scale: 1 },
+        hidden: { opacity: 0, y: 8 },
+        visible: { opacity: 1, y: 0 },
       };
 
   return createPortal(
@@ -100,9 +84,8 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           onKeyDown={handleKeyDown}
         >
-          {/* Overlay sombre semi-transparent */}
           <motion.div
-            className="fixed inset-0 bg-neutral-950/45 dark:bg-neutral-950/70 backdrop-blur-sm"
+            className="fixed inset-0 bg-neutral-950/85 dark:bg-neutral-950/90 backdrop-blur-sm"
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
@@ -112,14 +95,13 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
             aria-hidden="true"
           />
 
-          {/* Surface */}
           <motion.div
             ref={surfaceRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby={title ? titleId.current : undefined}
             tabIndex={-1}
-            className={`relative w-full ${SIZES[size] ?? SIZES.md} rounded-xl bg-neutral-0 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-lg dark:shadow-modal focus:outline-none`}
+            className={`relative w-full ${SIZES[size] ?? SIZES.md} bg-neutral-0 dark:bg-neutral-950 border border-neutral-0 dark:border-neutral-0 outline outline-1 outline-neutral-950 dark:outline-neutral-0 shadow-modal focus:outline-none`}
             variants={surfaceVariants}
             initial="hidden"
             animate="visible"
@@ -127,22 +109,26 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           >
             {title && (
-              <header className="flex items-start justify-between px-6 pt-6 pb-4">
-                <h2
-                  id={titleId.current}
-                  className="text-xl font-semibold text-neutral-900 dark:text-neutral-50"
-                >
-                  {title}
-                </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
+              <header className="flex items-start justify-between gap-4 border-b border-neutral-950 dark:border-neutral-0 px-6 py-5">
+                <div className="flex flex-col gap-1">
+                  <span className="text-2xs font-semibold uppercase tracking-[0.2em] text-accent-500 dark:text-accent-300">
+                    — Dialog
+                  </span>
+                  <h2
+                    id={titleId.current}
+                    className="text-xl font-bold tracking-tight text-neutral-950 dark:text-neutral-0"
+                  >
+                    {title}
+                  </h2>
+                </div>
+                <button
+                  type="button"
                   onClick={onClose}
                   aria-label={t('common.close')}
-                  className="-mr-2 -mt-1 !px-2"
+                  className="inline-flex h-9 w-9 items-center justify-center border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0 hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors"
                 >
                   <svg
-                    className="h-5 w-5"
+                    className="h-4 w-4"
                     viewBox="0 0 20 20"
                     fill="none"
                     aria-hidden="true"
@@ -154,18 +140,18 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
                       strokeLinecap="round"
                     />
                   </svg>
-                </Button>
+                </button>
               </header>
             )}
 
             <div
-              className={`px-6 max-h-[70vh] overflow-y-auto ${title ? 'py-2' : 'pt-6 pb-2'}`}
+              className={`px-6 max-h-[70vh] overflow-y-auto ${title ? 'py-6' : 'pt-6 pb-2'}`}
             >
               {children}
             </div>
 
             {footer && (
-              <footer className="flex justify-end gap-3 px-6 pt-4 pb-6">
+              <footer className="flex justify-end gap-3 border-t border-neutral-950 dark:border-neutral-0 px-6 py-5">
                 {footer}
               </footer>
             )}

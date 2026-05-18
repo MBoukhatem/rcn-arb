@@ -5,91 +5,99 @@ export default {
   theme: {
     extend: {
       colors: {
-        // --- Échelle de neutres ---
+        // Pure noir / blanc + nuances graphiques.
         neutral: {
           0: '#FFFFFF',
-          50: '#F7F7F8',
-          100: '#EDEDEF',
-          200: '#DEDEE1',
-          300: '#C6C6CB',
-          400: '#9A9AA1',
-          500: '#6E6E76',
-          600: '#52525A',
-          700: '#3A3A41',
-          800: '#26262B',
-          850: '#1C1C20',
-          900: '#141417',
-          950: '#0A0A0C',
+          50: '#F4F4F4',
+          100: '#E6E6E6',
+          200: '#CFCFCF',
+          300: '#A8A8A8',
+          400: '#7A7A7A',
+          500: '#525252',
+          600: '#363636',
+          700: '#222222',
+          800: '#141414',
+          850: '#0C0C0C',
+          900: '#060606',
+          950: '#000000',
         },
-        // --- Accent pourpre ---
+        // Pourpre rougeâtre — accent unique, parcimonieux.
         accent: {
-          50: '#F5F3FF',
-          100: '#EDE9FE',
-          200: '#DDD6FE',
-          300: '#C4B5FD',
-          400: '#A78BFA',
-          500: '#8B5CF6',
-          600: '#6D28D9',
-          700: '#5B21B6',
-          800: '#4C1D95',
-          900: '#3B1675',
+          50: '#FBE9EC',
+          100: '#F4C7CE',
+          200: '#E89AA5',
+          300: '#D86C7B',
+          400: '#C24858',
+          500: '#A12A3D',
+          600: '#811D2E',
+          700: '#641423',
+          800: '#4A0D19',
+          900: '#2E0810',
         },
-        // --- États ---
-        success: { light: '#15803D', dark: '#4ADE80' },
-        error: { light: '#B91C1C', dark: '#F87171' },
-        warning: { light: '#B45309', dark: '#FBBF24' },
+        success: { light: '#1E1E1E', dark: '#E6E6E6' },
+        error: { light: '#811D2E', dark: '#D86C7B' },
+        warning: { light: '#3A3A3A', dark: '#CFCFCF' },
       },
       fontFamily: {
-        // UI latine sobre — Inter chargée via Google Fonts
+        // Inter pour la grille latine, Cairo pour l'arabe.
         sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        // Contenu arabe — Cairo via Google Fonts
         arabic: ['Cairo', 'system-ui', 'sans-serif'],
+        // Typographie graphique haute densité.
+        display: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       fontSize: {
-        // [taille, { lineHeight, letterSpacing? }]
-        '2xs': ['0.6875rem', { lineHeight: '1rem' }], // 11px
-        xs: ['0.75rem', { lineHeight: '1.125rem' }], // 12px
-        sm: ['0.875rem', { lineHeight: '1.375rem' }], // 14px
-        base: ['1rem', { lineHeight: '1.625rem' }], // 16px
-        lg: ['1.125rem', { lineHeight: '1.75rem' }], // 18px
-        xl: ['1.375rem', { lineHeight: '1.875rem' }], // 22px
-        '2xl': ['1.75rem', { lineHeight: '2.25rem', letterSpacing: '-0.01em' }], // 28px
-        '3xl': ['2.25rem', { lineHeight: '2.625rem', letterSpacing: '-0.02em' }], // 36px
-        '4xl': ['3rem', { lineHeight: '3.25rem', letterSpacing: '-0.02em' }], // 48px
-        '5xl': ['3.75rem', { lineHeight: '4rem', letterSpacing: '-0.025em' }], // 60px
-        // Tailles dédiées au contenu arabe (interligne plus généreux)
-        'ar-sm': ['1.25rem', { lineHeight: '2.25rem' }], // 20px
-        'ar-base': ['1.625rem', { lineHeight: '2.75rem' }], // 26px
-        'ar-lg': ['2.25rem', { lineHeight: '3.5rem' }], // 36px
-        'ar-xl': ['3.25rem', { lineHeight: '4.5rem' }], // 52px
-        'ar-hero': ['4.5rem', { lineHeight: '6rem' }], // 72px
+        '2xs': ['0.6875rem', { lineHeight: '1rem', letterSpacing: '0.08em' }],
+        xs: ['0.75rem', { lineHeight: '1.125rem', letterSpacing: '0.06em' }],
+        sm: ['0.875rem', { lineHeight: '1.375rem' }],
+        base: ['1rem', { lineHeight: '1.625rem' }],
+        lg: ['1.125rem', { lineHeight: '1.75rem' }],
+        xl: ['1.375rem', { lineHeight: '1.875rem' }],
+        '2xl': ['1.75rem', { lineHeight: '2.25rem', letterSpacing: '-0.02em' }],
+        '3xl': ['2.5rem', { lineHeight: '2.75rem', letterSpacing: '-0.03em' }],
+        '4xl': ['3.5rem', { lineHeight: '3.75rem', letterSpacing: '-0.035em' }],
+        '5xl': ['4.5rem', { lineHeight: '4.5rem', letterSpacing: '-0.04em' }],
+        '6xl': ['6rem', { lineHeight: '6rem', letterSpacing: '-0.045em' }],
+        'ar-sm': ['1.25rem', { lineHeight: '2.25rem' }],
+        'ar-base': ['1.625rem', { lineHeight: '2.75rem' }],
+        'ar-lg': ['2.5rem', { lineHeight: '3.5rem' }],
+        'ar-xl': ['3.75rem', { lineHeight: '5rem' }],
+        'ar-hero': ['6rem', { lineHeight: '7rem' }],
       },
+      // Aucun border-radius — design graphique strictement angulaire.
       borderRadius: {
         none: '0',
-        sm: '0.25rem', // 4px
-        DEFAULT: '0.5rem', // 8px
-        md: '0.625rem', // 10px
-        lg: '0.875rem', // 14px
-        xl: '1.25rem', // 20px
-        '2xl': '1.75rem', // 28px
-        full: '9999px',
+        sm: '0',
+        DEFAULT: '0',
+        md: '0',
+        lg: '0',
+        xl: '0',
+        '2xl': '0',
+        '3xl': '0',
+        full: '9999px', // conservé uniquement pour les pastilles/avatars circulaires
       },
       boxShadow: {
-        // Ombres douces, faiblement opaques — discrétion monochrome
-        xs: '0 1px 2px 0 rgba(10, 10, 12, 0.04)',
-        sm: '0 1px 3px 0 rgba(10, 10, 12, 0.06), 0 1px 2px -1px rgba(10, 10, 12, 0.06)',
-        DEFAULT:
-          '0 4px 12px -2px rgba(10, 10, 12, 0.08), 0 2px 6px -2px rgba(10, 10, 12, 0.06)',
-        md: '0 8px 24px -4px rgba(10, 10, 12, 0.10), 0 4px 8px -4px rgba(10, 10, 12, 0.06)',
-        lg: '0 16px 40px -8px rgba(10, 10, 12, 0.14), 0 6px 14px -6px rgba(10, 10, 12, 0.08)',
-        // Ombre pour modale en thème sombre (plus profonde)
-        modal: '0 24px 64px -12px rgba(0, 0, 0, 0.45)',
-        // Halo d'accent (focus, élément sélectionné)
-        'accent-glow': '0 0 0 4px rgba(109, 40, 217, 0.14)',
+        xs: 'none',
+        sm: 'none',
+        DEFAULT: 'none',
+        md: 'none',
+        lg: 'none',
+        modal: '0 24px 64px -12px rgba(0, 0, 0, 0.85)',
+        'accent-glow': '0 0 0 2px rgba(161, 42, 61, 0.6)',
       },
       transitionTimingFunction: {
-        soft: 'cubic-bezier(0.22, 1, 0.36, 1)', // sortie douce (entrées UI)
-        snappy: 'cubic-bezier(0.4, 0, 0.2, 1)', // standard
+        soft: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        snappy: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      },
+      backgroundImage: {
+        // Trame typographique graphique : grille fine + ligne pointillée.
+        'grid-dot':
+          'radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)',
+        'grid-dot-light':
+          'radial-gradient(rgba(0,0,0,0.08) 1px, transparent 1px)',
+      },
+      backgroundSize: {
+        'grid-dot': '18px 18px',
       },
       keyframes: {
         'fade-in': {
@@ -112,6 +120,10 @@ export default {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
         },
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.25s ease-soft both',
@@ -119,6 +131,7 @@ export default {
         'scale-in': 'scale-in 0.2s ease-soft both',
         'spin-slow': 'spin-slow 0.7s linear infinite',
         shimmer: 'shimmer 1.6s ease-snappy infinite',
+        marquee: 'marquee 28s linear infinite',
       },
     },
   },

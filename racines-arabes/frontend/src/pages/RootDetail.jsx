@@ -20,17 +20,15 @@ import { createWord, updateWord, deleteWord } from '@/services/word.service';
 import { WORD_TYPES, VERB_TENSES, getTypeLabel } from '@/utils/morphology';
 import { joinLetters } from '@/utils/formatters';
 
-// Classes partagées pour les selects natifs (alignées sur l'Input du design system).
 const SELECT_CLASS =
-  'w-full h-11 px-3.5 rounded-md text-sm bg-neutral-0 text-neutral-900 ' +
-  'border border-neutral-300 transition-colors duration-150 ' +
-  'focus:outline-none focus:border-accent-600 focus:ring-4 focus:ring-accent-600/[0.14] ' +
-  'dark:bg-neutral-850 dark:text-neutral-50 dark:border-neutral-700 ' +
-  'dark:focus:border-accent-400 dark:focus:ring-accent-400/20';
+  'w-full h-11 px-3.5 text-sm bg-neutral-0 text-neutral-950 ' +
+  'border border-neutral-950 transition-colors duration-150 ' +
+  'focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-500/30 ' +
+  'dark:bg-neutral-950 dark:text-neutral-0 dark:border-neutral-0 ' +
+  'dark:focus:border-accent-300 dark:focus:ring-accent-300/30';
 const LABEL_CLASS =
-  'block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5';
+  'block text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-950 dark:text-neutral-0 mb-2';
 
-// Champs vides pour un nouveau mot.
 const EMPTY_WORD = {
   arabic: '',
   transliteration: '',
@@ -43,7 +41,6 @@ const EMPTY_WORD = {
   notes: '',
 };
 
-// --- Formulaire de mot (création / édition) ---
 const WordForm = ({ values, onChange }) => {
   const { t } = useTranslation();
   const handle = (e) => onChange({ ...values, [e.target.name]: e.target.value });
@@ -149,14 +146,12 @@ const RootDetail = () => {
     () => getRoot(slug),
     [slug],
   );
-  // Mots groupés par type côté backend.
   const {
     data: groupedWords,
     loading: wordsLoading,
     refetch: refetchWords,
   } = useFetch(() => getRootWords(slug, { group: true }), [slug]);
 
-  // --- États des modales ---
   const [wordModal, setWordModal] = useState({ open: false, mode: 'create', word: null });
   const [wordValues, setWordValues] = useState(EMPTY_WORD);
   const [wordSaving, setWordSaving] = useState(false);
@@ -171,7 +166,6 @@ const RootDetail = () => {
   const [wordToDelete, setWordToDelete] = useState(null);
   const [wordDeleting, setWordDeleting] = useState(false);
 
-  // Vérifie si l'utilisateur peut éditer/supprimer une ressource.
   const canManage = useCallback(
     (resource) => {
       if (!user) return false;
@@ -187,7 +181,6 @@ const RootDetail = () => {
     refetchWords();
   };
 
-  // --- Mots : ouverture des modales ---
   const openCreateWord = () => {
     setWordValues(EMPTY_WORD);
     setWordModal({ open: true, mode: 'create', word: null });
@@ -216,7 +209,6 @@ const RootDetail = () => {
       toast.error(t('word.tenseRequired'));
       return;
     }
-    // Le tense n'est transmis que pour les verbes.
     const payload = { ...wordValues };
     if (payload.type !== 'VERB') delete payload.tense;
 
@@ -252,7 +244,6 @@ const RootDetail = () => {
     }
   };
 
-  // --- Racine : édition / suppression ---
   const openEditRoot = () => {
     setRootValues({
       meaningFr: root?.meaningFr ?? '',
@@ -294,9 +285,8 @@ const RootDetail = () => {
     }
   };
 
-  // Actions par mot rendues dans WordList.
   const renderWordActions = (word) => (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1.5">
       <FavoriteButton item={word?._id} itemModel="Word" />
       {canManage(word) && (
         <>
@@ -324,9 +314,11 @@ const RootDetail = () => {
   if (error || !root) {
     return (
       <PageWrapper>
-        <p className="py-16 text-center text-base text-error-light dark:text-error-dark">
-          {error?.message ?? t('errors.notFound')}
-        </p>
+        <div className="border-2 border-dashed border-neutral-950 dark:border-neutral-0 py-20 text-center">
+          <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+            {error?.message ?? t('errors.notFound')}
+          </p>
+        </div>
       </PageWrapper>
     );
   }
@@ -338,80 +330,130 @@ const RootDetail = () => {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-        className="relative rounded-2xl border border-neutral-200 bg-neutral-0 p-8 text-center sm:p-12 dark:border-neutral-700 dark:bg-neutral-850"
+        className="relative border-2 border-neutral-950 dark:border-neutral-0 overflow-hidden"
       >
-        <div className="absolute right-4 top-4">
+        {/* En-tête bar */}
+        <div className="flex items-center justify-between border-b border-neutral-950 dark:border-neutral-0 px-6 py-3 bg-neutral-0 dark:bg-neutral-950">
+          <span className="font-mono text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+            — RACINE / {root.slug}
+          </span>
           <FavoriteButton item={root._id} itemModel="Root" />
         </div>
-        <p
-          lang="ar"
-          dir="rtl"
-          className="font-arabic text-ar-lg font-bold text-neutral-900 sm:text-ar-hero dark:text-neutral-50"
-        >
-          {joinLetters(root.letters ?? [])}
-        </p>
-        {root.transliteration && (
-          <p className="mt-3 text-base italic text-neutral-400 dark:text-neutral-500">
-            {root.transliteration}
-          </p>
-        )}
-        <p className="mx-auto mt-4 max-w-xl text-lg text-neutral-700 dark:text-neutral-300">
-          {root.meaningFr}
-        </p>
-        {root.meaningAr && (
-          <p
-            lang="ar"
-            dir="rtl"
-            className="mx-auto mt-2 font-arabic text-ar-sm text-neutral-500 dark:text-neutral-400"
-          >
-            {root.meaningAr}
-          </p>
-        )}
 
-        {isAuthenticated && (
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Button variant="primary" size="sm" onClick={openCreateWord}>
-              {t('root.addWord')}
-            </Button>
-            {canManage(root) && (
-              <>
-                <Button variant="secondary" size="sm" onClick={openEditRoot}>
-                  {t('root.editRoot')}
-                </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => setDeleteRootOpen(true)}
-                >
-                  {t('root.deleteRoot')}
-                </Button>
-              </>
+        <div className="grid grid-cols-1 lg:grid-cols-12">
+          {/* Lettres en grand sur fond noir */}
+          <div className="relative lg:col-span-5 bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950 p-10 sm:p-14 flex flex-col items-center justify-center">
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 opacity-20"
+              style={{
+                backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)',
+                backgroundSize: '18px 18px',
+              }}
+            />
+            <span className="relative text-2xs font-semibold uppercase tracking-[0.32em] text-accent-300 dark:text-accent-500">
+              [ {root.letters?.join(' · ') ?? '—'} ]
+            </span>
+            <p
+              lang="ar"
+              dir="rtl"
+              className="relative mt-6 font-arabic text-[5rem] sm:text-[7rem] font-bold leading-[0.9]"
+            >
+              {joinLetters(root.letters ?? [])}
+            </p>
+            {root.transliteration && (
+              <p className="relative mt-4 text-sm italic opacity-70">
+                / {root.transliteration} /
+              </p>
             )}
           </div>
-        )}
+
+          {/* Définitions à droite */}
+          <div className="lg:col-span-7 p-8 sm:p-12 bg-neutral-0 dark:bg-neutral-950 lg:border-l-2 lg:border-neutral-950 dark:lg:border-neutral-0">
+            <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+              — Sens · FR
+            </p>
+            <p className="mt-3 text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+              {root.meaningFr}
+            </p>
+
+            {root.meaningEn && (
+              <div className="mt-6 border-t border-neutral-300 dark:border-neutral-700 pt-4">
+                <p className="text-2xs font-bold uppercase tracking-[0.24em] text-neutral-500 dark:text-neutral-400">
+                  — Sens · EN
+                </p>
+                <p className="mt-2 text-lg text-neutral-700 dark:text-neutral-300">
+                  {root.meaningEn}
+                </p>
+              </div>
+            )}
+
+            {root.meaningAr && (
+              <div className="mt-4 border-t border-neutral-300 dark:border-neutral-700 pt-4">
+                <p className="text-2xs font-bold uppercase tracking-[0.24em] text-neutral-500 dark:text-neutral-400">
+                  — Sens · AR
+                </p>
+                <p
+                  lang="ar"
+                  dir="rtl"
+                  className="mt-2 font-arabic text-2xl text-neutral-700 dark:text-neutral-300"
+                >
+                  {root.meaningAr}
+                </p>
+              </div>
+            )}
+
+            {isAuthenticated && (
+              <div className="mt-8 flex flex-wrap gap-2">
+                <Button variant="primary" size="sm" onClick={openCreateWord}>
+                  + {t('root.addWord')}
+                </Button>
+                {canManage(root) && (
+                  <>
+                    <Button variant="secondary" size="sm" onClick={openEditRoot}>
+                      {t('root.editRoot')}
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => setDeleteRootOpen(true)}
+                    >
+                      {t('root.deleteRoot')}
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </motion.section>
 
       {/* Mots dérivés */}
-      <section className="mt-12">
-        <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
-          {t('root.derivedWords')}
-        </h2>
+      <section className="mt-16">
+        <header className="flex items-end justify-between gap-4 border-b-2 border-neutral-950 dark:border-neutral-0 pb-4 mb-10">
+          <div>
+            <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+              — 02 / Dérivés
+            </p>
+            <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+              {t('root.derivedWords')}
+            </h2>
+          </div>
+        </header>
         {wordsLoading ? (
-          <div className="flex justify-center py-10">
+          <div className="flex justify-center py-12">
             <Spinner size="md" />
           </div>
         ) : (
-          <div className="mt-6">
-            <WordList
-              words={groupedWords}
-              grouped
-              renderActions={renderWordActions}
-            />
-          </div>
+          <WordList
+            words={groupedWords}
+            grouped
+            renderActions={renderWordActions}
+          />
         )}
       </section>
 
-      {/* Modale mot (create / edit) */}
+      {/* Modales */}
       <Modal
         isOpen={wordModal.open}
         onClose={() => setWordModal({ open: false, mode: 'create', word: null })}
@@ -438,7 +480,6 @@ const RootDetail = () => {
         <WordForm values={wordValues} onChange={setWordValues} />
       </Modal>
 
-      {/* Modale édition racine */}
       <Modal
         isOpen={rootModalOpen}
         onClose={() => setRootModalOpen(false)}
@@ -488,7 +529,6 @@ const RootDetail = () => {
         </div>
       </Modal>
 
-      {/* Confirmation suppression racine */}
       <Modal
         isOpen={deleteRootOpen}
         onClose={() => setDeleteRootOpen(false)}
@@ -509,12 +549,11 @@ const RootDetail = () => {
           </>
         }
       >
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+        <p className="text-sm text-neutral-700 dark:text-neutral-300">
           {t('root.deleteConfirm')}
         </p>
       </Modal>
 
-      {/* Confirmation suppression mot */}
       <Modal
         isOpen={!!wordToDelete}
         onClose={() => setWordToDelete(null)}
@@ -536,14 +575,14 @@ const RootDetail = () => {
         }
       >
         <div className="space-y-3">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="text-sm text-neutral-700 dark:text-neutral-300">
             {t('word.deleteConfirm')}
           </p>
           {wordToDelete && (
             <p
               lang="ar"
               dir="rtl"
-              className="font-arabic text-ar-base text-neutral-900 dark:text-neutral-50"
+              className="font-arabic text-3xl font-bold text-neutral-950 dark:text-neutral-0"
             >
               {wordToDelete.arabic}
               {wordToDelete.type && (

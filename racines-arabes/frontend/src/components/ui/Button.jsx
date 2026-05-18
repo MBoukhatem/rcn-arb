@@ -1,53 +1,49 @@
-// Button — bouton stylé maison (variants, tailles, états loading/disabled).
-// Design System §5.1.
+// Button — boutons strictement noirs ou blancs, sans border-radius.
+// Design éditorial : typographie compacte, lettrage espacé.
 import Spinner from '@/components/ui/Spinner';
 
-// Conteneur de base commun à tous les variants.
 const BASE =
-  'inline-flex items-center justify-center gap-2 font-medium rounded-md ' +
-  'transition-all duration-150 ease-snappy focus-visible:outline-none ' +
-  'focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 ' +
-  'disabled:pointer-events-none select-none active:scale-[0.98]';
+  'inline-flex items-center justify-center gap-2 font-semibold uppercase ' +
+  'tracking-[0.14em] transition-all duration-150 ease-snappy ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
+  'focus-visible:ring-accent-500 focus-visible:ring-offset-neutral-0 ' +
+  'dark:focus-visible:ring-offset-neutral-950 disabled:opacity-40 ' +
+  'disabled:pointer-events-none select-none active:translate-y-px ' +
+  'border';
 
 const SIZES = {
-  sm: 'h-9 px-3.5 text-sm',
-  md: 'h-11 px-5 text-sm',
-  lg: 'h-[3.25rem] px-7 text-base',
+  sm: 'h-9 px-4 text-2xs',
+  md: 'h-11 px-6 text-xs',
+  lg: 'h-14 px-8 text-xs',
 };
 
+// Variants : tous strictement noir ou blanc.
 const VARIANTS = {
+  // Bloc noir, texte blanc (clair) → inversé en sombre.
   primary:
-    'bg-accent-600 text-neutral-0 hover:bg-accent-700 dark:bg-accent-600 ' +
-    'dark:text-neutral-0 dark:hover:bg-accent-500 ring-accent-600 ' +
-    'dark:ring-accent-400 ring-offset-neutral-0 dark:ring-offset-neutral-900',
+    'bg-neutral-950 text-neutral-0 border-neutral-950 ' +
+    'hover:bg-neutral-800 hover:border-neutral-800 ' +
+    'dark:bg-neutral-0 dark:text-neutral-950 dark:border-neutral-0 ' +
+    'dark:hover:bg-neutral-100 dark:hover:border-neutral-100',
+  // Bloc blanc, texte noir, bordure noire (clair) → inversé.
   secondary:
-    'bg-neutral-0 text-neutral-900 border border-neutral-300 ' +
-    'hover:bg-neutral-50 hover:border-neutral-400 dark:bg-neutral-800 ' +
-    'dark:text-neutral-50 dark:border-neutral-600 dark:hover:bg-neutral-700 ' +
-    'ring-accent-600 dark:ring-accent-400 ring-offset-neutral-0 dark:ring-offset-neutral-900',
+    'bg-neutral-0 text-neutral-950 border-neutral-950 ' +
+    'hover:bg-neutral-950 hover:text-neutral-0 ' +
+    'dark:bg-neutral-950 dark:text-neutral-0 dark:border-neutral-0 ' +
+    'dark:hover:bg-neutral-0 dark:hover:text-neutral-950',
+  // Transparent, sans bordure, soulignement à l'hover.
   ghost:
-    'bg-transparent text-neutral-700 hover:bg-neutral-100 ' +
-    'dark:text-neutral-300 dark:hover:bg-neutral-800 ring-accent-600 ' +
-    'dark:ring-accent-400 ring-offset-neutral-0 dark:ring-offset-neutral-900',
+    'bg-transparent text-neutral-950 border-transparent ' +
+    'hover:bg-neutral-950 hover:text-neutral-0 ' +
+    'dark:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950',
+  // Discrètement teinté d'accent (pourpre rougeâtre) pour les actions critiques.
   danger:
-    'bg-transparent text-error-light border border-error-light/40 ' +
-    'hover:bg-error-light/[0.08] dark:text-error-dark dark:border-error-dark/40 ' +
-    'dark:hover:bg-error-dark/[0.12] ring-error-light dark:ring-error-dark ' +
-    'ring-offset-neutral-0 dark:ring-offset-neutral-900',
+    'bg-transparent text-accent-500 border-accent-500 ' +
+    'hover:bg-accent-500 hover:text-neutral-0 ' +
+    'dark:text-accent-300 dark:border-accent-300 ' +
+    'dark:hover:bg-accent-300 dark:hover:text-neutral-950',
 };
 
-/**
- * @param {object} props
- * @param {'primary'|'secondary'|'ghost'|'danger'} [props.variant='primary']
- * @param {'sm'|'md'|'lg'} [props.size='md']
- * @param {boolean} [props.loading=false]
- * @param {boolean} [props.disabled]
- * @param {'button'|'submit'|'reset'} [props.type='button']
- * @param {Function} [props.onClick]
- * @param {string} [props.className]
- * @param {React.ReactNode} props.children
- * @param {React.ElementType} [props.as] - composant de rendu alternatif (ex. Link).
- */
 const Button = ({
   variant = 'primary',
   size = 'md',
@@ -65,10 +61,6 @@ const Button = ({
     VARIANTS[variant] ?? VARIANTS.primary
   } ${loading ? 'pointer-events-none' : ''} ${className}`;
 
-  // Le spinner du bouton primary est blanc ; sinon il prend l'accent.
-  const spinnerClass = variant === 'primary' ? 'text-neutral-0' : '';
-
-  // Props spécifiques au <button> natif uniquement.
   const nativeProps =
     Component === 'button'
       ? { type, disabled: isInteractiveDisabled }
@@ -81,7 +73,7 @@ const Button = ({
       {...nativeProps}
       {...rest}
     >
-      {loading && <Spinner size="sm" className={spinnerClass} />}
+      {loading && <Spinner size="sm" />}
       {children}
     </Component>
   );

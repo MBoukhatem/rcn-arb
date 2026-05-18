@@ -4,35 +4,33 @@
 
 @layer base {
   :root {
-    --scrollbar-track: #f7f7f8;
-    --scrollbar-thumb: #c6c6cb;
-    --selection-bg: #ede9fe;
-    --selection-fg: #3b1675;
+    --scrollbar-track: #f4f4f4;
+    --scrollbar-thumb: #141414;
+    --selection-bg: #811d2e;
+    --selection-fg: #ffffff;
   }
 
   html.dark {
-    --scrollbar-track: #1c1c20;
-    --scrollbar-thumb: #3a3a41;
-    --selection-bg: #4c1d95;
-    --selection-fg: #f5f3ff;
+    --scrollbar-track: #060606;
+    --scrollbar-thumb: #e6e6e6;
+    --selection-bg: #d86c7b;
+    --selection-fg: #060606;
   }
 
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
-    /* Empêche un flash de thème : ThemeContext pose .dark avant le rendu React */
   }
 
   body {
-    @apply bg-neutral-0 text-neutral-900 font-sans antialiased;
-    @apply dark:bg-neutral-900 dark:text-neutral-50;
+    @apply bg-neutral-0 text-neutral-950 font-sans antialiased;
+    @apply dark:bg-neutral-950 dark:text-neutral-0;
     transition:
       background-color 0.2s ease,
       color 0.2s ease;
     min-height: 100vh;
   }
 
-  /* Tout texte arabe : direction RTL + police Cairo + interligne aéré */
   [lang='ar'],
   .arabic {
     font-family: 'Cairo', system-ui, sans-serif;
@@ -40,7 +38,6 @@
     unicode-bidi: isolate;
   }
 
-  /* Titres en police latine, légèrement resserrés */
   h1,
   h2,
   h3,
@@ -49,13 +46,11 @@
     text-wrap: balance;
   }
 
-  /* Sélection de texte teintée pourpre discret */
   ::selection {
     background-color: var(--selection-bg);
     color: var(--selection-fg);
   }
 
-  /* Scrollbar sobre et monochrome */
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
@@ -69,29 +64,28 @@
   }
   *::-webkit-scrollbar-thumb {
     background: var(--scrollbar-thumb);
-    border-radius: 9999px;
+    border-radius: 0;
     border: 2px solid var(--scrollbar-track);
   }
 
-  /* Focus visible global cohérent (clavier uniquement) */
   :focus-visible {
-    outline: 2px solid #6d28d9;
+    outline: 2px solid #811d2e;
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 0;
   }
   html.dark :focus-visible {
-    outline-color: #a78bfa;
+    outline-color: #d86c7b;
   }
 }
 
 @layer components {
-  /* Squelette de chargement réutilisable */
+  /* Squelette de chargement */
   .skeleton {
-    @apply bg-neutral-100 dark:bg-neutral-800 rounded-md;
+    @apply bg-neutral-100 dark:bg-neutral-800;
     background-image: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.45) 50%,
+      rgba(255, 255, 255, 0.6) 50%,
       transparent 100%
     );
     background-size: 200% 100%;
@@ -101,8 +95,92 @@
     background-image: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.08) 50%,
       transparent 100%
     );
+  }
+
+  /* Étiquette typographique haute densité (style éditorial) */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400;
+  }
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 1px;
+    background-color: currentColor;
+  }
+
+  /* Tag à crochets : [ label ] */
+  .bracket-tag {
+    @apply inline-flex items-center gap-1.5 text-2xs font-semibold uppercase tracking-[0.18em];
+  }
+  .bracket-tag::before {
+    content: '[';
+  }
+  .bracket-tag::after {
+    content: ']';
+  }
+
+  /* Coins de cadrage (style viseur) — appliquer sur un parent relative */
+  .frame-corners::before,
+  .frame-corners::after,
+  .frame-corners > .corner-tl,
+  .frame-corners > .corner-tr,
+  .frame-corners > .corner-bl,
+  .frame-corners > .corner-br {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: currentColor;
+    border-style: solid;
+    border-width: 0;
+    pointer-events: none;
+  }
+  .frame-corners::before {
+    top: -1px;
+    left: -1px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+  }
+  .frame-corners::after {
+    top: -1px;
+    right: -1px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+  }
+
+  /* Ligne pointillée horizontale (séparateur graphique) */
+  .dotted-rule {
+    background-image: linear-gradient(
+      to right,
+      currentColor 50%,
+      transparent 50%
+    );
+    background-size: 6px 1px;
+    background-repeat: repeat-x;
+    background-position: 0 50%;
+    height: 1px;
+    width: 100%;
+    color: currentColor;
+  }
+}
+
+@layer utilities {
+  /* Texte rayé/contour (mode "outline") */
+  .text-outline {
+    -webkit-text-stroke: 1px currentColor;
+    color: transparent;
+  }
+
+  /* Pattern de fond grille pointillée */
+  .bg-dots {
+    background-image: var(--tw-bg-dots, radial-gradient(rgba(0,0,0,0.12) 1px, transparent 1px));
+    background-size: 18px 18px;
+  }
+  html.dark .bg-dots {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
   }
 }

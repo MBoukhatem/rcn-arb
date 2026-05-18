@@ -19,7 +19,7 @@ const App = () => {
   const location = useLocation();
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-0 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-50">
+    <div className="flex min-h-screen flex-col bg-neutral-0 text-neutral-950 dark:bg-neutral-950 dark:text-neutral-0">
       <Navbar />
       <main className="flex-1">
         <AnimatePresence mode="wait">

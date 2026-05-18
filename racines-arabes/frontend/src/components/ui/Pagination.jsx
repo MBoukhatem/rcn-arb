@@ -1,22 +1,22 @@
-// Pagination — contrôles de navigation entre pages.
-// Design System §5.5.
+// Pagination — contrôles graphiques carrés, sans border-radius.
 import { useTranslation } from 'react-i18next';
 
 const PAGE_BTN =
-  'min-w-9 h-9 px-2 rounded-md text-sm font-medium transition-colors ' +
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-600 ' +
-  'dark:focus-visible:ring-accent-400';
+  'min-w-10 h-10 px-2 text-2xs font-semibold uppercase tracking-[0.14em] transition-colors ' +
+  'border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ' +
+  'dark:focus-visible:ring-accent-300';
 
 const INACTIVE =
-  'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800';
+  'border-neutral-300 text-neutral-700 hover:bg-neutral-950 hover:text-neutral-0 hover:border-neutral-950 ' +
+  'dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 dark:hover:border-neutral-0';
 
 const ACTIVE =
-  'bg-accent-600 text-neutral-0 hover:bg-accent-600 dark:bg-accent-600 dark:text-neutral-0';
+  'bg-neutral-950 text-neutral-0 border-neutral-950 ' +
+  'dark:bg-neutral-0 dark:text-neutral-950 dark:border-neutral-0';
 
 const ARROW =
-  'inline-flex items-center justify-center disabled:opacity-40 disabled:pointer-events-none';
+  'inline-flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none';
 
-// Construit la liste de pages affichées, avec ellipses pour les grands totaux.
 const buildPages = (page, total) => {
   if (total <= 7) {
     return Array.from({ length: total }, (_, i) => i + 1);
@@ -31,16 +31,9 @@ const buildPages = (page, total) => {
   return pages;
 };
 
-/**
- * @param {object} props
- * @param {number} props.page - page courante (1-indexée).
- * @param {number} props.totalPages
- * @param {Function} props.onPageChange - reçoit le nouveau numéro de page.
- */
 const Pagination = ({ page, totalPages, onPageChange }) => {
   const { t } = useTranslation();
 
-  // Ne rend rien s'il n'y a au plus qu'une page.
   if (!totalPages || totalPages <= 1) return null;
 
   const pages = buildPages(page, totalPages);
@@ -52,7 +45,7 @@ const Pagination = ({ page, totalPages, onPageChange }) => {
 
   return (
     <nav
-      className="flex items-center justify-center gap-1.5"
+      className="flex items-center justify-center gap-2"
       aria-label={t('common.page')}
     >
       <button
@@ -62,7 +55,7 @@ const Pagination = ({ page, totalPages, onPageChange }) => {
         disabled={page <= 1}
         aria-label={t('common.previous')}
       >
-        <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path
             d="M12.5 4l-6 6 6 6"
             stroke="currentColor"
@@ -77,10 +70,10 @@ const Pagination = ({ page, totalPages, onPageChange }) => {
         typeof item === 'string' ? (
           <span
             key={item}
-            className="text-neutral-400 dark:text-neutral-500 px-1 select-none"
+            className="text-neutral-400 dark:text-neutral-600 px-1 select-none"
             aria-hidden="true"
           >
-            …
+            ···
           </span>
         ) : (
           <button
@@ -91,7 +84,7 @@ const Pagination = ({ page, totalPages, onPageChange }) => {
             aria-current={item === page ? 'page' : undefined}
             aria-label={`${t('common.page')} ${item}`}
           >
-            {item}
+            {String(item).padStart(2, '0')}
           </button>
         ),
       )}
@@ -103,7 +96,7 @@ const Pagination = ({ page, totalPages, onPageChange }) => {
         disabled={page >= totalPages}
         aria-label={t('common.next')}
       >
-        <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path
             d="M7.5 4l6 6-6 6"
             stroke="currentColor"
@@ -114,8 +107,8 @@ const Pagination = ({ page, totalPages, onPageChange }) => {
         </svg>
       </button>
 
-      <span className="ml-2 text-xs text-neutral-400 dark:text-neutral-500 select-none">
-        {t('common.page')} {page} {t('common.of')} {totalPages}
+      <span className="ml-3 text-2xs uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400 select-none">
+        {String(page).padStart(2, '0')} / {String(totalPages).padStart(2, '0')}
       </span>
     </nav>
   );

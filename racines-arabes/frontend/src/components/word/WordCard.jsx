@@ -1,19 +1,12 @@
-// WordCard — carte d'un mot dérivé (arabe, schème, traduction, badges).
-// Design System §5.9.
+// WordCard — carte d'un mot dérivé, design éditorial avec en-tête typographique.
 import { useTranslation } from 'react-i18next';
 import { getTypeLabel, TYPE_META } from '@/utils/morphology';
 import Badge from '@/components/ui/Badge';
 
 const CARD_BASE =
-  'group relative rounded-xl border bg-neutral-0 dark:bg-neutral-850 ' +
-  'border-neutral-200 dark:border-neutral-700 p-6 transition-all duration-200 ease-soft';
+  'group relative bg-neutral-0 dark:bg-neutral-950 ' +
+  'border border-neutral-950 dark:border-neutral-0 p-6 transition-colors duration-200 h-full';
 
-/**
- * @param {object} props
- * @param {object} props.word - { arabic, transliteration, translationFr, translationEn, type, tense, pattern, example, notes }
- * @param {React.ReactNode} [props.actions] - noeud d'actions affiché en coin (ex. FavoriteButton).
- * @param {string} [props.className]
- */
 const WordCard = ({ word, actions, className = '' }) => {
   const { t, i18n } = useTranslation();
 
@@ -28,45 +21,50 @@ const WordCard = ({ word, actions, className = '' }) => {
 
   return (
     <article className={`${CARD_BASE} ${className}`}>
-      {/* Zone d'actions en coin */}
-      {actions && <div className="absolute top-3 right-3">{actions}</div>}
+      {actions && <div className="absolute top-3 right-3 z-10">{actions}</div>}
+
+      {/* En-tête : type morphologique en eyebrow */}
+      <div className="flex items-center justify-between gap-2">
+        <span className="font-mono text-2xs uppercase tracking-[0.2em] text-accent-500 dark:text-accent-300">
+          — {getTypeLabel(word.type, t)}
+        </span>
+        {isVerb && word.tense && (
+          <Badge>{t(`morphology.tense.${word.tense}`)}</Badge>
+        )}
+      </div>
 
       {/* Mot arabe en vedette */}
       <p
         lang="ar"
         dir="rtl"
-        className="font-arabic text-ar-lg sm:text-ar-xl font-bold text-neutral-900 dark:text-neutral-50 pr-10"
+        className="mt-4 font-arabic text-4xl sm:text-5xl font-bold text-neutral-950 dark:text-neutral-0 leading-tight"
       >
         {word.arabic}
       </p>
 
       {/* Translittération */}
       {word.transliteration && (
-        <p className="mt-1 text-sm text-neutral-400 dark:text-neutral-500 italic">
-          {word.transliteration}
+        <p className="mt-2 text-sm italic text-neutral-500 dark:text-neutral-400">
+          / {word.transliteration} /
         </p>
       )}
 
-      {/* Badges : type morphologique (+ temps si verbe) */}
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <Badge accent={meta?.badgeAccent ?? false}>
-          {getTypeLabel(word.type, t)}
-        </Badge>
-        {isVerb && word.tense && (
-          <Badge>{t(`morphology.tense.${word.tense}`)}</Badge>
-        )}
-      </div>
+      {/* Filet pointillé */}
+      <span
+        aria-hidden="true"
+        className="block mt-4 h-px w-full bg-neutral-950 dark:bg-neutral-0 opacity-30"
+      />
 
-      {/* Schème (pattern) en arabe */}
+      {/* Schème */}
       {word.pattern && (
-        <div className="mt-4">
-          <p className="text-2xs uppercase tracking-wide font-semibold text-neutral-400 dark:text-neutral-500">
-            {t('morphology.patternLabel')}
+        <div className="mt-4 flex items-baseline gap-3">
+          <p className="text-2xs uppercase tracking-[0.18em] font-bold text-neutral-700 dark:text-neutral-300">
+            Schème
           </p>
           <p
             lang="ar"
             dir="rtl"
-            className="font-arabic text-ar-sm text-neutral-500 dark:text-neutral-400"
+            className="font-arabic text-lg text-accent-500 dark:text-accent-300"
           >
             {word.pattern}
           </p>
@@ -75,26 +73,39 @@ const WordCard = ({ word, actions, className = '' }) => {
 
       {/* Traduction */}
       {translation && (
-        <p className="mt-3 text-sm text-neutral-700 dark:text-neutral-300">
+        <p className="mt-4 text-sm leading-relaxed text-neutral-800 dark:text-neutral-200">
           {translation}
         </p>
       )}
 
       {/* Exemple */}
       {word.example && (
-        <p
-          lang="ar"
-          dir="rtl"
-          className="mt-4 text-sm italic text-neutral-500 dark:text-neutral-400 font-arabic bg-neutral-50 dark:bg-neutral-900 rounded-md p-3 border-r-2 border-accent-300 dark:border-accent-400/40"
-        >
-          {word.example}
-        </p>
+        <div className="mt-4 border-l-2 border-accent-500 dark:border-accent-300 pl-3">
+          <p
+            lang="ar"
+            dir="rtl"
+            className="font-arabic text-base italic text-neutral-600 dark:text-neutral-400"
+          >
+            {word.example}
+          </p>
+        </div>
       )}
 
       {/* Notes */}
       {word.notes && (
-        <p className="mt-3 text-xs text-neutral-400 dark:text-neutral-500">
-          {word.notes}
+        <p className="mt-3 text-2xs uppercase tracking-[0.16em] text-neutral-500 dark:text-neutral-500">
+          ↳ {word.notes}
+        </p>
+      )}
+
+      {/* Marqueur méta arabe en bas */}
+      {meta?.arabicName && (
+        <p
+          lang="ar"
+          dir="rtl"
+          className="mt-5 pt-3 border-t border-neutral-300 dark:border-neutral-700 font-arabic text-sm text-neutral-500 dark:text-neutral-500"
+        >
+          {meta.arabicName}
         </p>
       )}
     </article>

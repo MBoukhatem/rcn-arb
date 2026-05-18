@@ -1,5 +1,4 @@
-// Navbar — barre de navigation responsive (burger mobile, toggle thème, langue).
-// Design System §5.7.
+// Navbar — barre éditoriale stricte : bordure pleine, typographie haute densité.
 import { useState, useCallback } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
@@ -8,19 +7,16 @@ import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import Button from '@/components/ui/Button';
-import logo from '@/assets/logo.svg';
 
 const LINK_BASE =
-  'relative text-sm font-medium px-3 py-2 rounded-md transition-colors';
+  'relative text-2xs font-semibold uppercase tracking-[0.18em] px-3 py-2 transition-colors';
 const LINK_INACTIVE =
-  'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 ' +
-  'dark:text-neutral-400 dark:hover:text-neutral-50 dark:hover:bg-neutral-800';
-const LINK_ACTIVE = 'text-accent-600 dark:text-accent-400';
+  'text-neutral-700 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-neutral-0';
+const LINK_ACTIVE = 'text-neutral-950 dark:text-neutral-0';
 
-// Icône soleil/lune pour le toggle de thème.
 const ThemeIcon = ({ isDark }) =>
   isDark ? (
-    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
       <path
         d="M16 11.5A6.5 6.5 0 0 1 8.5 4a6.5 6.5 0 1 0 7.5 7.5z"
         stroke="currentColor"
@@ -29,7 +25,7 @@ const ThemeIcon = ({ isDark }) =>
       />
     </svg>
   ) : (
-    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
       <circle cx="10" cy="10" r="3.5" stroke="currentColor" strokeWidth="1.5" />
       <path
         d="M10 1.5v2M10 16.5v2M3.5 10h-2M18.5 10h-2M5.05 5.05L3.64 3.64M16.36 16.36l-1.41-1.41M14.95 5.05l1.41-1.41M3.64 16.36l1.41-1.41"
@@ -50,7 +46,6 @@ const Navbar = () => {
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  // Liens publics + liens privés selon l'authentification.
   const links = [
     { to: '/', label: t('nav.home'), end: true },
     { to: '/explorer', label: t('nav.explorer') },
@@ -70,7 +65,6 @@ const Navbar = () => {
     navigate('/');
   }, [logout, closeMenu, t, navigate]);
 
-  // Bascule de langue fr <-> en.
   const toggleLanguage = useCallback(() => {
     const next = i18n.language?.startsWith('en') ? 'fr' : 'en';
     i18n.changeLanguage(next);
@@ -92,7 +86,7 @@ const Navbar = () => {
           {isActive && (
             <motion.span
               layoutId="nav-underline"
-              className="absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full bg-accent-600 dark:bg-accent-400"
+              className="absolute left-3 right-3 -bottom-0.5 h-px bg-neutral-950 dark:bg-neutral-0"
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             />
           )}
@@ -102,17 +96,30 @@ const Navbar = () => {
   );
 
   return (
-    <header className="sticky top-0 z-40 h-16 w-full border-b transition-colors bg-neutral-0/85 border-neutral-200 dark:bg-neutral-900/85 dark:border-neutral-800 backdrop-blur-md">
-      <div className="mx-auto max-w-7xl h-full px-4 sm:px-6 flex items-center justify-between gap-4">
-        {/* Logo / marque */}
+    <header className="sticky top-0 z-40 w-full border-b-2 border-neutral-950 bg-neutral-0/95 dark:border-neutral-0 dark:bg-neutral-950/95 backdrop-blur">
+      <div className="mx-auto max-w-[1400px] h-16 px-4 sm:px-6 flex items-center justify-between gap-4">
+        {/* Marque */}
         <NavLink
           to="/"
           end
           onClick={closeMenu}
-          className="flex items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-600 dark:focus-visible:ring-accent-400"
+          className="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300"
           aria-label={t('nav.home')}
         >
-          <img src={logo} alt="نظام الجذور" className="h-8 w-auto dark:invert" />
+          <span
+            lang="ar"
+            className="font-arabic text-2xl font-bold text-neutral-950 dark:text-neutral-0 leading-none"
+          >
+            ع
+          </span>
+          <div className="flex flex-col leading-none">
+            <span className="text-sm font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+              RACINES
+            </span>
+            <span className="mt-0.5 text-[9px] font-semibold tracking-[0.32em] text-accent-500 dark:text-accent-300">
+              ARABES
+            </span>
+          </div>
         </NavLink>
 
         {/* Liens desktop */}
@@ -121,30 +128,28 @@ const Navbar = () => {
         </nav>
 
         {/* Zone droite desktop */}
-        <div className="hidden md:flex items-center gap-1.5">
-          <Button
-            variant="ghost"
-            size="sm"
+        <div className="hidden md:flex items-center gap-2">
+          <button
+            type="button"
             onClick={toggleLanguage}
             aria-label={t('language.label')}
-            className="!px-2.5 font-semibold uppercase tracking-wide text-xs"
+            className="h-9 px-3 text-2xs font-bold uppercase tracking-[0.18em] border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0 hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors"
           >
             {i18n.language?.startsWith('en') ? 'EN' : 'FR'}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
+          </button>
+          <button
+            type="button"
             onClick={toggleTheme}
             aria-label={t('theme.toggle')}
-            className="!px-2"
+            className="h-9 w-9 inline-flex items-center justify-center border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0 hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors"
           >
             <ThemeIcon isDark={isDark} />
-          </Button>
+          </button>
 
-          <span className="mx-1 h-5 w-px bg-neutral-200 dark:bg-neutral-700" aria-hidden="true" />
+          <span className="mx-1 h-6 w-px bg-neutral-300 dark:bg-neutral-700" aria-hidden="true" />
 
           {isAuthenticated ? (
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <Button variant="secondary" size="sm" onClick={handleLogout}>
               {t('nav.logout')}
             </Button>
           ) : (
@@ -160,25 +165,23 @@ const Navbar = () => {
         </div>
 
         {/* Burger mobile */}
-        <div className="flex md:hidden items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
+        <div className="flex md:hidden items-center gap-2">
+          <button
+            type="button"
             onClick={toggleTheme}
             aria-label={t('theme.toggle')}
-            className="!px-2"
+            className="h-9 w-9 inline-flex items-center justify-center border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0"
           >
             <ThemeIcon isDark={isDark} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
+          </button>
+          <button
+            type="button"
             onClick={() => setMenuOpen((open) => !open)}
             aria-label="Menu"
             aria-expanded={menuOpen}
-            className="!px-2"
+            className="h-9 w-9 inline-flex items-center justify-center border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0"
           >
-            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               {menuOpen ? (
                 <path
                   d="M5 5l10 10M15 5L5 15"
@@ -195,7 +198,7 @@ const Navbar = () => {
                 />
               )}
             </svg>
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -207,13 +210,13 @@ const Navbar = () => {
             animate={shouldReduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
             exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="md:hidden border-b border-neutral-200 dark:border-neutral-800 bg-neutral-0 dark:bg-neutral-900"
+            className="md:hidden border-t border-neutral-950 dark:border-neutral-0 bg-neutral-0 dark:bg-neutral-950"
             aria-label="Navigation mobile"
           >
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 flex flex-col gap-1">
+            <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-4 flex flex-col gap-1">
               {links.map(renderNavLink)}
 
-              <span className="my-2 h-px w-full bg-neutral-200 dark:bg-neutral-800" aria-hidden="true" />
+              <span className="my-3 h-px w-full bg-neutral-300 dark:bg-neutral-700" aria-hidden="true" />
 
               <button
                 type="button"
@@ -228,12 +231,12 @@ const Navbar = () => {
                   variant="secondary"
                   size="md"
                   onClick={handleLogout}
-                  className="mt-2 w-full"
+                  className="mt-3 w-full"
                 >
                   {t('nav.logout')}
                 </Button>
               ) : (
-                <div className="mt-2 flex flex-col gap-2">
+                <div className="mt-3 flex flex-col gap-2">
                   <Button
                     as={NavLink}
                     to="/login"

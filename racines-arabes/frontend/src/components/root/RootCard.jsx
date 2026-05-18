@@ -1,22 +1,17 @@
-// RootCard — carte présentant une racine (3 lettres, sens, translittération).
-// Design System §5.9.
+// RootCard — carte de racine éditoriale, bordure dure, hover inversion.
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { joinLetters } from '@/utils/formatters';
 
 const CARD_BASE =
-  'group relative block rounded-xl border bg-neutral-0 dark:bg-neutral-850 ' +
-  'border-neutral-200 dark:border-neutral-700 p-6 transition-all duration-200 ' +
-  'ease-soft hover:border-accent-300 dark:hover:border-accent-400/50 ' +
-  'hover:shadow-md focus-visible:outline-none focus-visible:ring-2 ' +
-  'focus-visible:ring-accent-600 dark:focus-visible:ring-accent-400';
+  'group relative block bg-neutral-0 dark:bg-neutral-950 ' +
+  'border-2 border-neutral-950 dark:border-neutral-0 ' +
+  'p-6 transition-colors duration-200 ' +
+  'hover:bg-neutral-950 hover:text-neutral-0 ' +
+  'dark:hover:bg-neutral-0 dark:hover:text-neutral-950 ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300';
 
-/**
- * @param {object} props
- * @param {object} props.root - { slug, letters[], meaningFr, meaningEn, transliteration, wordsCount }
- * @param {string} [props.className]
- */
 const RootCard = ({ root, className = '' }) => {
   const { t, i18n } = useTranslation();
   const shouldReduce = useReducedMotion();
@@ -27,9 +22,7 @@ const RootCard = ({ root, className = '' }) => {
   const meaning = isEnglish
     ? (root.meaningEn ?? root.meaningFr)
     : (root.meaningFr ?? root.meaningEn);
-  // Lettres : tableau `letters` ou dérivées du slug.
-  const letters =
-    root.letters ?? (root.slug ? root.slug.split('-') : []);
+  const letters = root.letters ?? (root.slug ? root.slug.split('-') : []);
 
   return (
     <motion.div
@@ -37,35 +30,44 @@ const RootCard = ({ root, className = '' }) => {
       transition={{ duration: 0.16, ease: [0.4, 0, 0.2, 1] }}
     >
       <Link to={`/roots/${root.slug}`} className={`${CARD_BASE} ${className}`}>
-        {/* Racine en grand, RTL */}
+        {/* Corner ID */}
+        <span className="font-mono text-2xs uppercase tracking-[0.2em] text-accent-500 dark:text-accent-300 group-hover:text-accent-300 dark:group-hover:text-accent-500">
+          [ {root.slug ?? 'root'} ]
+        </span>
+
+        {/* Racine en grand */}
         <p
           lang="ar"
           dir="rtl"
-          className="font-arabic text-ar-lg font-semibold text-neutral-900 dark:text-neutral-50 text-center tracking-wide"
+          className="mt-4 font-arabic text-5xl font-bold text-center tracking-wide"
         >
           {joinLetters(letters)}
         </p>
 
-        {/* Translittération latine */}
+        {/* Filet */}
+        <span className="block mt-4 h-px w-full bg-current opacity-30" aria-hidden="true" />
+
         {root.transliteration && (
-          <p className="mt-1 text-center text-sm text-neutral-400 dark:text-neutral-500 italic">
+          <p className="mt-3 text-center text-xs italic opacity-70">
             {root.transliteration}
           </p>
         )}
 
-        {/* Sens */}
         {meaning && (
-          <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2 text-center">
+          <p className="mt-2 text-sm line-clamp-2 text-center">
             {meaning}
           </p>
         )}
 
-        {/* Compteur de mots */}
         {typeof root.wordsCount === 'number' && (
-          <p className="mt-4 text-center text-xs font-medium text-neutral-400 dark:text-neutral-500">
+          <p className="mt-5 text-center font-mono text-2xs uppercase tracking-[0.2em] opacity-70">
             {t('root.wordsCount', { count: root.wordsCount })}
           </p>
         )}
+
+        <span aria-hidden="true" className="absolute bottom-3 right-3 text-2xs font-bold">
+          →
+        </span>
       </Link>
     </motion.div>
   );

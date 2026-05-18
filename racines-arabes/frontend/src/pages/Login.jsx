@@ -1,4 +1,4 @@
-// Page de connexion — formulaire email/password avec validation temps réel.
+// Page de connexion — formulaire éditorial, panneau visuel à gauche.
 import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -22,7 +22,6 @@ const Login = () => {
   const [touched, setTouched] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Validation champ par champ — clé i18n d'erreur ou null si valide.
   const validateField = (name, val) => {
     if (name === 'email') {
       if (!val.trim()) return 'validation.emailRequired';
@@ -41,8 +40,6 @@ const Login = () => {
   };
   const isValid = !errors.email && !errors.password;
 
-  // À la saisie : on met à jour la valeur et on marque le champ « touché »
-  // pour activer la validation temps réel champ par champ.
   const handleChange = (e) => {
     const { name, value } = e.target;
     setValues((prev) => ({ ...prev, [name]: value }));
@@ -66,7 +63,6 @@ const Login = () => {
     }
   };
 
-  // Si l'auth est en cours de vérification, on attend.
   if (loading) return null;
   if (isAuthenticated) return <Navigate to="/" replace />;
 
@@ -76,58 +72,94 @@ const Login = () => {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto max-w-md"
+        className="mx-auto grid w-full max-w-5xl grid-cols-1 lg:grid-cols-2 border-2 border-neutral-950 dark:border-neutral-0"
       >
-        <h1 className="text-center text-3xl font-bold text-neutral-900 dark:text-neutral-50">
-          {t('auth.loginTitle')}
-        </h1>
-
-        <form
-          onSubmit={handleSubmit}
-          noValidate
-          className="mt-8 space-y-5 rounded-xl border border-neutral-200 bg-neutral-0 p-6 sm:p-8 dark:border-neutral-700 dark:bg-neutral-850"
-        >
-          <Input
-            label={t('auth.email')}
-            name="email"
-            type="email"
-            value={values.email}
-            onChange={handleChange}
-            error={touched.email && errors.email ? t(errors.email) : ''}
-            placeholder={t('auth.emailPlaceholder')}
-            required
+        {/* Panneau visuel */}
+        <aside className="relative hidden lg:flex flex-col justify-between bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950 p-10">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)',
+              backgroundSize: '20px 20px',
+            }}
           />
-          <Input
-            label={t('auth.password')}
-            name="password"
-            type="password"
-            value={values.password}
-            onChange={handleChange}
-            error={touched.password && errors.password ? t(errors.password) : ''}
-            hint={!errors.password ? t('auth.passwordHint') : ''}
-            required
-          />
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            loading={submitting}
-            disabled={submitting}
-            className="w-full"
-          >
-            {t('auth.submitLogin')}
-          </Button>
-        </form>
+          <div className="relative">
+            <p className="text-2xs font-bold uppercase tracking-[0.32em] text-accent-300 dark:text-accent-500">
+              — Session
+            </p>
+            <h2 className="mt-6 text-4xl font-extrabold tracking-tight">
+              Reprenez votre exploration.
+            </h2>
+          </div>
+          <div className="relative">
+            <p
+              lang="ar"
+              dir="rtl"
+              className="font-arabic text-7xl font-bold opacity-90"
+            >
+              أهلاً
+            </p>
+            <p className="mt-3 text-2xs uppercase tracking-[0.28em] opacity-70">
+              ahlan · welcome
+            </p>
+          </div>
+        </aside>
 
-        <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
-          {t('auth.noAccount')}{' '}
-          <Link
-            to="/register"
-            className="font-medium text-accent-600 hover:underline dark:text-accent-400"
-          >
-            {t('auth.submitRegister')}
-          </Link>
-        </p>
+        {/* Formulaire */}
+        <div className="p-8 sm:p-12">
+          <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
+            — 01 / Connexion
+          </p>
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+            {t('auth.loginTitle')}
+          </h1>
+
+          <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-5">
+            <Input
+              label={t('auth.email')}
+              name="email"
+              type="email"
+              value={values.email}
+              onChange={handleChange}
+              error={touched.email && errors.email ? t(errors.email) : ''}
+              placeholder={t('auth.emailPlaceholder')}
+              required
+            />
+            <Input
+              label={t('auth.password')}
+              name="password"
+              type="password"
+              value={values.password}
+              onChange={handleChange}
+              error={touched.password && errors.password ? t(errors.password) : ''}
+              hint={!errors.password ? t('auth.passwordHint') : ''}
+              required
+            />
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              loading={submitting}
+              disabled={submitting}
+              className="w-full"
+            >
+              {t('auth.submitLogin')} →
+            </Button>
+          </form>
+
+          <div className="mt-8 border-t border-neutral-300 dark:border-neutral-700 pt-6">
+            <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
+              {t('auth.noAccount')}
+            </p>
+            <Link
+              to="/register"
+              className="mt-2 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-accent-500 dark:text-accent-300 hover:underline underline-offset-4"
+            >
+              {t('auth.submitRegister')} →
+            </Link>
+          </div>
+        </div>
       </motion.div>
     </PageWrapper>
   );

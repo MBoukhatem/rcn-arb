@@ -30,7 +30,6 @@ const Favorites = () => {
     [page],
   );
 
-  // Après retrait d'un favori : on rafraîchit la liste.
   const handleToggle = useCallback(() => {
     toast.success(t('favorites.removeSuccess'));
     refetch();
@@ -42,7 +41,7 @@ const Favorites = () => {
   const words = favorites.filter((f) => f?.itemModel === 'Word');
 
   return (
-    <PageWrapper title={t('favorites.title')}>
+    <PageWrapper title={t('favorites.title')} eyebrow="Bibliothèque · Personnelle">
       {loading && (
         <div className="flex min-h-[40vh] items-center justify-center">
           <Spinner size="lg" />
@@ -50,32 +49,53 @@ const Favorites = () => {
       )}
 
       {!loading && error && (
-        <p className="py-16 text-center text-base text-error-light dark:text-error-dark">
-          {error?.message ?? t('errors.generic')}
-        </p>
+        <div className="border-2 border-accent-500 dark:border-accent-300 py-12 text-center">
+          <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+            {error?.message ?? t('errors.generic')}
+          </p>
+        </div>
       )}
 
       {!loading && !error && favorites.length === 0 && (
-        <p className="py-16 text-center text-base text-neutral-500 dark:text-neutral-400">
-          {t('favorites.empty')}
-        </p>
+        <div className="border-2 border-dashed border-neutral-950 dark:border-neutral-0 py-20 text-center">
+          <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
+            — Aucun favori
+          </p>
+          <p className="mt-3 text-base text-neutral-700 dark:text-neutral-300">
+            {t('favorites.empty')}
+          </p>
+        </div>
       )}
 
       {!loading && !error && favorites.length > 0 && (
-        <div className="space-y-12">
+        <div className="space-y-16">
           {roots.length > 0 && (
             <section>
-              <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
-                {t('favorites.roots')}
-              </h2>
+              <header className="flex items-end justify-between gap-4 border-b-2 border-neutral-950 dark:border-neutral-0 pb-4 mb-8">
+                <div>
+                  <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+                    — 01 / Racines
+                  </p>
+                  <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+                    {t('favorites.roots')}
+                  </h2>
+                </div>
+                <span className="font-mono text-2xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+                  {String(roots.length).padStart(2, '0')} entr.
+                </span>
+              </header>
               <motion.div
                 variants={listVariants}
                 initial="hidden"
                 animate="visible"
-                className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6"
+                className="grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-3 border-l border-t border-neutral-950 dark:border-neutral-0"
               >
                 {roots.map((fav) => (
-                  <motion.div key={fav._id} variants={cardVariants} className="relative">
+                  <motion.div
+                    key={fav._id}
+                    variants={cardVariants}
+                    className="relative -ml-px -mt-px"
+                  >
                     <RootCard root={fav.item} />
                     <div className="absolute right-3 top-3">
                       <FavoriteButton
@@ -94,17 +114,31 @@ const Favorites = () => {
 
           {words.length > 0 && (
             <section>
-              <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
-                {t('favorites.words')}
-              </h2>
+              <header className="flex items-end justify-between gap-4 border-b-2 border-neutral-950 dark:border-neutral-0 pb-4 mb-8">
+                <div>
+                  <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+                    — 02 / Mots
+                  </p>
+                  <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+                    {t('favorites.words')}
+                  </h2>
+                </div>
+                <span className="font-mono text-2xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+                  {String(words.length).padStart(2, '0')} entr.
+                </span>
+              </header>
               <motion.div
                 variants={listVariants}
                 initial="hidden"
                 animate="visible"
-                className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6"
+                className="grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-3 border-l border-t border-neutral-950 dark:border-neutral-0"
               >
                 {words.map((fav) => (
-                  <motion.div key={fav._id} variants={cardVariants}>
+                  <motion.div
+                    key={fav._id}
+                    variants={cardVariants}
+                    className="-ml-px -mt-px"
+                  >
                     <WordCard
                       word={fav.item}
                       actions={

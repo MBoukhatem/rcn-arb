@@ -12,16 +12,22 @@ import Modal from '@/components/ui/Modal';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/services/api';
 
-// Classes du select natif, alignées sur l'Input du design system.
 const SELECT_CLASS =
-  'w-full h-11 px-3.5 rounded-md text-sm bg-neutral-0 text-neutral-900 ' +
-  'border border-neutral-300 transition-colors duration-150 ' +
-  'focus:outline-none focus:border-accent-600 focus:ring-4 focus:ring-accent-600/[0.14] ' +
-  'dark:bg-neutral-850 dark:text-neutral-50 dark:border-neutral-700 ' +
-  'dark:focus:border-accent-400 dark:focus:ring-accent-400/20';
+  'w-full h-11 px-3.5 text-sm bg-neutral-0 text-neutral-950 ' +
+  'border border-neutral-950 transition-colors duration-150 ' +
+  'focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-500/30 ' +
+  'dark:bg-neutral-950 dark:text-neutral-0 dark:border-neutral-0 ' +
+  'dark:focus:border-accent-300 dark:focus:ring-accent-300/30';
 
 const LABEL_CLASS =
-  'block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5';
+  'block text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-950 dark:text-neutral-0 mb-2';
+
+const SECTION =
+  'border-2 border-neutral-950 dark:border-neutral-0 bg-neutral-0 dark:bg-neutral-950';
+const SECTION_HEADER =
+  'flex items-center justify-between border-b border-neutral-950 dark:border-neutral-0 px-6 py-3';
+const SECTION_TITLE =
+  'text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300';
 
 const Profile = () => {
   const { t } = useTranslation();
@@ -99,135 +105,143 @@ const Profile = () => {
   };
 
   return (
-    <PageWrapper title={t('profile.title')}>
+    <PageWrapper title={t('profile.title')} eyebrow="Compte · Utilisateur">
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto max-w-2xl space-y-8"
+        className="mx-auto max-w-3xl space-y-10"
       >
         {/* Mise à jour du profil */}
-        <form
-          onSubmit={submitProfile}
-          className="space-y-5 rounded-xl border border-neutral-200 bg-neutral-0 p-6 sm:p-8 dark:border-neutral-700 dark:bg-neutral-850"
-        >
-          <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-50">
-            {t('profile.updateProfile')}
-          </h2>
-
-          <div>
-            <span className={LABEL_CLASS}>{t('profile.email')}</span>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+        <form onSubmit={submitProfile} className={SECTION}>
+          <header className={SECTION_HEADER}>
+            <span className={SECTION_TITLE}>— 01 / Profil</span>
+            <span className="font-mono text-2xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
               {user?.email}
-            </p>
-          </div>
+            </span>
+          </header>
 
-          <Input
-            label={t('profile.name')}
-            name="name"
-            type="text"
-            value={profile.name}
-            onChange={handleProfileChange}
-            required
-          />
+          <div className="p-6 sm:p-8 space-y-5">
+            <h2 className="text-2xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+              {t('profile.updateProfile')}
+            </h2>
 
-          <div>
-            <label className={LABEL_CLASS} htmlFor="bio">
-              {t('profile.bio')}
-            </label>
-            <textarea
-              id="bio"
-              name="bio"
-              value={profile.bio}
+            <Input
+              label={t('profile.name')}
+              name="name"
+              type="text"
+              value={profile.name}
               onChange={handleProfileChange}
-              rows={3}
-              maxLength={280}
-              placeholder={t('profile.bioPlaceholder')}
-              className={`${SELECT_CLASS} h-auto py-2.5 placeholder:text-neutral-400 dark:placeholder:text-neutral-500`}
+              required
             />
-          </div>
 
-          <Input
-            label={t('profile.avatarUrl')}
-            name="avatarUrl"
-            type="url"
-            value={profile.avatarUrl}
-            onChange={handleProfileChange}
-          />
+            <div>
+              <label className={LABEL_CLASS} htmlFor="bio">
+                {t('profile.bio')}
+              </label>
+              <textarea
+                id="bio"
+                name="bio"
+                value={profile.bio}
+                onChange={handleProfileChange}
+                rows={3}
+                maxLength={280}
+                placeholder={t('profile.bioPlaceholder')}
+                className={`${SELECT_CLASS} h-auto py-2.5 placeholder:text-neutral-400 dark:placeholder:text-neutral-600`}
+              />
+            </div>
 
-          <div>
-            <label className={LABEL_CLASS} htmlFor="nativeLanguage">
-              {t('profile.nativeLanguage')}
-            </label>
-            <select
-              id="nativeLanguage"
-              name="nativeLanguage"
-              value={profile.nativeLanguage}
+            <Input
+              label={t('profile.avatarUrl')}
+              name="avatarUrl"
+              type="url"
+              value={profile.avatarUrl}
               onChange={handleProfileChange}
-              className={SELECT_CLASS}
-            >
-              <option value="fr">{t('profile.nativeLanguageFr')}</option>
-              <option value="en">{t('profile.nativeLanguageEn')}</option>
-              <option value="ar">{t('profile.nativeLanguageAr')}</option>
-            </select>
-          </div>
+            />
 
-          <Button
-            type="submit"
-            variant="primary"
-            loading={savingProfile}
-            disabled={savingProfile}
-          >
-            {t('common.save')}
-          </Button>
+            <div>
+              <label className={LABEL_CLASS} htmlFor="nativeLanguage">
+                {t('profile.nativeLanguage')}
+              </label>
+              <select
+                id="nativeLanguage"
+                name="nativeLanguage"
+                value={profile.nativeLanguage}
+                onChange={handleProfileChange}
+                className={SELECT_CLASS}
+              >
+                <option value="fr">{t('profile.nativeLanguageFr')}</option>
+                <option value="en">{t('profile.nativeLanguageEn')}</option>
+                <option value="ar">{t('profile.nativeLanguageAr')}</option>
+              </select>
+            </div>
+
+            <Button
+              type="submit"
+              variant="primary"
+              loading={savingProfile}
+              disabled={savingProfile}
+            >
+              {t('common.save')}
+            </Button>
+          </div>
         </form>
 
         {/* Changement de mot de passe */}
-        <form
-          onSubmit={submitPassword}
-          className="space-y-5 rounded-xl border border-neutral-200 bg-neutral-0 p-6 sm:p-8 dark:border-neutral-700 dark:bg-neutral-850"
-        >
-          <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-50">
-            {t('profile.changePassword')}
-          </h2>
-          <Input
-            label={t('profile.currentPassword')}
-            name="currentPassword"
-            type="password"
-            value={passwords.currentPassword}
-            onChange={handlePasswordChange}
-            required
-          />
-          <Input
-            label={t('profile.newPassword')}
-            name="newPassword"
-            type="password"
-            value={passwords.newPassword}
-            onChange={handlePasswordChange}
-            hint={t('auth.passwordHint')}
-            required
-          />
-          <Button
-            type="submit"
-            variant="primary"
-            loading={savingPassword}
-            disabled={savingPassword}
-          >
-            {t('profile.changePassword')}
-          </Button>
+        <form onSubmit={submitPassword} className={SECTION}>
+          <header className={SECTION_HEADER}>
+            <span className={SECTION_TITLE}>— 02 / Sécurité</span>
+          </header>
+          <div className="p-6 sm:p-8 space-y-5">
+            <h2 className="text-2xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+              {t('profile.changePassword')}
+            </h2>
+            <Input
+              label={t('profile.currentPassword')}
+              name="currentPassword"
+              type="password"
+              value={passwords.currentPassword}
+              onChange={handlePasswordChange}
+              required
+            />
+            <Input
+              label={t('profile.newPassword')}
+              name="newPassword"
+              type="password"
+              value={passwords.newPassword}
+              onChange={handlePasswordChange}
+              hint={t('auth.passwordHint')}
+              required
+            />
+            <Button
+              type="submit"
+              variant="primary"
+              loading={savingPassword}
+              disabled={savingPassword}
+            >
+              {t('profile.changePassword')}
+            </Button>
+          </div>
         </form>
 
         {/* Suppression de compte */}
-        <div className="space-y-3 rounded-xl border border-error-light/40 bg-neutral-0 p-6 sm:p-8 dark:border-error-dark/40 dark:bg-neutral-850">
-          <h2 className="text-xl font-semibold text-error-light dark:text-error-dark">
-            {t('profile.deleteAccount')}
-          </h2>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {t('profile.deleteAccountConfirm')}
-          </p>
-          <Button variant="danger" onClick={() => setDeleteOpen(true)}>
-            {t('profile.deleteAccount')}
-          </Button>
+        <div className="border-2 border-accent-500 dark:border-accent-300 bg-neutral-0 dark:bg-neutral-950">
+          <header className="flex items-center justify-between border-b border-accent-500 dark:border-accent-300 px-6 py-3">
+            <span className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+              — Zone critique
+            </span>
+          </header>
+          <div className="p-6 sm:p-8 space-y-4">
+            <h2 className="text-2xl font-extrabold tracking-tight text-accent-500 dark:text-accent-300">
+              {t('profile.deleteAccount')}
+            </h2>
+            <p className="text-sm text-neutral-700 dark:text-neutral-300">
+              {t('profile.deleteAccountConfirm')}
+            </p>
+            <Button variant="danger" onClick={() => setDeleteOpen(true)}>
+              {t('profile.deleteAccount')}
+            </Button>
+          </div>
         </div>
       </motion.div>
 
@@ -251,7 +265,7 @@ const Profile = () => {
           </>
         }
       >
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+        <p className="text-sm text-neutral-700 dark:text-neutral-300">
           {t('profile.deleteAccountConfirm')}
         </p>
       </Modal>

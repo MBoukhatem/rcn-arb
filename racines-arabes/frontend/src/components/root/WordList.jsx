@@ -1,27 +1,18 @@
-// WordList — liste des mots dérivés groupés par type morphologique.
-// Design System §6.3 (apparition en cascade).
+// WordList — liste éditoriale des mots dérivés groupés par type morphologique.
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { getTypeLabel, groupWordsByType } from '@/utils/morphology';
 import WordCard from '@/components/word/WordCard';
 
-// Variants de cascade (§6.3).
 const listVariants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
 };
 
-/**
- * @param {object} props
- * @param {Array} props.words - tableau de mots OU tableau de groupes si `grouped`.
- * @param {boolean} [props.grouped=false] - true si `words` est déjà groupé.
- * @param {Function} [props.renderActions] - (word) => noeud d'actions par carte.
- */
 const WordList = ({ words = [], grouped = false, renderActions }) => {
   const { t } = useTranslation();
   const shouldReduce = useReducedMotion();
 
-  // Carte : variants réduits si prefers-reduced-motion.
   const cardVariants = shouldReduce
     ? { hidden: { opacity: 0 }, visible: { opacity: 1 } }
     : {
@@ -33,37 +24,42 @@ const WordList = ({ words = [], grouped = false, renderActions }) => {
         },
       };
 
-  // Normalise l'entrée : groupe localement si nécessaire.
   const groups = grouped ? words : groupWordsByType(words);
 
   if (!groups || groups.length === 0) {
     return (
-      <p className="py-12 text-center text-sm text-neutral-400 dark:text-neutral-500">
-        {t('root.noWords')}
-      </p>
+      <div className="border border-dashed border-neutral-300 dark:border-neutral-700 py-16 text-center">
+        <p className="text-2xs font-bold uppercase tracking-[0.24em] text-neutral-500 dark:text-neutral-400">
+          {t('root.noWords')}
+        </p>
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-12">
-      {groups.map((group) => (
+    <div className="flex flex-col gap-16">
+      {groups.map((group, gi) => (
         <section key={group.type} aria-label={getTypeLabel(group.type, t)}>
-          {/* Titre de section : libellé traduit + nom arabe */}
-          <header className="mb-5 flex items-baseline gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-2">
-            <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
-              {getTypeLabel(group.type, t)}
-            </h2>
-            {group.meta?.arabicName && (
-              <span
-                lang="ar"
-                dir="rtl"
-                className="font-arabic text-ar-sm text-neutral-400 dark:text-neutral-500"
-              >
-                {group.meta.arabicName}
+          <header className="mb-6 flex items-end justify-between gap-4 border-b-2 border-neutral-950 dark:border-neutral-0 pb-3">
+            <div className="flex items-baseline gap-4 flex-wrap">
+              <span className="font-mono text-2xs uppercase tracking-[0.2em] text-accent-500 dark:text-accent-300">
+                — {String(gi + 1).padStart(2, '0')}
               </span>
-            )}
-            <span className="ml-auto text-xs font-medium text-neutral-400 dark:text-neutral-500">
-              {t('root.wordsCount', { count: group.words.length })}
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+                {getTypeLabel(group.type, t)}
+              </h2>
+              {group.meta?.arabicName && (
+                <span
+                  lang="ar"
+                  dir="rtl"
+                  className="font-arabic text-ar-sm text-neutral-500 dark:text-neutral-400"
+                >
+                  · {group.meta.arabicName}
+                </span>
+              )}
+            </div>
+            <span className="font-mono text-2xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+              {String(group.words.length).padStart(2, '0')} entr.
             </span>
           </header>
 
@@ -72,10 +68,14 @@ const WordList = ({ words = [], grouped = false, renderActions }) => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-10%' }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border-l border-t border-neutral-950 dark:border-neutral-0"
           >
             {group.words.map((word) => (
-              <motion.div key={word._id ?? word.id ?? word.arabic} variants={cardVariants}>
+              <motion.div
+                key={word._id ?? word.id ?? word.arabic}
+                variants={cardVariants}
+                className="-ml-px -mt-px"
+              >
                 <WordCard
                   word={word}
                   actions={renderActions ? renderActions(word) : undefined}

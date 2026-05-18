@@ -1,4 +1,4 @@
-// Page d'inscription — formulaire name/email/password/confirmation avec validation temps réel.
+// Page d'inscription — formulaire éditorial, panneau visuel à droite.
 import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -26,7 +26,6 @@ const Register = () => {
   const [touched, setTouched] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Validation champ par champ — clé i18n d'erreur ou null si valide.
   const validateField = (name, val, all) => {
     if (name === 'name') {
       if (!val.trim()) return 'validation.nameRequired';
@@ -88,80 +87,116 @@ const Register = () => {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto max-w-md"
+        className="mx-auto grid w-full max-w-5xl grid-cols-1 lg:grid-cols-2 border-2 border-neutral-950 dark:border-neutral-0"
       >
-        <h1 className="text-center text-3xl font-bold text-neutral-900 dark:text-neutral-50">
-          {t('auth.registerTitle')}
-        </h1>
+        {/* Formulaire */}
+        <div className="p-8 sm:p-12 order-2 lg:order-1">
+          <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
+            — 01 / Inscription
+          </p>
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+            {t('auth.registerTitle')}
+          </h1>
 
-        <form
-          onSubmit={handleSubmit}
-          noValidate
-          className="mt-8 space-y-5 rounded-xl border border-neutral-200 bg-neutral-0 p-6 sm:p-8 dark:border-neutral-700 dark:bg-neutral-850"
-        >
-          <Input
-            label={t('auth.name')}
-            name="name"
-            type="text"
-            value={values.name}
-            onChange={handleChange}
-            error={touched.name && errors.name ? t(errors.name) : ''}
-            required
-          />
-          <Input
-            label={t('auth.email')}
-            name="email"
-            type="email"
-            value={values.email}
-            onChange={handleChange}
-            error={touched.email && errors.email ? t(errors.email) : ''}
-            placeholder={t('auth.emailPlaceholder')}
-            required
-          />
-          <Input
-            label={t('auth.password')}
-            name="password"
-            type="password"
-            value={values.password}
-            onChange={handleChange}
-            error={touched.password && errors.password ? t(errors.password) : ''}
-            hint={!errors.password ? t('auth.passwordHint') : ''}
-            required
-          />
-          <Input
-            label={t('auth.confirmPassword')}
-            name="confirmPassword"
-            type="password"
-            value={values.confirmPassword}
-            onChange={handleChange}
-            error={
-              touched.confirmPassword && errors.confirmPassword
-                ? t(errors.confirmPassword)
-                : ''
-            }
-            required
-          />
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            loading={submitting}
-            disabled={submitting}
-            className="w-full"
-          >
-            {t('auth.submitRegister')}
-          </Button>
-        </form>
+          <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-5">
+            <Input
+              label={t('auth.name')}
+              name="name"
+              type="text"
+              value={values.name}
+              onChange={handleChange}
+              error={touched.name && errors.name ? t(errors.name) : ''}
+              required
+            />
+            <Input
+              label={t('auth.email')}
+              name="email"
+              type="email"
+              value={values.email}
+              onChange={handleChange}
+              error={touched.email && errors.email ? t(errors.email) : ''}
+              placeholder={t('auth.emailPlaceholder')}
+              required
+            />
+            <Input
+              label={t('auth.password')}
+              name="password"
+              type="password"
+              value={values.password}
+              onChange={handleChange}
+              error={touched.password && errors.password ? t(errors.password) : ''}
+              hint={!errors.password ? t('auth.passwordHint') : ''}
+              required
+            />
+            <Input
+              label={t('auth.confirmPassword')}
+              name="confirmPassword"
+              type="password"
+              value={values.confirmPassword}
+              onChange={handleChange}
+              error={
+                touched.confirmPassword && errors.confirmPassword
+                  ? t(errors.confirmPassword)
+                  : ''
+              }
+              required
+            />
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              loading={submitting}
+              disabled={submitting}
+              className="w-full"
+            >
+              {t('auth.submitRegister')} →
+            </Button>
+          </form>
 
-        <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
-          {t('auth.hasAccount')}{' '}
-          <Link
-            to="/login"
-            className="font-medium text-accent-600 hover:underline dark:text-accent-400"
-          >
-            {t('auth.submitLogin')}
-          </Link>
-        </p>
+          <div className="mt-8 border-t border-neutral-300 dark:border-neutral-700 pt-6">
+            <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
+              {t('auth.hasAccount')}
+            </p>
+            <Link
+              to="/login"
+              className="mt-2 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-accent-500 dark:text-accent-300 hover:underline underline-offset-4"
+            >
+              {t('auth.submitLogin')} →
+            </Link>
+          </div>
+        </div>
+
+        {/* Panneau visuel */}
+        <aside className="relative hidden lg:flex flex-col justify-between bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950 p-10 order-1 lg:order-2">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)',
+              backgroundSize: '20px 20px',
+            }}
+          />
+          <div className="relative">
+            <p className="text-2xs font-bold uppercase tracking-[0.32em] text-accent-300 dark:text-accent-500">
+              — Nouveau
+            </p>
+            <h2 className="mt-6 text-4xl font-extrabold tracking-tight">
+              Rejoignez le dictionnaire.
+            </h2>
+          </div>
+          <div className="relative">
+            <p
+              lang="ar"
+              dir="rtl"
+              className="font-arabic text-7xl font-bold opacity-90"
+            >
+              تَفَضَّل
+            </p>
+            <p className="mt-3 text-2xs uppercase tracking-[0.28em] opacity-70">
+              tafaḍḍal · be our guest
+            </p>
+          </div>
+        </aside>
       </motion.div>
     </PageWrapper>
   );
