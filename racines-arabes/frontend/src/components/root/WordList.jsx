@@ -24,7 +24,11 @@ const WordList = ({ words = [], grouped = false, renderActions }) => {
         },
       };
 
-  const groups = grouped ? words : groupWordsByType(words);
+  const groups = grouped
+    ? Array.isArray(words)
+      ? words
+      : []
+    : groupWordsByType(Array.isArray(words) ? words : []);
 
   if (!groups || groups.length === 0) {
     return (

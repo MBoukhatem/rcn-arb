@@ -21,17 +21,20 @@ const WordCard = ({ word, actions, className = '' }) => {
 
   return (
     <article className={`${CARD_BASE} ${className}`}>
-      {actions && <div className="absolute top-3 right-3 z-10">{actions}</div>}
-
-      {/* En-tête : type morphologique en eyebrow */}
-      <div className="flex items-center justify-between gap-2">
+      {/* En-tête : type morphologique + actions */}
+      <div className="flex items-start justify-between gap-3">
         <span className="font-mono text-2xs uppercase tracking-[0.2em] text-accent-500 dark:text-accent-300">
           — {getTypeLabel(word.type, t)}
         </span>
-        {isVerb && word.tense && (
-          <Badge>{t(`morphology.tense.${word.tense}`)}</Badge>
-        )}
+        {actions && <div className="flex items-center gap-1.5">{actions}</div>}
       </div>
+
+      {/* Badge temps verbal */}
+      {isVerb && word.tense && (
+        <div className="mt-3">
+          <Badge>{t(`morphology.tense.${word.tense}`)}</Badge>
+        </div>
+      )}
 
       {/* Mot arabe en vedette */}
       <p

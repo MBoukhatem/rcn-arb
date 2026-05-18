@@ -286,19 +286,47 @@ const RootDetail = () => {
   };
 
   const renderWordActions = (word) => (
-    <div className="flex items-center gap-1.5">
+    <>
       <FavoriteButton item={word?._id} itemModel="Word" />
       {canManage(word) && (
         <>
-          <Button variant="ghost" size="sm" onClick={() => openEditWord(word)}>
-            {t('common.edit')}
-          </Button>
-          <Button variant="danger" size="sm" onClick={() => setWordToDelete(word)}>
-            {t('common.delete')}
-          </Button>
+          <button
+            type="button"
+            onClick={() => openEditWord(word)}
+            aria-label={t('common.edit')}
+            title={t('common.edit')}
+            className="inline-flex h-9 w-9 items-center justify-center border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0 hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path
+                d="M3 17h4l9-9-4-4-9 9v4zM12 5l3 3"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => setWordToDelete(word)}
+            aria-label={t('common.delete')}
+            title={t('common.delete')}
+            className="inline-flex h-9 w-9 items-center justify-center border border-accent-500 dark:border-accent-300 text-accent-500 dark:text-accent-300 hover:bg-accent-500 hover:text-neutral-0 dark:hover:bg-accent-300 dark:hover:text-neutral-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path
+                d="M4 6h12M8 6V4h4v2M6 6l1 11h6l1-11M9 9v6M11 9v6"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
         </>
       )}
-    </div>
+    </>
   );
 
   if (loading) {
@@ -403,25 +431,18 @@ const RootDetail = () => {
               </div>
             )}
 
-            {isAuthenticated && (
+            {isAuthenticated && canManage(root) && (
               <div className="mt-8 flex flex-wrap gap-2">
-                <Button variant="primary" size="sm" onClick={openCreateWord}>
-                  + {t('root.addWord')}
+                <Button variant="secondary" size="sm" onClick={openEditRoot}>
+                  {t('root.editRoot')}
                 </Button>
-                {canManage(root) && (
-                  <>
-                    <Button variant="secondary" size="sm" onClick={openEditRoot}>
-                      {t('root.editRoot')}
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => setDeleteRootOpen(true)}
-                    >
-                      {t('root.deleteRoot')}
-                    </Button>
-                  </>
-                )}
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => setDeleteRootOpen(true)}
+                >
+                  {t('root.deleteRoot')}
+                </Button>
               </div>
             )}
           </div>
@@ -430,7 +451,7 @@ const RootDetail = () => {
 
       {/* Mots dérivés */}
       <section className="mt-16">
-        <header className="flex items-end justify-between gap-4 border-b-2 border-neutral-950 dark:border-neutral-0 pb-4 mb-10">
+        <header className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-neutral-950 dark:border-neutral-0 pb-4 mb-10">
           <div>
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
               — 02 / Dérivés
@@ -439,6 +460,11 @@ const RootDetail = () => {
               {t('root.derivedWords')}
             </h2>
           </div>
+          {isAuthenticated && (
+            <Button variant="primary" size="sm" onClick={openCreateWord}>
+              + {t('root.addWord')}
+            </Button>
+          )}
         </header>
         {wordsLoading ? (
           <div className="flex justify-center py-12">

@@ -3,6 +3,7 @@
 //  - getRoots renvoie l'objet paginé complet { success, data, total, page, totalPages }.
 //  - les autres fonctions (détail/mutation) renvoient le contenu de `data`.
 import api from '@/services/api';
+import { WORD_TYPES, TYPE_META } from '@/utils/morphology';
 
 // Liste paginée + recherche. params : { page, limit, q }.
 export const getRoots = async (params = {}) => {
@@ -11,15 +12,29 @@ export const getRoots = async (params = {}) => {
 };
 
 // Détail d'une racine par slug → objet racine.
+// Backend renvoie { data: { root: {...} } } : on déballe le wrapper.
 export const getRoot = async (slug) => {
   const res = await api.get(`/roots/${slug}`);
-  return res.data.data;
+  return res.data.data?.root ?? res.data.data;
 };
 
 // Mots d'une racine. params : { type, group }.
+// Avec group=true, le backend renvoie { root, words: { VERB: [...], MASDAR: [...], ... } }.
+// On normalise en [{ type, meta, words: [...] }] consommé par WordList.
 export const getRootWords = async (slug, params = {}) => {
   const res = await api.get(`/roots/${slug}/words`, { params });
-  return res.data.data;
+  const payload = res.data.data;
+
+  if (params.group) {
+    const grouped = payload?.words ?? {};
+    return WORD_TYPES.map((type) => ({
+      type,
+      meta: TYPE_META[type],
+      words: Array.isArray(grouped[type]) ? grouped[type] : [],
+    })).filter((g) => g.words.length > 0);
+  }
+
+  return payload?.words ?? payload;
 };
 
 // Création d'une racine → racine créée.
