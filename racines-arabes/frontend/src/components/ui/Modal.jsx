@@ -101,7 +101,7 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
             aria-modal="true"
             aria-labelledby={title ? titleId.current : undefined}
             tabIndex={-1}
-            className={`relative w-full ${SIZES[size] ?? SIZES.md} bg-neutral-0 dark:bg-neutral-950 border border-neutral-0 dark:border-neutral-0 outline outline-1 outline-neutral-950 dark:outline-neutral-0 shadow-modal focus:outline-none`}
+            className={`relative w-full ${SIZES[size] ?? SIZES.md} bg-neutral-0 dark:bg-neutral-950 outline outline-1 outline-neutral-950 dark:outline-neutral-0 shadow-modal focus:outline-none`}
             variants={surfaceVariants}
             initial="hidden"
             animate="visible"
@@ -109,14 +109,14 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           >
             {title && (
-              <header className="flex items-start justify-between gap-4 border-b border-neutral-950 dark:border-neutral-0 px-6 py-5">
+              <header className="flex items-start justify-between gap-4 px-6 py-5">
                 <div className="flex flex-col gap-1">
                   <span className="text-2xs font-semibold uppercase tracking-[0.2em] text-accent-500 dark:text-accent-300">
                     — Dialog
                   </span>
                   <h2
                     id={titleId.current}
-                    className="text-xl font-bold tracking-tight text-neutral-950 dark:text-neutral-0"
+                    className="text-xl font-bold tracking-tight text-ink dark:text-neutral-0"
                   >
                     {title}
                   </h2>
@@ -125,7 +125,7 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
                   type="button"
                   onClick={onClose}
                   aria-label={t('common.close')}
-                  className="inline-flex h-9 w-9 items-center justify-center border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0 hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors"
+                  className="inline-flex h-9 w-9 shrink-0 items-center justify-center border border-neutral-950 dark:border-neutral-0 text-ink dark:text-neutral-0 hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300"
                 >
                   <svg
                     className="h-4 w-4"
@@ -151,7 +151,7 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
             </div>
 
             {footer && (
-              <footer className="flex justify-end gap-3 border-t border-neutral-950 dark:border-neutral-0 px-6 py-5">
+              <footer className="flex justify-end gap-3 px-6 py-5">
                 {footer}
               </footer>
             )}

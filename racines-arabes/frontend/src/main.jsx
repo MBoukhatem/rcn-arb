@@ -10,13 +10,13 @@ import { AuthProvider } from '@/context/AuthContext.jsx';
 import '@/i18n.js';
 import '@/styles/index.css';
 
-// Style des toasts — alignement strict noir/blanc, sans border-radius.
+// Style des toasts — brun profond, accent sable, sans border-radius.
 const toasterOptions = {
   duration: 4000,
   style: {
-    background: '#060606',
-    color: '#FFFFFF',
-    border: '1px solid #FFFFFF',
+    background: '#1F1815',
+    color: '#F9EDED',
+    border: '1px solid #B89455',
     borderRadius: '0',
     fontSize: '0.8125rem',
     padding: '0.875rem 1rem',
@@ -25,10 +25,10 @@ const toasterOptions = {
     boxShadow: 'none',
   },
   success: {
-    iconTheme: { primary: '#D86C7B', secondary: '#060606' },
+    iconTheme: { primary: '#CFB069', secondary: '#1F1815' },
   },
   error: {
-    iconTheme: { primary: '#D86C7B', secondary: '#060606' },
+    iconTheme: { primary: '#D8A39B', secondary: '#1F1815' },
   },
 };
 

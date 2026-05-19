@@ -1,9 +1,9 @@
-// Page « À propos » — présentation éditoriale du projet et de la morphologie arabe.
+// Page « À propos » — présentation du projet et de la morphologie arabe.
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
 import PageWrapper from '@/components/layout/PageWrapper';
-import Badge from '@/components/ui/Badge';
+import Ornament from '@/components/ui/Ornament';
 import { WORD_TYPES, TYPE_META, getTypeLabel } from '@/utils/morphology';
 
 const TYPE_EXAMPLES = {
@@ -26,45 +26,38 @@ const About = () => {
 
   return (
     <PageWrapper title={t('about.title')} eyebrow="Manifeste · Méthode">
+      {/* ───────── Introduction ───────── */}
       <motion.section
         variants={sectionVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 lg:grid-cols-12 gap-0 border-2 border-neutral-950 dark:border-neutral-0"
+        className="grid grid-cols-1 lg:grid-cols-12 gap-4"
       >
-        <div className="lg:col-span-4 border-b-2 lg:border-b-0 lg:border-r-2 border-neutral-950 dark:border-neutral-0 bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950 p-8 sm:p-10 relative overflow-hidden">
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 opacity-20"
-            style={{
-              backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)',
-              backgroundSize: '20px 20px',
-            }}
-          />
-          <p className="relative text-2xs font-bold uppercase tracking-[0.32em] text-accent-300 dark:text-accent-500">
+        <div className="lg:col-span-4 flex flex-col justify-center bg-accent-800 text-sand-50 p-8 sm:p-10">
+          <p className="text-2xs font-bold uppercase tracking-[0.32em] text-sand-300">
             — Introduction
           </p>
           <p
             lang="ar"
             dir="rtl"
-            className="relative mt-8 font-arabic text-6xl font-bold leading-tight"
+            className="mt-6 font-arabic text-5xl font-bold leading-tight"
           >
             الجذور الثلاثية
           </p>
-          <p className="relative mt-4 text-2xs uppercase tracking-[0.24em] opacity-70">
+          <p className="mt-4 text-2xs uppercase tracking-[0.24em] text-sand-100/70">
             al-juḏūr aṯ-ṯulāṯiyya · trilateral roots
           </p>
         </div>
-        <div className="lg:col-span-8 p-8 sm:p-12 bg-neutral-0 dark:bg-neutral-950">
+        <div className="lg:col-span-8 p-8 sm:p-12 bg-neutral-0 dark:bg-neutral-900">
           <p className="text-lg leading-relaxed text-neutral-800 dark:text-neutral-200">
             {t('about.intro')}
           </p>
 
-          <div className="mt-10 border-t border-neutral-300 dark:border-neutral-700 pt-8">
-            <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+          <div className="mt-10">
+            <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-600 dark:text-sand-300">
               — Morphologie
             </p>
-            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('about.morphologyTitle')}
             </h2>
             <p className="mt-3 text-base text-neutral-700 dark:text-neutral-300">
@@ -72,11 +65,11 @@ const About = () => {
             </p>
           </div>
 
-          <div className="mt-8 border-t border-neutral-300 dark:border-neutral-700 pt-8">
-            <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+          <div className="mt-8">
+            <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-600 dark:text-sand-300">
               — Audience
             </p>
-            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('about.audienceTitle')}
             </h2>
             <p className="mt-3 text-base text-neutral-700 dark:text-neutral-300">
@@ -86,30 +79,28 @@ const About = () => {
         </div>
       </motion.section>
 
+      {/* ───────── Les 7 types morphologiques ───────── */}
       <section className="mt-20">
-        <header className="flex items-end justify-between gap-6 border-b-2 border-neutral-950 dark:border-neutral-0 pb-6">
-          <div>
-            <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
-              — Typologie
-            </p>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
-              {t('morphology.title')}
-            </h2>
-            <p className="mt-3 max-w-2xl text-base text-neutral-700 dark:text-neutral-300">
-              {t('morphology.intro')}
-            </p>
-          </div>
-          <span className="hidden sm:block font-mono text-2xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-            {String(WORD_TYPES.length).padStart(2, '0')} types
-          </span>
-        </header>
+        <div className="flex flex-col items-center text-center">
+          <Ornament />
+          <p className="mt-4 text-2xs font-bold uppercase tracking-[0.28em] text-accent-600 dark:text-sand-300">
+            Typologie · {String(WORD_TYPES.length).padStart(2, '0')} types
+          </p>
+          <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
+            {t('morphology.title')}
+          </h2>
+          <p className="mt-3 max-w-2xl text-base text-neutral-700 dark:text-neutral-300">
+            {t('morphology.intro')}
+          </p>
+        </div>
 
+        {/* Les 7 types sur une seule ligne */}
         <motion.div
-          variants={{ visible: { transition: { staggerChildren: 0.06 } } }}
+          variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-10%' }}
-          className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border-l border-t border-neutral-950 dark:border-neutral-0"
+          className="mt-10 grid grid-cols-7 gap-2"
         >
           {WORD_TYPES.map((code, i) => {
             const meta = TYPE_META[code];
@@ -117,33 +108,28 @@ const About = () => {
               <motion.article
                 key={code}
                 variants={sectionVariants}
-                className="-ml-px -mt-px border border-neutral-950 dark:border-neutral-0 p-6 bg-neutral-0 dark:bg-neutral-950 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900"
+                className="flex flex-col items-center text-center bg-neutral-0 dark:bg-neutral-900 border border-accent-700/40 dark:border-sand-300/30 px-2 py-5"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="font-mono text-2xs uppercase tracking-[0.2em] text-accent-500 dark:text-accent-300">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <span
-                    lang="ar"
-                    dir="rtl"
-                    className="font-arabic text-3xl font-bold text-neutral-950 dark:text-neutral-0"
-                  >
-                    {TYPE_EXAMPLES[code]}
-                  </span>
-                </div>
-                <div className="mt-5">
-                  <Badge accent={meta?.badgeAccent}>{getTypeLabel(code, t)}</Badge>
-                </div>
-                <p
+                <span className="font-mono text-2xs font-bold tracking-[0.16em] text-sand-600 dark:text-sand-300">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span
                   lang="ar"
                   dir="rtl"
-                  className="mt-4 font-arabic text-base text-neutral-500 dark:text-neutral-400"
+                  className="mt-3 font-arabic text-2xl sm:text-3xl font-bold text-accent-700 dark:text-accent-200"
+                >
+                  {TYPE_EXAMPLES[code]}
+                </span>
+                <span
+                  lang="ar"
+                  dir="rtl"
+                  className="mt-2 font-arabic text-xs text-neutral-500 dark:text-neutral-400"
                 >
                   {meta?.arabicName}
-                </p>
-                <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-300">
-                  {t(`morphology.typeDescription.${code}`)}
-                </p>
+                </span>
+                <span className="mt-3 text-2xs font-bold uppercase leading-tight tracking-[0.12em] text-ink dark:text-neutral-0">
+                  {getTypeLabel(code, t)}
+                </span>
               </motion.article>
             );
           })}

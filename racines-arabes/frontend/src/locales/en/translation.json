@@ -2,6 +2,7 @@
   "nav": {
     "home": "Home",
     "explorer": "Explorer",
+    "search": "Search",
     "about": "About",
     "login": "Log in",
     "register": "Sign up",
@@ -100,6 +101,10 @@
     "searchPlaceholder": "Word, transliteration or translation…",
     "allTypes": "All types",
     "allTenses": "All tenses"
+  },
+  "search": {
+    "title": "Word search",
+    "subtitle": "Search and filter dictionary words by type, tense and sort order."
   },
   "root": {
     "meaning": "Meaning",

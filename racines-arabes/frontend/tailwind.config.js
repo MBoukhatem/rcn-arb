@@ -5,38 +5,58 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Pure noir / blanc + nuances graphiques.
+        // Échelle de fond/texte — céramique persane :
+        // crème froid (fond clair) → bleu turquoise très profond (fond sombre).
+        // 0 = blanc cassé, 50 = crème, paliers hauts = turquoise nuit.
+        // Aucun noir pur, aucune teinte rose/marron — base neutre froide.
         neutral: {
-          0: '#FFFFFF',
-          50: '#F4F4F4',
-          100: '#E6E6E6',
-          200: '#CFCFCF',
-          300: '#A8A8A8',
-          400: '#7A7A7A',
-          500: '#525252',
-          600: '#363636',
-          700: '#222222',
-          800: '#141414',
-          850: '#0C0C0C',
-          900: '#060606',
-          950: '#000000',
+          0: '#FCFCFA',
+          50: '#F1F4F2',
+          100: '#E2E8E6',
+          200: '#C8D2D0',
+          300: '#A3B1B0',
+          400: '#7B8C8A',
+          500: '#52706F',
+          600: '#365453',
+          700: '#264140',
+          800: '#1B312F',
+          850: '#152826',
+          // 900/950 = bleus turquoise très profonds (fonds sombres).
+          900: '#102220',
+          950: '#0B1817',
         },
-        // Pourpre rougeâtre — accent unique, parcimonieux.
+        // Accent bleu turquoise — boutons, liens, titres, highlights.
         accent: {
-          50: '#FBE9EC',
-          100: '#F4C7CE',
-          200: '#E89AA5',
-          300: '#D86C7B',
-          400: '#C24858',
-          500: '#A12A3D',
-          600: '#811D2E',
-          700: '#641423',
-          800: '#4A0D19',
-          900: '#2E0810',
+          50: '#DDF0F1',
+          100: '#B6DEE0',
+          200: '#7FC3C7',
+          300: '#4BA5AB',
+          400: '#2A878E',
+          500: '#1A7B8C',
+          600: '#136374',
+          700: '#0F4F5E',
+          800: '#0B3B47',
+          900: '#082A33',
         },
-        success: { light: '#1E1E1E', dark: '#E6E6E6' },
-        error: { light: '#811D2E', dark: '#D86C7B' },
-        warning: { light: '#3A3A3A', dark: '#CFCFCF' },
+        // Échelle or doré — ornements, surlignages, touches précieuses.
+        sand: {
+          50: '#FBF3DC',
+          100: '#F5E4B6',
+          200: '#EDD088',
+          300: '#E2BA5A',
+          400: '#D9A22B',
+          500: '#BE8A22',
+          600: '#9C701C',
+          700: '#785616',
+          800: '#553D11',
+          900: '#37280C',
+        },
+        // Encre — texte principal : bleu-nuit très foncé (jamais #000).
+        ink: '#1E2A2E',
+        // États : turquoise pour succès, ambre brûlé pour l'erreur.
+        success: { light: '#136374', dark: '#7FC3C7' },
+        error: { light: '#A8442A', dark: '#E0926F' },
+        warning: { light: '#9C701C', dark: '#EDD088' },
       },
       fontFamily: {
         // Inter pour la grille latine, Cairo pour l'arabe.
@@ -83,7 +103,7 @@ export default {
         md: 'none',
         lg: 'none',
         modal: '0 24px 64px -12px rgba(0, 0, 0, 0.85)',
-        'accent-glow': '0 0 0 2px rgba(161, 42, 61, 0.6)',
+        'accent-glow': '0 0 0 2px rgba(26, 123, 140, 0.6)',
       },
       transitionTimingFunction: {
         soft: 'cubic-bezier(0.22, 1, 0.36, 1)',

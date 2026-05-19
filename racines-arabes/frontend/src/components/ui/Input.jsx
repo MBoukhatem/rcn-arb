@@ -1,21 +1,24 @@
-// Input — champ de formulaire éditorial, bordure stricte, sans border-radius.
+// Input — champ de formulaire éditorial, sans bordure ni border-radius.
+// Distinction par un fond contrasté ; focus marqué par un ring.
 import { useId } from 'react';
 
 const INPUT_BASE =
-  'w-full h-11 px-3.5 text-sm bg-neutral-0 text-neutral-950 ' +
-  'border placeholder:text-neutral-400 transition-colors duration-150 ' +
-  'dark:bg-neutral-950 dark:text-neutral-0 dark:placeholder:text-neutral-600 ' +
-  'focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ' +
-  'disabled:bg-neutral-50 dark:disabled:bg-neutral-850';
+  'w-full h-11 px-3.5 text-sm text-ink ' +
+  'placeholder:text-neutral-400 transition-colors duration-150 ' +
+  'dark:text-neutral-0 dark:placeholder:text-neutral-600 ' +
+  'focus:outline-none disabled:cursor-not-allowed ' +
+  // Désactivé : couleurs explicites pour rester lisible.
+  'disabled:bg-neutral-100 disabled:text-neutral-400 ' +
+  'dark:disabled:bg-neutral-800 dark:disabled:text-neutral-600';
 
 const INPUT_NORMAL =
-  'border-neutral-950 dark:border-neutral-0 ' +
-  'focus:border-accent-500 focus:ring-2 focus:ring-accent-500/40 ' +
-  'dark:focus:border-accent-300 dark:focus:ring-accent-300/30';
+  'bg-neutral-100 dark:bg-neutral-800 ' +
+  'focus:ring-2 focus:ring-accent-500/50 ' +
+  'dark:focus:ring-accent-300/40';
 
 const INPUT_ERROR =
-  'border-accent-500 ring-2 ring-accent-500/30 ' +
-  'dark:border-accent-300 dark:ring-accent-300/30';
+  'bg-accent-500/10 ring-2 ring-accent-500/40 ' +
+  'dark:bg-accent-300/10 dark:ring-accent-300/40';
 
 const Input = ({
   label,
@@ -43,7 +46,7 @@ const Input = ({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-950 dark:text-neutral-0 mb-2"
+          className="block text-2xs font-semibold uppercase tracking-[0.18em] text-ink dark:text-neutral-0 mb-2"
         >
           {label}
           {required && (

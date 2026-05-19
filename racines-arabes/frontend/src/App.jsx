@@ -7,6 +7,7 @@ import PrivateRoute from '@/routes/PrivateRoute.jsx';
 
 import Home from '@/pages/Home.jsx';
 import RootExplorer from '@/pages/RootExplorer.jsx';
+import Search from '@/pages/Search.jsx';
 import RootDetail from '@/pages/RootDetail.jsx';
 import Login from '@/pages/Login.jsx';
 import Register from '@/pages/Register.jsx';
@@ -19,13 +20,14 @@ const App = () => {
   const location = useLocation();
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-0 text-neutral-950 dark:bg-neutral-950 dark:text-neutral-0">
+    <div className="flex min-h-screen flex-col bg-neutral-50 text-ink dark:bg-neutral-950 dark:text-neutral-0">
       <Navbar />
       <main className="flex-1">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<Home />} />
             <Route path="/explorer" element={<RootExplorer />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/roots/:slug" element={<RootDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

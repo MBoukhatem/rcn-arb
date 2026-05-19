@@ -13,19 +13,20 @@ import { useAuth } from '@/hooks/useAuth';
 import api from '@/services/api';
 
 const SELECT_CLASS =
-  'w-full h-11 px-3.5 text-sm bg-neutral-0 text-neutral-950 ' +
-  'border border-neutral-950 transition-colors duration-150 ' +
-  'focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-500/30 ' +
-  'dark:bg-neutral-950 dark:text-neutral-0 dark:border-neutral-0 ' +
-  'dark:focus:border-accent-300 dark:focus:ring-accent-300/30';
+  'w-full h-11 px-3.5 text-sm bg-neutral-100 text-ink ' +
+  'transition-colors duration-150 ' +
+  'focus:outline-none focus:ring-2 focus:ring-accent-500/40 ' +
+  'dark:bg-neutral-800 dark:text-neutral-0 ' +
+  'dark:focus:ring-accent-300/40 ' +
+  'placeholder:text-neutral-400 dark:placeholder:text-neutral-600';
 
 const LABEL_CLASS =
-  'block text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-950 dark:text-neutral-0 mb-2';
+  'block text-2xs font-semibold uppercase tracking-[0.18em] text-ink dark:text-neutral-0 mb-2';
 
 const SECTION =
-  'border-2 border-neutral-950 dark:border-neutral-0 bg-neutral-0 dark:bg-neutral-950';
+  'bg-neutral-0 dark:bg-neutral-900';
 const SECTION_HEADER =
-  'flex items-center justify-between border-b border-neutral-950 dark:border-neutral-0 px-6 py-3';
+  'flex items-center justify-between px-6 py-3';
 const SECTION_TITLE =
   'text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300';
 
@@ -122,7 +123,7 @@ const Profile = () => {
           </header>
 
           <div className="p-6 sm:p-8 space-y-5">
-            <h2 className="text-2xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+            <h2 className="text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('profile.updateProfile')}
             </h2>
 
@@ -193,7 +194,7 @@ const Profile = () => {
             <span className={SECTION_TITLE}>— 02 / Sécurité</span>
           </header>
           <div className="p-6 sm:p-8 space-y-5">
-            <h2 className="text-2xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+            <h2 className="text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('profile.changePassword')}
             </h2>
             <Input
@@ -225,8 +226,8 @@ const Profile = () => {
         </form>
 
         {/* Suppression de compte */}
-        <div className="border-2 border-accent-500 dark:border-accent-300 bg-neutral-0 dark:bg-neutral-950">
-          <header className="flex items-center justify-between border-b border-accent-500 dark:border-accent-300 px-6 py-3">
+        <div className="bg-neutral-0 dark:bg-neutral-950 border border-accent-500 dark:border-accent-300">
+          <header className="flex items-center justify-between px-6 py-3">
             <span className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
               — Zone critique
             </span>

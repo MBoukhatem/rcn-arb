@@ -1,20 +1,24 @@
-// Page d'accueil — landing éditoriale en noir et blanc, accents pourpre rougeâtre.
+// Page d'accueil — refonte inspirée de l'art persan.
+// Palette : beige crème, vert olive, rose. Composition ornementale et centrée.
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
 import PageWrapper from '@/components/layout/PageWrapper';
 import Button from '@/components/ui/Button';
+import PersianArch from '@/components/ui/PersianArch';
+import Ornament from '@/components/ui/Ornament';
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
 };
 
 const stagger = {
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.08 } },
 };
 
+// Dérivés de la racine ك-ت-ب pour la démonstration.
 const KTB_DERIVED = [
   { ar: 'كَاتِب', tr: 'kātib', meaning: 'écrivain' },
   { ar: 'مَكْتَب', tr: 'maktab', meaning: 'bureau' },
@@ -33,142 +37,111 @@ const Home = () => {
   ];
 
   return (
-    <PageWrapper>
-      {/* ───────── HERO ───────── */}
+    <PageWrapper className="relative">
+      {/* ═════════ HERO — composition centrée sous une arche persane ═════════ */}
       <motion.section
         variants={stagger}
         initial="hidden"
         animate="visible"
-        className="relative border-2 border-neutral-950 dark:border-neutral-0 bg-neutral-0 dark:bg-neutral-950 overflow-hidden"
+        className="relative z-10 flex flex-col items-center text-center pt-4 pb-20"
       >
-        {/* Eyebrow bar */}
-        <div className="flex items-center justify-between border-b border-neutral-950 dark:border-neutral-0 px-6 sm:px-10 py-3">
-          <span className="text-2xs font-bold uppercase tracking-[0.32em] text-neutral-950 dark:text-neutral-0">
-            — DICTIONNAIRE / N°001
-          </span>
-          <span className="hidden sm:inline-flex text-2xs font-semibold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-            ك · ت · ب
-          </span>
-        </div>
+        <motion.p
+          variants={fadeUp}
+          className="text-2xs font-bold uppercase tracking-[0.42em] text-sand-600 dark:text-sand-300"
+        >
+          نظام الجذور العربية
+        </motion.p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
-          {/* Texte gauche */}
-          <div className="lg:col-span-7 px-6 sm:px-10 py-12 lg:py-20 lg:border-r-2 lg:border-neutral-950 dark:lg:border-neutral-0">
-            <motion.p
-              variants={fadeUp}
-              className="text-2xs font-bold uppercase tracking-[0.4em] text-accent-500 dark:text-accent-300"
-            >
-              — La face cachée de la langue
-            </motion.p>
-
-            <motion.h1
-              variants={fadeUp}
-              className="mt-6 text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[0.95] tracking-tight text-neutral-950 dark:text-neutral-0"
-            >
-              {t('home.heroTitle')}
-            </motion.h1>
-
-            <motion.div variants={fadeUp} className="mt-8 flex items-center gap-4">
-              <span className="h-px w-16 bg-neutral-950 dark:bg-neutral-0" aria-hidden="true" />
-              <p className="text-base sm:text-lg max-w-xl text-neutral-700 dark:text-neutral-300">
-                {t('home.heroSubtitle')}
+        {/* Arche persane encadrant la racine ك ت ب */}
+        <motion.div variants={fadeUp} className="mt-8 w-full max-w-md">
+          <PersianArch className="mx-auto h-[23rem] w-full text-accent-700 dark:text-accent-300">
+            <div className="flex h-[23rem] flex-col items-center justify-center px-10">
+              <span className="text-2xs font-semibold uppercase tracking-[0.34em] text-sand-600 dark:text-sand-300">
+                Racine · جَذْر
+              </span>
+              <span
+                lang="ar"
+                dir="rtl"
+                className="mt-3 font-arabic text-5xl sm:text-6xl font-bold leading-[1.5] text-accent-700 dark:text-accent-200"
+                style={{ whiteSpace: 'nowrap', letterSpacing: '0.08em' }}
+              >
+                كتب
+              </span>
+              <span className="mt-4 font-mono text-2xs uppercase tracking-[0.3em] text-ink/60 dark:text-neutral-300">
+                k · t · b
+              </span>
+              <p className="mt-2 text-sm italic text-sand-600 dark:text-sand-300">
+                « écrire / inscrire »
               </p>
-            </motion.div>
-
-            <motion.div variants={fadeUp} className="mt-10 flex flex-wrap gap-3">
-              <Button as={Link} to="/explorer" variant="primary" size="lg">
-                {t('home.cta')} →
-              </Button>
-              <Button as={Link} to="/about" variant="secondary" size="lg">
-                {t('home.ctaSecondary')}
-              </Button>
-            </motion.div>
-
-            {/* Statistique typographique */}
-            <motion.dl
-              variants={fadeUp}
-              className="mt-14 grid grid-cols-3 gap-6 border-t border-neutral-300 dark:border-neutral-700 pt-8"
-            >
-              <div>
-                <dt className="text-2xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-                  Racines
-                </dt>
-                <dd className="mt-2 font-mono text-3xl font-bold text-neutral-950 dark:text-neutral-0">
-                  10K+
-                </dd>
-              </div>
-              <div>
-                <dt className="text-2xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-                  Schèmes
-                </dt>
-                <dd className="mt-2 font-mono text-3xl font-bold text-neutral-950 dark:text-neutral-0">
-                  47
-                </dd>
-              </div>
-              <div>
-                <dt className="text-2xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-                  Dérivés
-                </dt>
-                <dd className="mt-2 font-mono text-3xl font-bold text-accent-500 dark:text-accent-300">
-                  ∞
-                </dd>
-              </div>
-            </motion.dl>
-          </div>
-
-          {/* Bloc arabe géant droite */}
-          <motion.div
-            variants={fadeUp}
-            className="lg:col-span-5 relative flex flex-col items-center justify-center px-6 sm:px-10 py-16 lg:py-20 bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950"
-          >
-            {/* Grille pointillée décorative */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 opacity-30"
-              style={{
-                backgroundImage:
-                  'radial-gradient(currentColor 1px, transparent 1px)',
-                backgroundSize: '20px 20px',
-              }}
-            />
-            <p className="relative text-2xs font-semibold uppercase tracking-[0.32em] text-accent-300 dark:text-accent-500">
-              [ ROOT.001 ]
-            </p>
-            <p
-              lang="ar"
-              dir="rtl"
-              className="relative font-arabic font-bold text-[8rem] sm:text-[10rem] leading-[0.9] mt-4"
-            >
-              ك ت ب
-            </p>
-            <div className="relative mt-6 flex items-center gap-2 text-2xs uppercase tracking-[0.3em]">
-              <span>K</span>
-              <span className="opacity-40">·</span>
-              <span>T</span>
-              <span className="opacity-40">·</span>
-              <span>B</span>
             </div>
-            <p className="relative mt-6 text-sm italic opacity-70">
-              « écrire / inscrire »
-            </p>
-          </motion.div>
-        </div>
+          </PersianArch>
+        </motion.div>
+
+        <motion.h1
+          variants={fadeUp}
+          className="mt-10 max-w-3xl text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight text-ink dark:text-neutral-0"
+        >
+          {t('home.heroTitle')}
+        </motion.h1>
+
+        <motion.div variants={fadeUp} className="mt-6">
+          <Ornament />
+        </motion.div>
+
+        <motion.p
+          variants={fadeUp}
+          className="mt-6 max-w-xl text-base sm:text-lg text-neutral-700 dark:text-neutral-300"
+        >
+          {t('home.heroSubtitle')}
+        </motion.p>
+
+        <motion.div
+          variants={fadeUp}
+          className="mt-9 flex flex-wrap justify-center gap-3"
+        >
+          <Button as={Link} to="/explorer" variant="primary" size="lg">
+            {t('home.cta')} →
+          </Button>
+          <Button as={Link} to="/about" variant="secondary" size="lg">
+            {t('home.ctaSecondary')}
+          </Button>
+        </motion.div>
+
+        {/* Statistiques */}
+        <motion.dl
+          variants={fadeUp}
+          className="mt-16 grid w-full max-w-2xl grid-cols-3 gap-px overflow-hidden bg-neutral-200 dark:bg-neutral-800"
+        >
+          {[
+            { k: 'Racines', v: '10K+' },
+            { k: 'Schèmes', v: '47' },
+            { k: 'Dérivés', v: '∞' },
+          ].map((s) => (
+            <div
+              key={s.k}
+              className="flex flex-col items-center bg-neutral-50 dark:bg-neutral-900 py-6"
+            >
+              <dt className="text-2xs font-semibold uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                {s.k}
+              </dt>
+              <dd className="mt-2 font-arabic text-3xl font-bold text-accent-700 dark:text-accent-300">
+                {s.v}
+              </dd>
+            </div>
+          ))}
+        </motion.dl>
       </motion.section>
 
-      {/* ───────── FONCTIONNALITÉS ───────── */}
-      <section className="mt-24">
-        <div className="flex items-end justify-between gap-6 border-b-2 border-neutral-950 dark:border-neutral-0 pb-6">
-          <div>
-            <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
-              — 02 / Système
-            </p>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
-              {t('home.featuresTitle')}
-            </h2>
-          </div>
-          <span className="hidden sm:block font-mono text-2xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-            03 modules
-          </span>
+      {/* ═════════ FONCTIONNALITÉS ═════════ */}
+      <section className="mt-12">
+        <div className="flex flex-col items-center text-center">
+          <Ornament />
+          <p className="mt-5 text-2xs font-bold uppercase tracking-[0.3em] text-sand-600 dark:text-sand-300">
+            02 · Le système
+          </p>
+          <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
+            {t('home.featuresTitle')}
+          </h2>
         </div>
 
         <motion.div
@@ -176,119 +149,116 @@ const Home = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-10%' }}
-          className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-0 border-l-2 border-t-2 border-neutral-950 dark:border-neutral-0"
+          className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4"
         >
           {features.map((f, i) => (
             <motion.article
               key={f.title}
               variants={fadeUp}
-              className="relative border-r-2 border-b-2 border-neutral-950 dark:border-neutral-0 p-8 bg-neutral-0 dark:bg-neutral-950 group hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors"
+              className="group relative bg-neutral-0 dark:bg-neutral-900 p-8 transition-colors duration-200 hover:bg-accent-700 dark:hover:bg-accent-600"
             >
-              <span className="font-mono text-xs font-semibold tracking-[0.18em] text-accent-500 dark:text-accent-300 group-hover:text-accent-300 dark:group-hover:text-accent-500">
-                STEP {String(i + 1).padStart(2, '0')}
-              </span>
-              <h3 className="mt-6 text-xl font-bold tracking-tight">
-                {f.title}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed opacity-80">
-                {f.text}
-              </p>
+              {/* Coin floral */}
               <span
                 aria-hidden="true"
-                className="absolute right-4 top-4 text-2xs font-bold tracking-[0.2em]"
+                className="absolute right-5 top-5 text-sand-400 dark:text-sand-300 group-hover:text-sand-200"
               >
-                →
+                <svg className="h-4 w-4" viewBox="0 0 12 12" fill="currentColor">
+                  <path d="M6 0l1.6 4.4L12 6 7.6 7.6 6 12 4.4 7.6 0 6l4.4-1.6z" />
+                </svg>
               </span>
+              <span className="font-mono text-2xs font-bold tracking-[0.22em] text-sand-600 dark:text-sand-300 group-hover:text-sand-200">
+                ÉTAPE {String(i + 1).padStart(2, '0')}
+              </span>
+              <h3 className="mt-5 text-xl font-bold tracking-tight text-ink dark:text-neutral-0 group-hover:text-sand-50">
+                {f.title}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300 group-hover:text-sand-100/90">
+                {f.text}
+              </p>
             </motion.article>
           ))}
         </motion.div>
       </section>
 
-      {/* ───────── EXEMPLE VISUEL : KTB derived ───────── */}
+      {/* ═════════ DÉMONSTRATION — racine ك-ت-ب et ses dérivés ═════════ */}
       <motion.section
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 18 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-10%' }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="mt-24 border-2 border-neutral-950 dark:border-neutral-0"
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="mt-24"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12">
-          <div className="lg:col-span-5 p-8 sm:p-12 border-b-2 lg:border-b-0 lg:border-r-2 border-neutral-950 dark:border-neutral-0 bg-neutral-50 dark:bg-neutral-900">
-            <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
-              — 03 / Démonstration
-            </p>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
-              {t('home.exampleTitle')}
-            </h2>
-            <p className="mt-5 text-base text-neutral-700 dark:text-neutral-300">
-              {t('home.exampleText')}
-            </p>
-            <div className="mt-8 flex items-center gap-4">
-              <p
+        <div className="flex flex-col items-center text-center">
+          <Ornament />
+          <p className="mt-5 text-2xs font-bold uppercase tracking-[0.3em] text-sand-600 dark:text-sand-300">
+            03 · Démonstration
+          </p>
+          <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
+            {t('home.exampleTitle')}
+          </h2>
+          <p className="mt-4 max-w-xl text-base text-neutral-700 dark:text-neutral-300">
+            {t('home.exampleText')}
+          </p>
+        </div>
+
+        <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {KTB_DERIVED.map((w, i) => (
+            <article
+              key={w.tr}
+              className="group flex flex-col items-center bg-neutral-0 dark:bg-neutral-900 px-4 py-7 text-center transition-transform duration-200 hover:-translate-y-1"
+            >
+              <span className="font-mono text-2xs uppercase tracking-[0.2em] text-sand-500 dark:text-sand-300">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span
                 lang="ar"
                 dir="rtl"
-                className="font-arabic text-6xl font-extrabold text-neutral-950 dark:text-neutral-0"
+                className="mt-3 font-arabic text-4xl font-bold text-accent-700 dark:text-accent-200"
               >
-                ك ت ب
-              </p>
-              <div className="font-mono text-xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-                <p>K·T·B</p>
-                <p className="mt-1 text-accent-500 dark:text-accent-300">06 dérivés</p>
-              </div>
-            </div>
-          </div>
-          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-0">
-            {KTB_DERIVED.map((w, i) => (
-              <div
-                key={w.tr}
-                className={`relative flex flex-col p-6 border-neutral-950 dark:border-neutral-0 ${
-                  i % 3 !== 2 ? 'border-r-2' : ''
-                } ${i < KTB_DERIVED.length - 3 ? 'border-b-2' : ''}`}
-              >
-                <span className="font-mono text-2xs uppercase tracking-[0.2em] text-accent-500 dark:text-accent-300">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <span
-                  lang="ar"
-                  dir="rtl"
-                  className="font-arabic text-3xl font-bold text-neutral-950 dark:text-neutral-0 mt-3"
-                >
-                  {w.ar}
-                </span>
-                <span className="mt-1 text-xs italic text-neutral-500 dark:text-neutral-400">
-                  {w.tr}
-                </span>
-                <span className="mt-3 text-2xs uppercase tracking-[0.16em] font-semibold text-neutral-700 dark:text-neutral-300">
-                  {w.meaning}
-                </span>
-              </div>
-            ))}
-          </div>
+                {w.ar}
+              </span>
+              <span className="mt-2 font-mono text-2xs italic text-neutral-500 dark:text-neutral-400">
+                {w.tr}
+              </span>
+              <span className="mt-3 text-2xs font-semibold uppercase tracking-[0.16em] text-sand-600 dark:text-sand-300">
+                {w.meaning}
+              </span>
+            </article>
+          ))}
         </div>
       </motion.section>
 
-      {/* ───────── CTA FINAL ───────── */}
-      <section className="mt-24 border-2 border-neutral-950 dark:border-neutral-0 bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950 p-10 sm:p-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-          <div className="lg:col-span-8">
-            <p className="text-2xs font-bold uppercase tracking-[0.32em] text-accent-300 dark:text-accent-500">
-              — Prêt à explorer ?
-            </p>
-            <h2 className="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.05]">
-              Commencez par <span className="text-outline">trois lettres</span>.
-            </h2>
-            <p className="mt-5 max-w-xl opacity-80">
-              Sélectionnez votre racine, parcourez ses dérivés, comprenez la
-              mécanique morphologique de la langue arabe.
-            </p>
-          </div>
-          <div className="lg:col-span-4 flex justify-start lg:justify-end">
-            <Button as={Link} to="/explorer" variant="secondary" size="lg">
-              Ouvrir l&apos;explorateur →
-            </Button>
-          </div>
+      {/* ═════════ CTA FINAL ═════════ */}
+      <motion.section
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-10%' }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="mt-24 bg-accent-800 px-6 py-16 sm:px-16 text-center"
+      >
+        <div className="flex flex-col items-center">
+          <Ornament />
+          <p className="mt-5 text-2xs font-bold uppercase tracking-[0.32em] text-sand-300">
+            Prêt à explorer ?
+          </p>
+          <h2 className="mt-4 max-w-2xl text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.1] text-sand-50">
+            Commencez par <span className="text-sand-300">trois lettres</span>.
+          </h2>
+          <p className="mt-5 max-w-xl text-base text-sand-100/80">
+            Sélectionnez votre racine, parcourez ses dérivés, comprenez la
+            mécanique morphologique de la langue arabe.
+          </p>
+          <Button
+            as={Link}
+            to="/explorer"
+            variant="primary"
+            size="lg"
+            className="mt-9 !bg-sand-300 !text-accent-900 hover:!bg-sand-200"
+          >
+            Ouvrir l&apos;explorateur →
+          </Button>
         </div>
-      </section>
+      </motion.section>
     </PageWrapper>
   );
 };

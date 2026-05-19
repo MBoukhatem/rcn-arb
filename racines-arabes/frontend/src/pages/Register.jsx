@@ -87,14 +87,14 @@ const Register = () => {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto grid w-full max-w-5xl grid-cols-1 lg:grid-cols-2 border-2 border-neutral-950 dark:border-neutral-0"
+        className="mx-auto grid w-full max-w-5xl grid-cols-1 lg:grid-cols-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-950 dark:border-neutral-0"
       >
         {/* Formulaire */}
         <div className="p-8 sm:p-12 order-2 lg:order-1">
           <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
             — 01 / Inscription
           </p>
-          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
             {t('auth.registerTitle')}
           </h1>
 
@@ -153,7 +153,7 @@ const Register = () => {
             </Button>
           </form>
 
-          <div className="mt-8 border-t border-neutral-300 dark:border-neutral-700 pt-6">
+          <div className="mt-8 pt-6">
             <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
               {t('auth.hasAccount')}
             </p>

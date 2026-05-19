@@ -3,16 +3,16 @@ import { useTranslation } from 'react-i18next';
 
 const PAGE_BTN =
   'min-w-10 h-10 px-2 text-2xs font-semibold uppercase tracking-[0.14em] transition-colors ' +
-  'border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ' +
   'dark:focus-visible:ring-accent-300';
 
 const INACTIVE =
-  'border-neutral-300 text-neutral-700 hover:bg-neutral-950 hover:text-neutral-0 hover:border-neutral-950 ' +
-  'dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 dark:hover:border-neutral-0';
+  'text-neutral-700 hover:bg-neutral-950 hover:text-neutral-0 ' +
+  'dark:text-neutral-300 dark:hover:bg-neutral-0 dark:hover:text-neutral-950';
 
 const ACTIVE =
-  'bg-neutral-950 text-neutral-0 border-neutral-950 ' +
-  'dark:bg-neutral-0 dark:text-neutral-950 dark:border-neutral-0';
+  'bg-neutral-950 text-neutral-0 ' +
+  'dark:bg-neutral-0 dark:text-neutral-950';
 
 const ARROW =
   'inline-flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none';

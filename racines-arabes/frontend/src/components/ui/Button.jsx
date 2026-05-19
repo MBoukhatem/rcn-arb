@@ -1,4 +1,4 @@
-// Button — boutons strictement noirs ou blancs, sans border-radius.
+// Button — boutons strictement noirs ou blancs, sans bordure ni border-radius.
 // Design éditorial : typographie compacte, lettrage espacé.
 import Spinner from '@/components/ui/Spinner';
 
@@ -7,9 +7,11 @@ const BASE =
   'tracking-[0.14em] transition-all duration-150 ease-snappy ' +
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
   'focus-visible:ring-accent-500 focus-visible:ring-offset-neutral-0 ' +
-  'dark:focus-visible:ring-offset-neutral-950 disabled:opacity-40 ' +
-  'disabled:pointer-events-none select-none active:translate-y-px ' +
-  'border';
+  'dark:focus-visible:ring-offset-neutral-950 select-none active:translate-y-px ' +
+  // État désactivé : couleurs explicites (pas d'opacité) pour rester lisible.
+  'disabled:pointer-events-none disabled:bg-neutral-200 disabled:text-neutral-400 ' +
+  'disabled:border-neutral-200 dark:disabled:bg-neutral-800 ' +
+  'dark:disabled:text-neutral-600 dark:disabled:border-neutral-800';
 
 const SIZES = {
   sm: 'h-9 px-4 text-2xs',
@@ -17,31 +19,29 @@ const SIZES = {
   lg: 'h-14 px-8 text-xs',
 };
 
-// Variants : tous strictement noir ou blanc.
+// Variants : palette vert sapin / sable. Aucun noir.
 const VARIANTS = {
-  // Bloc noir, texte blanc (clair) → inversé en sombre.
+  // Plein vert sapin, texte crème → plus clair en sombre.
   primary:
-    'bg-neutral-950 text-neutral-0 border-neutral-950 ' +
-    'hover:bg-neutral-800 hover:border-neutral-800 ' +
-    'dark:bg-neutral-0 dark:text-neutral-950 dark:border-neutral-0 ' +
-    'dark:hover:bg-neutral-100 dark:hover:border-neutral-100',
-  // Bloc blanc, texte noir, bordure noire (clair) → inversé.
+    'bg-accent-700 text-sand-50 hover:bg-accent-600 ' +
+    'dark:bg-accent-500 dark:text-neutral-950 dark:hover:bg-accent-400',
+  // Contour vert, fond transparent → remplissage à l'hover.
   secondary:
-    'bg-neutral-0 text-neutral-950 border-neutral-950 ' +
-    'hover:bg-neutral-950 hover:text-neutral-0 ' +
-    'dark:bg-neutral-950 dark:text-neutral-0 dark:border-neutral-0 ' +
-    'dark:hover:bg-neutral-0 dark:hover:text-neutral-950',
-  // Transparent, sans bordure, soulignement à l'hover.
+    'bg-transparent text-accent-700 border border-accent-700 ' +
+    'hover:bg-accent-700 hover:text-sand-50 ' +
+    'dark:text-sand-200 dark:border-sand-300 ' +
+    'dark:hover:bg-sand-300 dark:hover:text-neutral-950',
+  // Transparent, remplissage vert doux à l'hover.
   ghost:
-    'bg-transparent text-neutral-950 border-transparent ' +
-    'hover:bg-neutral-950 hover:text-neutral-0 ' +
-    'dark:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950',
-  // Discrètement teinté d'accent (pourpre rougeâtre) pour les actions critiques.
+    'bg-transparent text-accent-700 ' +
+    'hover:bg-accent-700/10 hover:text-accent-800 ' +
+    'dark:text-sand-200 dark:hover:bg-sand-300/15',
+  // Action critique : teinté brique.
   danger:
-    'bg-transparent text-accent-500 border-accent-500 ' +
-    'hover:bg-accent-500 hover:text-neutral-0 ' +
-    'dark:text-accent-300 dark:border-accent-300 ' +
-    'dark:hover:bg-accent-300 dark:hover:text-neutral-950',
+    'bg-error-light/10 text-error-light ' +
+    'hover:bg-error-light hover:text-sand-50 ' +
+    'dark:bg-error-dark/15 dark:text-error-dark ' +
+    'dark:hover:bg-error-dark dark:hover:text-neutral-950',
 };
 
 const Button = ({

@@ -1,5 +1,6 @@
-// PageWrapper — conteneur de page éditorial, titre marqué d'une barre verticale d'accent.
+// PageWrapper — conteneur de page. En-tête centré et orné (style persan).
 import { motion, useReducedMotion } from 'framer-motion';
+import Ornament from '@/components/ui/Ornament';
 
 const PageWrapper = ({ children, className = '', title, eyebrow }) => {
   const shouldReduce = useReducedMotion();
@@ -33,13 +34,14 @@ const PageWrapper = ({ children, className = '', title, eyebrow }) => {
       className={`mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10 py-12 sm:py-16 lg:py-20 ${className}`}
     >
       {title && (
-        <header className="mb-12 border-b-2 border-neutral-950 dark:border-neutral-0 pb-6">
+        <header className="mb-12 flex flex-col items-center text-center">
+          <Ornament />
           {eyebrow && (
-            <p className="mb-3 text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
-              — {eyebrow}
+            <p className="mt-4 text-2xs font-bold uppercase tracking-[0.3em] text-accent-600 dark:text-sand-300">
+              {eyebrow}
             </p>
           )}
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+          <h1 className="mt-3 text-4xl sm:text-5xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
             {title}
           </h1>
         </header>

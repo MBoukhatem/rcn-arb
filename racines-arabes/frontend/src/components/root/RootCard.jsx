@@ -6,7 +6,7 @@ import { joinLetters } from '@/utils/formatters';
 
 const CARD_BASE =
   'group relative block bg-neutral-0 dark:bg-neutral-950 ' +
-  'border-2 border-neutral-950 dark:border-neutral-0 ' +
+  'border border-neutral-950 dark:border-neutral-0 ' +
   'p-6 transition-colors duration-200 ' +
   'hover:bg-neutral-950 hover:text-neutral-0 ' +
   'dark:hover:bg-neutral-0 dark:hover:text-neutral-950 ' +

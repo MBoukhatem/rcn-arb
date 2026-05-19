@@ -21,13 +21,13 @@ import { WORD_TYPES, VERB_TENSES, getTypeLabel } from '@/utils/morphology';
 import { joinLetters } from '@/utils/formatters';
 
 const SELECT_CLASS =
-  'w-full h-11 px-3.5 text-sm bg-neutral-0 text-neutral-950 ' +
-  'border border-neutral-950 transition-colors duration-150 ' +
-  'focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-500/30 ' +
-  'dark:bg-neutral-950 dark:text-neutral-0 dark:border-neutral-0 ' +
-  'dark:focus:border-accent-300 dark:focus:ring-accent-300/30';
+  'w-full h-11 px-3.5 text-sm bg-neutral-0 text-ink ' +
+  'transition-colors duration-150 ' +
+  'focus:outline-none focus:ring-2 focus:ring-accent-500/30 ' +
+  'dark:bg-neutral-950 dark:text-neutral-0 ' +
+  'dark:focus:ring-accent-300/30';
 const LABEL_CLASS =
-  'block text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-950 dark:text-neutral-0 mb-2';
+  'block text-2xs font-semibold uppercase tracking-[0.18em] text-ink dark:text-neutral-0 mb-2';
 
 const EMPTY_WORD = {
   arabic: '',
@@ -295,7 +295,7 @@ const RootDetail = () => {
             onClick={() => openEditWord(word)}
             aria-label={t('common.edit')}
             title={t('common.edit')}
-            className="inline-flex h-9 w-9 items-center justify-center border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0 hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300"
+            className="inline-flex h-9 w-9 items-center justify-center border border-neutral-950 dark:border-neutral-0 text-ink dark:text-neutral-0 hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300"
           >
             <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <path
@@ -342,7 +342,7 @@ const RootDetail = () => {
   if (error || !root) {
     return (
       <PageWrapper>
-        <div className="border-2 border-dashed border-neutral-950 dark:border-neutral-0 py-20 text-center">
+        <div className="bg-neutral-50 dark:bg-neutral-900 py-20 text-center">
           <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
             {error?.message ?? t('errors.notFound')}
           </p>
@@ -358,10 +358,10 @@ const RootDetail = () => {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-        className="relative border-2 border-neutral-950 dark:border-neutral-0 overflow-hidden"
+        className="relative bg-neutral-50 dark:bg-neutral-900 overflow-hidden"
       >
         {/* En-tête bar */}
-        <div className="flex items-center justify-between border-b border-neutral-950 dark:border-neutral-0 px-6 py-3 bg-neutral-0 dark:bg-neutral-950">
+        <div className="flex items-center justify-between px-6 py-3 bg-neutral-0 dark:bg-neutral-950">
           <span className="font-mono text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
             — RACINE / {root.slug}
           </span>
@@ -397,16 +397,16 @@ const RootDetail = () => {
           </div>
 
           {/* Définitions à droite */}
-          <div className="lg:col-span-7 p-8 sm:p-12 bg-neutral-0 dark:bg-neutral-950 lg:border-l-2 lg:border-neutral-950 dark:lg:border-neutral-0">
+          <div className="lg:col-span-7 p-8 sm:p-12 bg-neutral-0 dark:bg-neutral-950">
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
               — Sens · FR
             </p>
-            <p className="mt-3 text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+            <p className="mt-3 text-3xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {root.meaningFr}
             </p>
 
             {root.meaningEn && (
-              <div className="mt-6 border-t border-neutral-300 dark:border-neutral-700 pt-4">
+              <div className="mt-6 pt-4">
                 <p className="text-2xs font-bold uppercase tracking-[0.24em] text-neutral-500 dark:text-neutral-400">
                   — Sens · EN
                 </p>
@@ -417,7 +417,7 @@ const RootDetail = () => {
             )}
 
             {root.meaningAr && (
-              <div className="mt-4 border-t border-neutral-300 dark:border-neutral-700 pt-4">
+              <div className="mt-4 pt-4">
                 <p className="text-2xs font-bold uppercase tracking-[0.24em] text-neutral-500 dark:text-neutral-400">
                   — Sens · AR
                 </p>
@@ -451,12 +451,12 @@ const RootDetail = () => {
 
       {/* Mots dérivés */}
       <section className="mt-16">
-        <header className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-neutral-950 dark:border-neutral-0 pb-4 mb-10">
+        <header className="flex flex-wrap items-end justify-between gap-4 pb-4 mb-10">
           <div>
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
               — 02 / Dérivés
             </p>
-            <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+            <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('root.derivedWords')}
             </h2>
           </div>
@@ -608,7 +608,7 @@ const RootDetail = () => {
             <p
               lang="ar"
               dir="rtl"
-              className="font-arabic text-3xl font-bold text-neutral-950 dark:text-neutral-0"
+              className="font-arabic text-3xl font-bold text-ink dark:text-neutral-0"
             >
               {wordToDelete.arabic}
               {wordToDelete.type && (

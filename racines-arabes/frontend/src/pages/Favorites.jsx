@@ -4,8 +4,12 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
+import { Link } from 'react-router-dom';
+
 import PageWrapper from '@/components/layout/PageWrapper';
 import Spinner from '@/components/ui/Spinner';
+import Button from '@/components/ui/Button';
+import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
 import RootCard from '@/components/root/RootCard';
 import WordCard from '@/components/word/WordCard';
@@ -43,40 +47,44 @@ const Favorites = () => {
   return (
     <PageWrapper title={t('favorites.title')} eyebrow="Bibliothèque · Personnelle">
       {loading && (
-        <div className="flex min-h-[40vh] items-center justify-center">
+        <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3">
           <Spinner size="lg" />
+          <p className="text-2xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+            {t('common.loading')}
+          </p>
         </div>
       )}
 
       {!loading && error && (
-        <div className="border-2 border-accent-500 dark:border-accent-300 py-12 text-center">
-          <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-            {error?.message ?? t('errors.generic')}
-          </p>
-        </div>
+        <EmptyState
+          tone="error"
+          eyebrow={t('common.error')}
+          title={error?.message ?? t('errors.generic')}
+        />
       )}
 
       {!loading && !error && favorites.length === 0 && (
-        <div className="border-2 border-dashed border-neutral-950 dark:border-neutral-0 py-20 text-center">
-          <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
-            — Aucun favori
-          </p>
-          <p className="mt-3 text-base text-neutral-700 dark:text-neutral-300">
-            {t('favorites.empty')}
-          </p>
-        </div>
+        <EmptyState
+          eyebrow="Aucun favori"
+          title={t('favorites.empty')}
+          action={
+            <Button as={Link} to="/explorer" variant="primary">
+              {t('nav.explorer')}
+            </Button>
+          }
+        />
       )}
 
       {!loading && !error && favorites.length > 0 && (
         <div className="space-y-16">
           {roots.length > 0 && (
             <section>
-              <header className="flex items-end justify-between gap-4 border-b-2 border-neutral-950 dark:border-neutral-0 pb-4 mb-8">
+              <header className="flex items-end justify-between gap-4 pb-4 mb-8">
                 <div>
                   <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
                     — 01 / Racines
                   </p>
-                  <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+                  <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
                     {t('favorites.roots')}
                   </h2>
                 </div>
@@ -88,13 +96,13 @@ const Favorites = () => {
                 variants={listVariants}
                 initial="hidden"
                 animate="visible"
-                className="grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-3 border-l border-t border-neutral-950 dark:border-neutral-0"
+                className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
               >
                 {roots.map((fav) => (
                   <motion.div
                     key={fav._id}
                     variants={cardVariants}
-                    className="relative -ml-px -mt-px"
+                    className="relative"
                   >
                     <RootCard root={fav.item} />
                     <div className="absolute right-3 top-3">
@@ -114,12 +122,12 @@ const Favorites = () => {
 
           {words.length > 0 && (
             <section>
-              <header className="flex items-end justify-between gap-4 border-b-2 border-neutral-950 dark:border-neutral-0 pb-4 mb-8">
+              <header className="flex items-end justify-between gap-4 pb-4 mb-8">
                 <div>
                   <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
                     — 02 / Mots
                   </p>
-                  <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+                  <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
                     {t('favorites.words')}
                   </h2>
                 </div>
@@ -131,14 +139,10 @@ const Favorites = () => {
                 variants={listVariants}
                 initial="hidden"
                 animate="visible"
-                className="grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-3 border-l border-t border-neutral-950 dark:border-neutral-0"
+                className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
               >
                 {words.map((fav) => (
-                  <motion.div
-                    key={fav._id}
-                    variants={cardVariants}
-                    className="-ml-px -mt-px"
-                  >
+                  <motion.div key={fav._id} variants={cardVariants}>
                     <WordCard
                       word={fav.item}
                       actions={

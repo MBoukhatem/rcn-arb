@@ -7,29 +7,29 @@ import alphabet from '@/assets/arabic-alphabet.json';
 const CELL_BASE =
   'aspect-square flex items-center justify-center font-arabic ' +
   'text-2xl sm:text-3xl font-semibold cursor-pointer transition-all duration-150 ease-snappy ' +
-  'select-none border focus-visible:outline-none focus-visible:ring-2 ' +
+  'select-none focus-visible:outline-none focus-visible:ring-2 ' +
   'focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300';
 
 const CELL_REST =
-  'bg-neutral-0 text-neutral-950 border-neutral-950 ' +
+  'bg-neutral-0 text-ink ' +
   'hover:bg-neutral-950 hover:text-neutral-0 ' +
-  'dark:bg-neutral-950 dark:text-neutral-0 dark:border-neutral-0 ' +
+  'dark:bg-neutral-950 dark:text-neutral-0 ' +
   'dark:hover:bg-neutral-0 dark:hover:text-neutral-950';
 
 const CELL_SELECTED =
-  'bg-accent-500 text-neutral-0 border-accent-500 ' +
-  'dark:bg-accent-300 dark:text-neutral-950 dark:border-accent-300';
+  'bg-accent-500 text-neutral-0 ' +
+  'dark:bg-accent-300 dark:text-neutral-950';
 
 const CELL_DISABLED = 'opacity-30 pointer-events-none';
 
 const SLOT_BASE =
-  'h-24 w-24 sm:h-28 sm:w-28 border-2 flex items-center justify-center ' +
+  'h-24 w-24 sm:h-28 sm:w-28 flex items-center justify-center ' +
   'font-arabic text-4xl sm:text-5xl font-bold transition-all duration-150 relative';
 
 const SLOT_EMPTY =
-  'border-neutral-950 dark:border-neutral-0 text-neutral-300 dark:text-neutral-700 bg-neutral-0 dark:bg-neutral-950';
+  'text-neutral-300 dark:text-neutral-700 bg-neutral-0 dark:bg-neutral-950';
 const SLOT_FILLED =
-  'border-neutral-950 dark:border-neutral-0 bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950';
+  'bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950';
 const SLOT_ACTIVE =
   'ring-2 ring-offset-2 ring-accent-500 dark:ring-accent-300 ring-offset-neutral-0 dark:ring-offset-neutral-950';
 
@@ -124,12 +124,12 @@ const LetterPicker = ({ value = ['', '', ''], onChange }) => {
 
       {/* Grille des 28 lettres arabes */}
       <div className="w-full max-w-2xl">
-        <p className="mb-3 text-2xs font-bold uppercase tracking-[0.24em] text-neutral-950 dark:text-neutral-0">
+        <p className="mb-3 text-2xs font-bold uppercase tracking-[0.24em] text-ink dark:text-neutral-0">
           — Alphabet · 28
         </p>
         <div
           dir="rtl"
-          className="grid grid-cols-6 sm:grid-cols-7 gap-0 border-l border-t border-neutral-950 dark:border-neutral-0"
+          className="grid grid-cols-6 sm:grid-cols-7 gap-0"
           role="group"
           aria-label={t('explorer.pickLetters')}
         >

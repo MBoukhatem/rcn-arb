@@ -4,8 +4,9 @@ import { getTypeLabel, TYPE_META } from '@/utils/morphology';
 import Badge from '@/components/ui/Badge';
 
 const CARD_BASE =
-  'group relative bg-neutral-0 dark:bg-neutral-950 ' +
-  'border border-neutral-950 dark:border-neutral-0 p-6 transition-colors duration-200 h-full';
+  'group relative bg-neutral-50 dark:bg-neutral-900 ' +
+  'border border-neutral-950 dark:border-neutral-0 ' +
+  'p-6 transition-colors duration-200 h-full';
 
 const WordCard = ({ word, actions, className = '' }) => {
   const { t, i18n } = useTranslation();
@@ -40,7 +41,7 @@ const WordCard = ({ word, actions, className = '' }) => {
       <p
         lang="ar"
         dir="rtl"
-        className="mt-4 font-arabic text-4xl sm:text-5xl font-bold text-neutral-950 dark:text-neutral-0 leading-tight"
+        className="mt-4 font-arabic text-4xl sm:text-5xl font-bold text-ink dark:text-neutral-0 leading-tight"
       >
         {word.arabic}
       </p>
@@ -83,7 +84,7 @@ const WordCard = ({ word, actions, className = '' }) => {
 
       {/* Exemple */}
       {word.example && (
-        <div className="mt-4 border-l-2 border-accent-500 dark:border-accent-300 pl-3">
+        <div className="mt-4 pl-3">
           <p
             lang="ar"
             dir="rtl"
@@ -106,7 +107,7 @@ const WordCard = ({ word, actions, className = '' }) => {
         <p
           lang="ar"
           dir="rtl"
-          className="mt-5 pt-3 border-t border-neutral-300 dark:border-neutral-700 font-arabic text-sm text-neutral-500 dark:text-neutral-500"
+          className="mt-5 pt-3 font-arabic text-sm text-neutral-500 dark:text-neutral-500"
         >
           {meta.arabicName}
         </p>

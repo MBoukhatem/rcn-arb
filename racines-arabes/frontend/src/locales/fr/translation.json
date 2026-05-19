@@ -2,6 +2,7 @@
   "nav": {
     "home": "Accueil",
     "explorer": "Explorateur",
+    "search": "Rechercher",
     "about": "À propos",
     "login": "Connexion",
     "register": "Inscription",
@@ -100,6 +101,10 @@
     "searchPlaceholder": "Mot, translittération ou traduction…",
     "allTypes": "Tous les types",
     "allTenses": "Tous les temps"
+  },
+  "search": {
+    "title": "Recherche de mots",
+    "subtitle": "Recherchez et filtrez les mots du dictionnaire par type, temps et tri."
   },
   "root": {
     "meaning": "Sens",

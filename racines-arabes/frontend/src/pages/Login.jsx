@@ -72,7 +72,7 @@ const Login = () => {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto grid w-full max-w-5xl grid-cols-1 lg:grid-cols-2 border-2 border-neutral-950 dark:border-neutral-0"
+        className="mx-auto grid w-full max-w-5xl grid-cols-1 lg:grid-cols-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-950 dark:border-neutral-0"
       >
         {/* Panneau visuel */}
         <aside className="relative hidden lg:flex flex-col justify-between bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950 p-10">
@@ -111,7 +111,7 @@ const Login = () => {
           <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
             — 01 / Connexion
           </p>
-          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
             {t('auth.loginTitle')}
           </h1>
 
@@ -148,7 +148,7 @@ const Login = () => {
             </Button>
           </form>
 
-          <div className="mt-8 border-t border-neutral-300 dark:border-neutral-700 pt-6">
+          <div className="mt-8 pt-6">
             <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
               {t('auth.noAccount')}
             </p>

@@ -11,9 +11,9 @@ const NotFound = () => {
 
   return (
     <PageWrapper>
-      <div className="relative border-2 border-neutral-950 dark:border-neutral-0 min-h-[70vh] grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
+      <div className="relative min-h-[70vh] grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
         {/* Côté gauche : numéro */}
-        <div className="relative bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950 flex flex-col items-center justify-center py-14 px-6 border-b-2 lg:border-b-0 lg:border-r-2 border-neutral-950 dark:border-neutral-0">
+        <div className="relative bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950 flex flex-col items-center justify-center py-14 px-6">
           <div
             aria-hidden="true"
             className="absolute inset-0 opacity-20"
@@ -47,7 +47,7 @@ const NotFound = () => {
           <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
             — Page introuvable
           </p>
-          <h1 className="mt-4 text-5xl sm:text-6xl font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+          <h1 className="mt-4 text-5xl sm:text-6xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
             {t('notFound.title')}
           </h1>
           <p className="mt-5 max-w-md text-base text-neutral-700 dark:text-neutral-300">

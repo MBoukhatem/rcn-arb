@@ -10,9 +10,10 @@ import Button from '@/components/ui/Button';
 
 const LINK_BASE =
   'relative text-2xs font-semibold uppercase tracking-[0.18em] px-3 py-2 transition-colors';
+// Navbar sur fond vert sapin : liens en crème, actif en sable.
 const LINK_INACTIVE =
-  'text-neutral-700 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-neutral-0';
-const LINK_ACTIVE = 'text-neutral-950 dark:text-neutral-0';
+  'text-sand-100/70 hover:text-sand-50 hover:bg-accent-600/60';
+const LINK_ACTIVE = 'text-sand-200';
 
 const ThemeIcon = ({ isDark }) =>
   isDark ? (
@@ -49,6 +50,7 @@ const Navbar = () => {
   const links = [
     { to: '/', label: t('nav.home'), end: true },
     { to: '/explorer', label: t('nav.explorer') },
+    { to: '/search', label: t('nav.search') },
     { to: '/about', label: t('nav.about') },
     ...(isAuthenticated
       ? [
@@ -86,7 +88,7 @@ const Navbar = () => {
           {isActive && (
             <motion.span
               layoutId="nav-underline"
-              className="absolute left-3 right-3 -bottom-0.5 h-px bg-neutral-950 dark:bg-neutral-0"
+              className="absolute left-3 right-3 -bottom-0.5 h-px bg-sand-300"
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             />
           )}
@@ -96,7 +98,7 @@ const Navbar = () => {
   );
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b-2 border-neutral-950 bg-neutral-0/95 dark:border-neutral-0 dark:bg-neutral-950/95 backdrop-blur">
+    <header className="sticky top-0 z-40 w-full bg-accent-700/95 dark:bg-accent-900/95 backdrop-blur">
       <div className="mx-auto max-w-[1400px] h-16 px-4 sm:px-6 flex items-center justify-between gap-4">
         {/* Marque */}
         <NavLink
@@ -108,15 +110,15 @@ const Navbar = () => {
         >
           <span
             lang="ar"
-            className="font-arabic text-2xl font-bold text-neutral-950 dark:text-neutral-0 leading-none"
+            className="font-arabic text-2xl font-bold text-sand-200 leading-none"
           >
             ع
           </span>
           <div className="flex flex-col leading-none">
-            <span className="text-sm font-extrabold tracking-tight text-neutral-950 dark:text-neutral-0">
+            <span className="text-sm font-extrabold tracking-tight text-sand-50">
               RACINES
             </span>
-            <span className="mt-0.5 text-[9px] font-semibold tracking-[0.32em] text-accent-500 dark:text-accent-300">
+            <span className="mt-0.5 text-[9px] font-semibold tracking-[0.32em] text-sand-300">
               ARABES
             </span>
           </div>
@@ -133,7 +135,7 @@ const Navbar = () => {
             type="button"
             onClick={toggleLanguage}
             aria-label={t('language.label')}
-            className="h-9 px-3 text-2xs font-bold uppercase tracking-[0.18em] border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0 hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors"
+            className="h-9 px-3 text-2xs font-bold uppercase tracking-[0.18em] text-sand-100 hover:bg-accent-600/60 hover:text-sand-50 transition-colors"
           >
             {i18n.language?.startsWith('en') ? 'EN' : 'FR'}
           </button>
@@ -141,23 +143,40 @@ const Navbar = () => {
             type="button"
             onClick={toggleTheme}
             aria-label={t('theme.toggle')}
-            className="h-9 w-9 inline-flex items-center justify-center border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0 hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors"
+            className="h-9 w-9 inline-flex items-center justify-center text-sand-100 hover:bg-accent-600/60 hover:text-sand-50 transition-colors"
           >
             <ThemeIcon isDark={isDark} />
           </button>
 
-          <span className="mx-1 h-6 w-px bg-neutral-300 dark:bg-neutral-700" aria-hidden="true" />
+          <span className="mx-1 h-6 w-px bg-sand-200/30" aria-hidden="true" />
 
           {isAuthenticated ? (
-            <Button variant="secondary" size="sm" onClick={handleLogout}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleLogout}
+              className="!border-sand-300 !text-sand-100 hover:!bg-sand-300 hover:!text-accent-800"
+            >
               {t('nav.logout')}
             </Button>
           ) : (
             <>
-              <Button as={NavLink} to="/login" variant="ghost" size="sm">
+              <Button
+                as={NavLink}
+                to="/login"
+                variant="ghost"
+                size="sm"
+                className="!text-sand-100 hover:!bg-accent-600/60 hover:!text-sand-50"
+              >
                 {t('nav.login')}
               </Button>
-              <Button as={NavLink} to="/register" variant="primary" size="sm">
+              <Button
+                as={NavLink}
+                to="/register"
+                variant="primary"
+                size="sm"
+                className="!bg-sand-300 !text-accent-800 hover:!bg-sand-200"
+              >
                 {t('nav.register')}
               </Button>
             </>
@@ -170,7 +189,7 @@ const Navbar = () => {
             type="button"
             onClick={toggleTheme}
             aria-label={t('theme.toggle')}
-            className="h-9 w-9 inline-flex items-center justify-center border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0"
+            className="h-9 w-9 inline-flex items-center justify-center text-sand-100"
           >
             <ThemeIcon isDark={isDark} />
           </button>
@@ -179,7 +198,7 @@ const Navbar = () => {
             onClick={() => setMenuOpen((open) => !open)}
             aria-label="Menu"
             aria-expanded={menuOpen}
-            className="h-9 w-9 inline-flex items-center justify-center border border-neutral-950 dark:border-neutral-0 text-neutral-950 dark:text-neutral-0"
+            className="h-9 w-9 inline-flex items-center justify-center text-sand-100"
           >
             <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               {menuOpen ? (
@@ -210,13 +229,13 @@ const Navbar = () => {
             animate={shouldReduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
             exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="md:hidden border-t border-neutral-950 dark:border-neutral-0 bg-neutral-0 dark:bg-neutral-950"
+            className="md:hidden bg-accent-700 dark:bg-accent-900"
             aria-label="Navigation mobile"
           >
             <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-4 flex flex-col gap-1">
               {links.map(renderNavLink)}
 
-              <span className="my-3 h-px w-full bg-neutral-300 dark:bg-neutral-700" aria-hidden="true" />
+              <span className="my-3 h-px w-full bg-sand-200/30" aria-hidden="true" />
 
               <button
                 type="button"
@@ -231,7 +250,7 @@ const Navbar = () => {
                   variant="secondary"
                   size="md"
                   onClick={handleLogout}
-                  className="mt-3 w-full"
+                  className="mt-3 w-full !border-sand-300 !text-sand-100 hover:!bg-sand-300 hover:!text-accent-800"
                 >
                   {t('nav.logout')}
                 </Button>
@@ -243,7 +262,7 @@ const Navbar = () => {
                     variant="secondary"
                     size="md"
                     onClick={closeMenu}
-                    className="w-full"
+                    className="w-full !border-sand-300 !text-sand-100 hover:!bg-sand-300 hover:!text-accent-800"
                   >
                     {t('nav.login')}
                   </Button>
@@ -253,7 +272,7 @@ const Navbar = () => {
                     variant="primary"
                     size="md"
                     onClick={closeMenu}
-                    className="w-full"
+                    className="w-full !bg-sand-300 !text-accent-800 hover:!bg-sand-200"
                   >
                     {t('nav.register')}
                   </Button>
