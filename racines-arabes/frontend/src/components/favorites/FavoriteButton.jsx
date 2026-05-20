@@ -1,5 +1,6 @@
 // FavoriteButton — bouton favori graphique : carré, sans border-radius.
-import { useState, useCallback } from 'react';
+// Cœur rouge au hover et à l'état actif (même rouge que les actions "Supprimer").
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -19,6 +20,15 @@ const FavoriteButton = ({
   const shouldReduce = useReducedMotion();
   const [loading, setLoading] = useState(false);
 
+  // État local : permet au cœur de basculer immédiatement après le clic,
+  // même si le parent ne resynchronise pas la prop `isFavorited`.
+  const [favored, setFavored] = useState(isFavorited);
+  const [localFavoriteId, setLocalFavoriteId] = useState(favoriteId ?? null);
+
+  // Resync si le parent change réellement la prop (rare ici).
+  useEffect(() => setFavored(isFavorited), [isFavorited]);
+  useEffect(() => setLocalFavoriteId(favoriteId ?? null), [favoriteId]);
+
   const handleClick = useCallback(
     async (event) => {
       event.preventDefault();
@@ -33,30 +43,47 @@ const FavoriteButton = ({
 
       setLoading(true);
       try {
-        if (isFavorited) {
-          await removeFavorite(favoriteId);
+        if (favored) {
+          if (localFavoriteId) {
+            await removeFavorite(localFavoriteId);
+          }
+          setFavored(false);
+          setLocalFavoriteId(null);
           toast.success(t('favorites.removeSuccess'));
         } else {
-          await addFavorite({ item, itemModel });
+          const created = await addFavorite({ item, itemModel });
+          setFavored(true);
+          setLocalFavoriteId(created?._id ?? null);
           toast.success(t('favorites.addSuccess'));
         }
         onToggle?.();
-      } catch {
-        toast.error(t('errors.generic'));
+      } catch (err) {
+        // Si l'item existe déjà côté serveur (409 conflict), on le reflète
+        // dans l'UI comme favorisé — pas une vraie erreur pour l'utilisateur.
+        if (err?.status === 409 && !favored) {
+          setFavored(true);
+          toast.success(t('favorites.addSuccess'));
+        } else {
+          // Affiche le message réel renvoyé par l'API (utile pour debug).
+          toast.error(err?.message ?? t('errors.generic'));
+        }
       } finally {
         setLoading(false);
       }
     },
-    [loading, isAuthenticated, isFavorited, favoriteId, item, itemModel, onToggle, t],
+    [loading, isAuthenticated, favored, localFavoriteId, item, itemModel, onToggle, t],
   );
 
-  const label = isFavorited
+  const label = favored
     ? t('word.removeFromFavorites')
     : t('word.addToFavorites');
 
-  const stateClasses = isFavorited
-    ? 'bg-accent-500 text-neutral-0 border-accent-500 dark:bg-accent-300 dark:text-neutral-950 dark:border-accent-300'
-    : 'bg-neutral-0 text-neutral-950 border-neutral-950 hover:bg-neutral-950 hover:text-neutral-0 dark:bg-neutral-950 dark:text-neutral-0 dark:border-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950';
+  // Actif : fond rouge plein + cœur sable (même rouge que "Supprimer la racine").
+  // Repos : fond/bordure neutres alignés sur les actions voisines (crayon, poubelle).
+  // Hover : teinte sable dorée (cohérence avec les ornements de l'app).
+  const stateClasses = favored
+    ? 'bg-error-light text-sand-50 border-error-light dark:bg-error-dark dark:text-sand-50 dark:border-error-dark'
+    : 'bg-neutral-0 text-ink border-neutral-950 hover:bg-sand-300 hover:text-accent-800 hover:border-sand-400 dark:bg-neutral-900 dark:text-neutral-0 dark:border-neutral-0 dark:hover:bg-sand-300 dark:hover:text-accent-900 dark:hover:border-sand-300';
 
   return (
     <button
@@ -64,7 +91,7 @@ const FavoriteButton = ({
       onClick={handleClick}
       disabled={loading}
       aria-label={label}
-      aria-pressed={isFavorited}
+      aria-pressed={favored}
       title={label}
       className={`inline-flex h-9 w-9 items-center justify-center border transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300 disabled:pointer-events-none ${stateClasses}`}
     >
@@ -73,7 +100,7 @@ const FavoriteButton = ({
       ) : (
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
-            key={isFavorited ? 'filled' : 'empty'}
+            key={favored ? 'filled' : 'empty'}
             initial={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.6 }}
             animate={shouldReduce ? { opacity: 1 } : { opacity: 1, scale: 1 }}
             exit={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.6 }}
@@ -82,7 +109,7 @@ const FavoriteButton = ({
             <svg
               className="h-4 w-4"
               viewBox="0 0 20 20"
-              fill={isFavorited ? 'currentColor' : 'none'}
+              fill={favored ? 'currentColor' : 'none'}
               aria-hidden="true"
             >
               <path

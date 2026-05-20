@@ -5,6 +5,8 @@ import {
   changePassword,
   deleteAccount,
   listUsers,
+  getUserById,
+  updateUserAsAdmin,
   deleteUser,
 } from '../controllers/user.controller.js';
 import { protect } from '../middlewares/auth.middleware.js';
@@ -12,6 +14,7 @@ import { validate } from '../middlewares/validate.middleware.js';
 import { paginate } from '../middlewares/paginate.middleware.js';
 import {
   updateProfileSchema,
+  adminUpdateUserSchema,
   changePasswordSchema,
 } from '../validators/user.validator.js';
 
@@ -24,6 +27,8 @@ router.delete('/me', protect, deleteAccount);
 
 // Administration (le contrôle de rôle admin est fait dans le contrôleur)
 router.get('/', protect, paginate, listUsers);
+router.get('/:id', protect, getUserById);
+router.patch('/:id', protect, validate(adminUpdateUserSchema), updateUserAsAdmin);
 router.delete('/:id', protect, deleteUser);
 
 export default router;

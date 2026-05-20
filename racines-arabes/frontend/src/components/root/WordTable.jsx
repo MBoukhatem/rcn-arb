@@ -5,12 +5,18 @@ import { getTypeLabel, groupWordsByType } from '@/utils/morphology';
 
 /**
  * @param {object} props
- * @param {Array} props.words - tableau plat de mots dérivés.
+ * @param {Array} props.words - tableau plat OU groupé de mots dérivés.
+ * @param {boolean} [props.grouped] - si true, `words` est déjà au format [{type, words, meta}].
+ * @param {(word:object)=>React.ReactNode} [props.renderActions] - actions optionnelles
+ *   rendues dans une colonne supplémentaire (édition/suppression/favoris).
  */
-const WordTable = ({ words = [] }) => {
+const WordTable = ({ words = [], grouped = false, renderActions }) => {
   const { t, i18n } = useTranslation();
   const isEnglish = i18n.language?.startsWith('en');
-  const groups = groupWordsByType(Array.isArray(words) ? words : []);
+  const groups = grouped
+    ? (Array.isArray(words) ? words : [])
+    : groupWordsByType(Array.isArray(words) ? words : []);
+  const hasActions = typeof renderActions === 'function';
 
   if (groups.length === 0) {
     return (
@@ -80,6 +86,11 @@ const WordTable = ({ words = [] }) => {
                   <th className="px-5 py-2.5 font-bold">{t('word.transliteration')}</th>
                   <th className="px-5 py-2.5 font-bold">{t('morphology.patternLabel')}</th>
                   <th className="px-5 py-2.5 font-bold">{t('word.translation')}</th>
+                  {hasActions && (
+                    <th className="px-5 py-2.5 font-bold text-right">
+                      <span className="sr-only">Actions</span>
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -120,6 +131,13 @@ const WordTable = ({ words = [] }) => {
                       <td className="px-5 py-3 text-sm text-neutral-700 dark:text-neutral-300">
                         {translation || '—'}
                       </td>
+                      {hasActions && (
+                        <td className="px-5 py-3 text-right">
+                          <div className="inline-flex items-center gap-2">
+                            {renderActions(w)}
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   );
                 })}

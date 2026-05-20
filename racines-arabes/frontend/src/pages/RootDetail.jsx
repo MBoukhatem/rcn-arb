@@ -11,130 +11,16 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import Badge from '@/components/ui/Badge';
-import WordList from '@/components/root/WordList';
+import WordTable from '@/components/root/WordTable';
+import WordForm, { EMPTY_WORD } from '@/components/word/WordForm';
 import FavoriteButton from '@/components/favorites/FavoriteButton';
+import { ViewButton, EditButton, DeleteButton } from '@/components/ui/ActionButtons';
 import { useFetch } from '@/hooks/useFetch';
 import { useAuth } from '@/hooks/useAuth';
 import { getRoot, getRootWords, updateRoot, deleteRoot } from '@/services/root.service';
 import { createWord, updateWord, deleteWord } from '@/services/word.service';
-import { WORD_TYPES, VERB_TENSES, getTypeLabel } from '@/utils/morphology';
+import { getTypeLabel } from '@/utils/morphology';
 import { joinLetters } from '@/utils/formatters';
-
-const SELECT_CLASS =
-  'w-full h-11 px-3.5 text-sm bg-neutral-0 text-ink ' +
-  'transition-colors duration-150 ' +
-  'focus:outline-none focus:ring-2 focus:ring-accent-500/30 ' +
-  'dark:bg-neutral-950 dark:text-neutral-0 ' +
-  'dark:focus:ring-accent-300/30';
-const LABEL_CLASS =
-  'block text-2xs font-semibold uppercase tracking-[0.18em] text-ink dark:text-neutral-0 mb-2';
-
-const EMPTY_WORD = {
-  arabic: '',
-  transliteration: '',
-  translationFr: '',
-  translationEn: '',
-  type: 'VERB',
-  tense: 'MADI',
-  pattern: '',
-  example: '',
-  notes: '',
-};
-
-const WordForm = ({ values, onChange }) => {
-  const { t } = useTranslation();
-  const handle = (e) => onChange({ ...values, [e.target.name]: e.target.value });
-
-  return (
-    <div className="space-y-4">
-      <Input
-        label={t('word.arabic')}
-        name="arabic"
-        value={values.arabic}
-        onChange={handle}
-        placeholder={t('word.arabicPlaceholder')}
-        required
-      />
-      <Input
-        label={t('word.transliteration')}
-        name="transliteration"
-        value={values.transliteration}
-        onChange={handle}
-        required
-      />
-      <Input
-        label={t('word.translationFr')}
-        name="translationFr"
-        value={values.translationFr}
-        onChange={handle}
-        required
-      />
-      <Input
-        label={t('word.translationEn')}
-        name="translationEn"
-        value={values.translationEn}
-        onChange={handle}
-      />
-      <div>
-        <label className={LABEL_CLASS} htmlFor="word-type">
-          {t('word.type')}
-        </label>
-        <select
-          id="word-type"
-          name="type"
-          value={values.type}
-          onChange={handle}
-          className={SELECT_CLASS}
-        >
-          {WORD_TYPES.map((code) => (
-            <option key={code} value={code}>
-              {getTypeLabel(code, t)}
-            </option>
-          ))}
-        </select>
-      </div>
-      {values.type === 'VERB' && (
-        <div>
-          <label className={LABEL_CLASS} htmlFor="word-tense">
-            {t('word.tense')}
-          </label>
-          <select
-            id="word-tense"
-            name="tense"
-            value={values.tense}
-            onChange={handle}
-            className={SELECT_CLASS}
-          >
-            {VERB_TENSES.map((code) => (
-              <option key={code} value={code}>
-                {t(`morphology.tense.${code}`)}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-      <Input
-        label={t('word.pattern')}
-        name="pattern"
-        value={values.pattern}
-        onChange={handle}
-        required
-      />
-      <Input
-        label={t('word.example')}
-        name="example"
-        value={values.example}
-        onChange={handle}
-      />
-      <Input
-        label={t('word.notes')}
-        name="notes"
-        value={values.notes}
-        onChange={handle}
-      />
-    </div>
-  );
-};
 
 const RootDetail = () => {
   const { slug } = useParams();
@@ -287,43 +173,14 @@ const RootDetail = () => {
 
   const renderWordActions = (word) => (
     <>
+      {word?._id && (
+        <ViewButton to={`/words/${word._id}`} label={t('explorer.viewRoot')} />
+      )}
       <FavoriteButton item={word?._id} itemModel="Word" />
       {canManage(word) && (
         <>
-          <button
-            type="button"
-            onClick={() => openEditWord(word)}
-            aria-label={t('common.edit')}
-            title={t('common.edit')}
-            className="inline-flex h-9 w-9 items-center justify-center border border-neutral-950 dark:border-neutral-0 text-ink dark:text-neutral-0 hover:bg-neutral-950 hover:text-neutral-0 dark:hover:bg-neutral-0 dark:hover:text-neutral-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path
-                d="M3 17h4l9-9-4-4-9 9v4zM12 5l3 3"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={() => setWordToDelete(word)}
-            aria-label={t('common.delete')}
-            title={t('common.delete')}
-            className="inline-flex h-9 w-9 items-center justify-center border border-accent-500 dark:border-accent-300 text-accent-500 dark:text-accent-300 hover:bg-accent-500 hover:text-neutral-0 dark:hover:bg-accent-300 dark:hover:text-neutral-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path
-                d="M4 6h12M8 6V4h4v2M6 6l1 11h6l1-11M9 9v6M11 9v6"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+          <EditButton onClick={() => openEditWord(word)} label={t('common.edit')} />
+          <DeleteButton onClick={() => setWordToDelete(word)} label={t('common.delete')} />
         </>
       )}
     </>
@@ -358,10 +215,10 @@ const RootDetail = () => {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-        className="relative bg-neutral-50 dark:bg-neutral-900 overflow-hidden"
+        className="relative bg-neutral-0 dark:bg-neutral-900 border border-accent-700 dark:border-accent-300 overflow-hidden"
       >
         {/* En-tête bar */}
-        <div className="flex items-center justify-between px-6 py-3 bg-neutral-0 dark:bg-neutral-950">
+        <div className="flex items-center justify-between px-6 py-3 bg-neutral-0 dark:bg-neutral-900 border-b border-accent-700 dark:border-accent-300">
           <span className="font-mono text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
             — RACINE / {root.slug}
           </span>
@@ -471,7 +328,7 @@ const RootDetail = () => {
             <Spinner size="md" />
           </div>
         ) : (
-          <WordList
+          <WordTable
             words={groupedWords}
             grouped
             renderActions={renderWordActions}

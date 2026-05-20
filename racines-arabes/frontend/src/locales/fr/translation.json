@@ -8,7 +8,8 @@
     "register": "Inscription",
     "profile": "Profil",
     "favorites": "Favoris",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "admin": "Admin"
   },
   "common": {
     "loading": "Chargement…",
@@ -105,6 +106,24 @@
   "search": {
     "title": "Recherche de mots",
     "subtitle": "Recherchez et filtrez les mots du dictionnaire par type, temps et tri."
+  },
+  "admin": {
+    "usersTitle": "Gestion des utilisateurs",
+    "usersSubtitle": "Consultez, modifiez et administrez les comptes utilisateurs de l'application.",
+    "users": "Utilisateurs",
+    "role": "Rôle",
+    "you": "Vous",
+    "createdAt": "Inscrit le",
+    "updatedAt": "Mis à jour le",
+    "viewUser": "Voir l'utilisateur",
+    "editUser": "Modifier l'utilisateur",
+    "deleteUser": "Supprimer l'utilisateur",
+    "deleteConfirm": "Cette action est irréversible. Confirmez-vous la suppression de cet utilisateur ?",
+    "cannotChangeOwnRole": "Vous ne pouvez pas modifier votre propre rôle depuis cette interface.",
+    "roles": {
+      "user": "Utilisateur",
+      "admin": "Administrateur"
+    }
   },
   "root": {
     "meaning": "Sens",

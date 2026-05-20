@@ -11,9 +11,14 @@ export const getFavorites = async (params = {}) => {
 };
 
 // Ajout d'un favori → favori créé. payload : { item, itemModel, note }.
+// Le backend répond { success, data: { favorite } } → on déballe le favori.
+// `note` est omise si non fournie (le validator Joi la rejetterait sinon).
 export const addFavorite = async ({ item, itemModel, note }) => {
-  const res = await api.post('/favorites', { item, itemModel, note });
-  return res.data.data;
+  const body = { item, itemModel };
+  if (typeof note === 'string') body.note = note;
+  const res = await api.post('/favorites', body);
+  const payload = res.data.data;
+  return payload?.favorite ?? payload;
 };
 
 // Retrait d'un favori par id.

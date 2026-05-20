@@ -13,9 +13,8 @@ import Modal from '@/components/ui/Modal';
 import EmptyState from '@/components/ui/EmptyState';
 import LetterPicker from '@/components/root/LetterPicker';
 import RootCard from '@/components/root/RootCard';
-import WordTable from '@/components/root/WordTable';
 import { useAuth } from '@/hooks/useAuth';
-import { getRoot, getRootWords, createRoot } from '@/services/root.service';
+import { getRoot, createRoot } from '@/services/root.service';
 import { slugFromLetters, joinLetters } from '@/utils/formatters';
 
 const LABEL_CLASS =
@@ -30,7 +29,6 @@ const RootExplorer = () => {
   const slug = complete ? slugFromLetters(letters) : '';
 
   const [root, setRoot] = useState(null);
-  const [rootWords, setRootWords] = useState(null);
   const [rootLoading, setRootLoading] = useState(false);
   const [rootResolved, setRootResolved] = useState(false);
 
@@ -46,12 +44,9 @@ const RootExplorer = () => {
     setRootLoading(true);
     setRootResolved(false);
     setRoot(null);
-    setRootWords(null);
     try {
       const found = await getRoot(currentSlug);
       setRoot(found);
-      const words = await getRootWords(currentSlug);
-      setRootWords(words);
     } catch (err) {
       if (err?.status !== 404) {
         toast.error(err?.message ?? t('errors.generic'));
@@ -70,7 +65,6 @@ const RootExplorer = () => {
       resolveRoot(slugFromLetters(next));
     } else {
       setRoot(null);
-      setRootWords(null);
       setRootResolved(false);
     }
   };
@@ -101,7 +95,7 @@ const RootExplorer = () => {
       </p>
 
       {/* Sélecteur de lettres */}
-      <section className="relative bg-neutral-0 dark:bg-neutral-950 p-6 sm:p-10">
+      <section className="relative bg-neutral-0 dark:bg-neutral-900 border border-accent-700 dark:border-accent-300 p-6 sm:p-10">
         <LetterPicker value={letters} onChange={handleLettersChange} />
       </section>
 
@@ -111,6 +105,7 @@ const RootExplorer = () => {
           <EmptyState
             eyebrow="En attente"
             title={t('explorer.selectAllLetters')}
+            className="!bg-neutral-0 dark:!bg-neutral-900 border border-accent-700 dark:border-accent-300"
           />
         )}
 
@@ -134,7 +129,7 @@ const RootExplorer = () => {
               <p className="mb-3 text-2xs font-bold uppercase tracking-[0.24em] text-accent-600 dark:text-sand-300">
                 — Racine identifiée
               </p>
-              <RootCard root={root} />
+              <RootCard root={root} interactive={false} />
               <Button
                 as={Link}
                 to={`/roots/${root.slug}`}
@@ -144,16 +139,6 @@ const RootExplorer = () => {
               >
                 {t('explorer.viewRoot')} →
               </Button>
-            </div>
-
-            {/* Mots dérivés — tableaux repliables par type */}
-            <div className="mt-14">
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
-                {t('root.derivedWords')}
-              </h2>
-              <div className="mt-6">
-                <WordTable words={rootWords ?? []} />
-              </div>
             </div>
           </motion.div>
         )}

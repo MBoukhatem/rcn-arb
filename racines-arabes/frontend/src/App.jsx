@@ -4,16 +4,20 @@ import { AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/layout/Navbar.jsx';
 import Footer from '@/components/layout/Footer.jsx';
 import PrivateRoute from '@/routes/PrivateRoute.jsx';
+import AdminRoute from '@/routes/AdminRoute.jsx';
 
 import Home from '@/pages/Home.jsx';
 import RootExplorer from '@/pages/RootExplorer.jsx';
 import Search from '@/pages/Search.jsx';
 import RootDetail from '@/pages/RootDetail.jsx';
+import WordDetail from '@/pages/WordDetail.jsx';
 import Login from '@/pages/Login.jsx';
 import Register from '@/pages/Register.jsx';
 import Profile from '@/pages/Profile.jsx';
 import Favorites from '@/pages/Favorites.jsx';
 import About from '@/pages/About.jsx';
+import AdminUsers from '@/pages/AdminUsers.jsx';
+import AdminUserDetail from '@/pages/AdminUserDetail.jsx';
 import NotFound from '@/pages/NotFound.jsx';
 
 const App = () => {
@@ -29,6 +33,7 @@ const App = () => {
             <Route path="/explorer" element={<RootExplorer />} />
             <Route path="/search" element={<Search />} />
             <Route path="/roots/:slug" element={<RootDetail />} />
+            <Route path="/words/:id" element={<WordDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route
@@ -48,6 +53,22 @@ const App = () => {
               }
             />
             <Route path="/about" element={<About />} />
+            <Route
+              path="/admin/users"
+              element={
+                <AdminRoute>
+                  <AdminUsers />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/users/:id"
+              element={
+                <AdminRoute>
+                  <AdminUserDetail />
+                </AdminRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>

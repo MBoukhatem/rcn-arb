@@ -8,7 +8,8 @@
     "register": "Sign up",
     "profile": "Profile",
     "favorites": "Favorites",
-    "logout": "Log out"
+    "logout": "Log out",
+    "admin": "Admin"
   },
   "common": {
     "loading": "Loading…",
@@ -105,6 +106,24 @@
   "search": {
     "title": "Word search",
     "subtitle": "Search and filter dictionary words by type, tense and sort order."
+  },
+  "admin": {
+    "usersTitle": "User management",
+    "usersSubtitle": "Browse, edit and administrate user accounts of the application.",
+    "users": "Users",
+    "role": "Role",
+    "you": "You",
+    "createdAt": "Joined on",
+    "updatedAt": "Updated on",
+    "viewUser": "View user",
+    "editUser": "Edit user",
+    "deleteUser": "Delete user",
+    "deleteConfirm": "This action is irreversible. Do you confirm the deletion of this user?",
+    "cannotChangeOwnRole": "You cannot change your own role from this interface.",
+    "roles": {
+      "user": "User",
+      "admin": "Administrator"
+    }
   },
   "root": {
     "meaning": "Meaning",

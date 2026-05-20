@@ -111,10 +111,12 @@ const Profile = () => {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto max-w-3xl space-y-10"
+        className="mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8"
       >
+        {/* Colonne gauche : Profil */}
+        <div className="flex flex-col">
         {/* Mise à jour du profil */}
-        <form onSubmit={submitProfile} className={SECTION}>
+        <form onSubmit={submitProfile} className={`${SECTION} flex flex-col flex-1`}>
           <header className={SECTION_HEADER}>
             <span className={SECTION_TITLE}>— 01 / Profil</span>
             <span className="font-mono text-2xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
@@ -122,7 +124,7 @@ const Profile = () => {
             </span>
           </header>
 
-          <div className="p-6 sm:p-8 space-y-5">
+          <div className="p-6 sm:p-8 space-y-5 flex-1 flex flex-col">
             <h2 className="text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('profile.updateProfile')}
             </h2>
@@ -182,68 +184,90 @@ const Profile = () => {
               variant="primary"
               loading={savingProfile}
               disabled={savingProfile}
+              className="w-full"
             >
               {t('common.save')}
             </Button>
+
+            {/* Note de pied — occupe le vide bas, ancre éditoriale. */}
+            <div className="mt-auto pt-6 border-t border-neutral-200 dark:border-neutral-800">
+              <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
+                — Confidentialité
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">
+                La langue maternelle permet d&apos;adapter les traductions
+                affichées dans le dictionnaire.
+              </p>
+            </div>
           </div>
         </form>
 
-        {/* Changement de mot de passe */}
-        <form onSubmit={submitPassword} className={SECTION}>
-          <header className={SECTION_HEADER}>
-            <span className={SECTION_TITLE}>— 02 / Sécurité</span>
-          </header>
-          <div className="p-6 sm:p-8 space-y-5">
-            <h2 className="text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
-              {t('profile.changePassword')}
-            </h2>
-            <Input
-              label={t('profile.currentPassword')}
-              name="currentPassword"
-              type="password"
-              value={passwords.currentPassword}
-              onChange={handlePasswordChange}
-              required
-            />
-            <Input
-              label={t('profile.newPassword')}
-              name="newPassword"
-              type="password"
-              value={passwords.newPassword}
-              onChange={handlePasswordChange}
-              hint={t('auth.passwordHint')}
-              required
-            />
-            <Button
-              type="submit"
-              variant="primary"
-              loading={savingPassword}
-              disabled={savingPassword}
-            >
-              {t('profile.changePassword')}
-            </Button>
-          </div>
-        </form>
-
-        {/* Suppression de compte */}
-        <div className="bg-neutral-0 dark:bg-neutral-950 border border-accent-500 dark:border-accent-300">
-          <header className="flex items-center justify-between px-6 py-3">
-            <span className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-              — Zone critique
-            </span>
-          </header>
-          <div className="p-6 sm:p-8 space-y-4">
-            <h2 className="text-2xl font-extrabold tracking-tight text-accent-500 dark:text-accent-300">
-              {t('profile.deleteAccount')}
-            </h2>
-            <p className="text-sm text-neutral-700 dark:text-neutral-300">
-              {t('profile.deleteAccountConfirm')}
-            </p>
-            <Button variant="danger" onClick={() => setDeleteOpen(true)}>
-              {t('profile.deleteAccount')}
-            </Button>
-          </div>
         </div>
+
+        {/* Colonne droite : Sécurité + Zone critique */}
+        <aside className="flex flex-col gap-6">
+          {/* Changement de mot de passe */}
+          <form onSubmit={submitPassword} className={SECTION}>
+            <header className={SECTION_HEADER}>
+              <span className={SECTION_TITLE}>— 02 / Sécurité</span>
+            </header>
+            <div className="p-6 sm:p-8 space-y-5">
+              <h2 className="text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
+                {t('profile.changePassword')}
+              </h2>
+              <Input
+                label={t('profile.currentPassword')}
+                name="currentPassword"
+                type="password"
+                value={passwords.currentPassword}
+                onChange={handlePasswordChange}
+                required
+              />
+              <Input
+                label={t('profile.newPassword')}
+                name="newPassword"
+                type="password"
+                value={passwords.newPassword}
+                onChange={handlePasswordChange}
+                hint={t('auth.passwordHint')}
+                required
+              />
+              <Button
+                type="submit"
+                variant="primary"
+                loading={savingPassword}
+                disabled={savingPassword}
+                className="w-full"
+              >
+                {t('profile.changePassword')}
+              </Button>
+            </div>
+          </form>
+
+          {/* Zone critique — absorbe la hauteur restante pour matcher la colonne gauche */}
+          <div className="bg-neutral-0 dark:bg-neutral-950 border border-accent-500 dark:border-accent-300 flex-1 flex flex-col">
+            <header className="flex items-center justify-between px-6 py-3">
+              <span className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+                — Zone critique
+              </span>
+            </header>
+            <div className="p-6 sm:p-8 space-y-4 flex-1 flex flex-col">
+              <h2 className="text-2xl font-extrabold tracking-tight text-accent-500 dark:text-accent-300">
+                {t('profile.deleteAccount')}
+              </h2>
+              <p className="text-sm text-neutral-700 dark:text-neutral-300">
+                {t('profile.deleteAccountConfirm')}
+              </p>
+              <Button
+                variant="danger"
+                onClick={() => setDeleteOpen(true)}
+                className="mt-auto w-full"
+              >
+                {t('profile.deleteAccount')}
+              </Button>
+            </div>
+          </div>
+        </aside>
       </motion.div>
 
       <Modal

@@ -13,7 +13,7 @@ const CELL_BASE =
 const CELL_REST =
   'bg-neutral-0 text-ink ' +
   'hover:bg-neutral-950 hover:text-neutral-0 ' +
-  'dark:bg-neutral-950 dark:text-neutral-0 ' +
+  'dark:bg-neutral-850 dark:text-neutral-0 ' +
   'dark:hover:bg-neutral-0 dark:hover:text-neutral-950';
 
 const CELL_SELECTED =
@@ -27,11 +27,11 @@ const SLOT_BASE =
   'font-arabic text-4xl sm:text-5xl font-bold transition-all duration-150 relative';
 
 const SLOT_EMPTY =
-  'text-neutral-300 dark:text-neutral-700 bg-neutral-0 dark:bg-neutral-950';
+  'text-neutral-300 dark:text-neutral-700 bg-neutral-0 dark:bg-neutral-850';
 const SLOT_FILLED =
   'bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950';
 const SLOT_ACTIVE =
-  'ring-2 ring-offset-2 ring-accent-500 dark:ring-accent-300 ring-offset-neutral-0 dark:ring-offset-neutral-950';
+  'ring-2 ring-offset-2 ring-accent-500 dark:ring-accent-300 ring-offset-neutral-0 dark:ring-offset-neutral-900';
 
 const LetterPicker = ({ value = ['', '', ''], onChange }) => {
   const { t } = useTranslation();

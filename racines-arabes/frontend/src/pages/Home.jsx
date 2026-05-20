@@ -45,9 +45,16 @@ const Home = () => {
         animate="visible"
         className="relative z-10 flex flex-col items-center text-center pt-4 pb-20"
       >
+        <motion.h1
+          variants={fadeUp}
+          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-[1.05] tracking-tight text-ink dark:text-neutral-0 whitespace-nowrap"
+        >
+          {t('home.heroTitle')}
+        </motion.h1>
+
         <motion.p
           variants={fadeUp}
-          className="text-2xs font-bold uppercase tracking-[0.42em] text-sand-600 dark:text-sand-300"
+          className="mt-10 text-2xs font-bold uppercase tracking-[0.42em] text-sand-600 dark:text-sand-300"
         >
           نظام الجذور العربية
         </motion.p>
@@ -77,14 +84,7 @@ const Home = () => {
           </PersianArch>
         </motion.div>
 
-        <motion.h1
-          variants={fadeUp}
-          className="mt-10 max-w-3xl text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight text-ink dark:text-neutral-0"
-        >
-          {t('home.heroTitle')}
-        </motion.h1>
-
-        <motion.div variants={fadeUp} className="mt-6">
+        <motion.div variants={fadeUp} className="mt-10">
           <Ornament />
         </motion.div>
 
@@ -110,7 +110,7 @@ const Home = () => {
         {/* Statistiques */}
         <motion.dl
           variants={fadeUp}
-          className="mt-16 grid w-full max-w-2xl grid-cols-3 gap-px overflow-hidden bg-neutral-200 dark:bg-neutral-800"
+          className="mt-16 grid w-full max-w-2xl grid-cols-3 overflow-hidden bg-neutral-0 dark:bg-neutral-900 border border-accent-700/40 dark:border-sand-300/30 divide-x divide-accent-700/40 dark:divide-sand-300/30"
         >
           {[
             { k: 'Racines', v: '10K+' },
@@ -119,7 +119,7 @@ const Home = () => {
           ].map((s) => (
             <div
               key={s.k}
-              className="flex flex-col items-center bg-neutral-50 dark:bg-neutral-900 py-6"
+              className="flex flex-col items-center py-6"
             >
               <dt className="text-2xs font-semibold uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
                 {s.k}
@@ -155,7 +155,7 @@ const Home = () => {
             <motion.article
               key={f.title}
               variants={fadeUp}
-              className="group relative bg-neutral-0 dark:bg-neutral-900 p-8 transition-colors duration-200 hover:bg-accent-700 dark:hover:bg-accent-600"
+              className="group relative bg-neutral-0 dark:bg-neutral-900 border border-accent-700/40 dark:border-sand-300/30 p-8 transition-colors duration-200 hover:bg-accent-700 dark:hover:bg-accent-600"
             >
               {/* Coin floral */}
               <span
@@ -205,7 +205,7 @@ const Home = () => {
           {KTB_DERIVED.map((w, i) => (
             <article
               key={w.tr}
-              className="group flex flex-col items-center bg-neutral-0 dark:bg-neutral-900 px-4 py-7 text-center transition-transform duration-200 hover:-translate-y-1"
+              className="group flex flex-col items-center bg-neutral-0 dark:bg-neutral-900 border border-accent-700/40 dark:border-sand-300/30 px-4 py-7 text-center transition-transform duration-200 hover:-translate-y-1"
             >
               <span className="font-mono text-2xs uppercase tracking-[0.2em] text-sand-500 dark:text-sand-300">
                 {String(i + 1).padStart(2, '0')}

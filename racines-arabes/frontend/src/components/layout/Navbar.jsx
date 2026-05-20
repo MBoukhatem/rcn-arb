@@ -1,5 +1,5 @@
 // Navbar — barre éditoriale stricte : bordure pleine, typographie haute densité.
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,18 @@ const LINK_BASE =
 const LINK_INACTIVE =
   'text-sand-100/70 hover:text-sand-50 hover:bg-accent-600/60';
 const LINK_ACTIVE = 'text-sand-200';
+
+const UserIcon = () => (
+  <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5" />
+    <path
+      d="M3.5 17c1.2-3 3.6-4.5 6.5-4.5s5.3 1.5 6.5 4.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+  </svg>
+);
 
 const ThemeIcon = ({ isDark }) =>
   isDark ? (
@@ -39,33 +51,60 @@ const ThemeIcon = ({ isDark }) =>
 
 const Navbar = () => {
   const { t, i18n } = useTranslation();
-  const { isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const shouldReduce = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
 
+  const isAdmin = user?.role === 'admin';
   const closeMenu = useCallback(() => setMenuOpen(false), []);
+  const closeUserMenu = useCallback(() => setUserMenuOpen(false), []);
 
+  // Liens principaux : Profil/Favoris sortis dans le dropdown utilisateur (desktop).
+  // Admin reçoit en plus un onglet "Admin" en bout de menu.
   const links = [
     { to: '/', label: t('nav.home'), end: true },
     { to: '/explorer', label: t('nav.explorer') },
     { to: '/search', label: t('nav.search') },
     { to: '/about', label: t('nav.about') },
-    ...(isAuthenticated
-      ? [
-          { to: '/profile', label: t('nav.profile') },
-          { to: '/favorites', label: t('nav.favorites') },
-        ]
-      : []),
+    ...(isAdmin ? [{ to: '/admin/users', label: t('nav.admin') }] : []),
   ];
+
+  // Items du dropdown utilisateur (visible uniquement si authentifié).
+  const userMenuLinks = [
+    { to: '/profile', label: t('nav.profile') },
+    { to: '/favorites', label: t('nav.favorites') },
+  ];
+
+  // Ferme le dropdown au clic extérieur ou touche Escape.
+  useEffect(() => {
+    if (!userMenuOpen) return undefined;
+    const handleClick = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    const handleKey = (e) => {
+      if (e.key === 'Escape') setUserMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handleClick);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('keydown', handleKey);
+    };
+  }, [userMenuOpen]);
 
   const handleLogout = useCallback(() => {
     logout();
     closeMenu();
+    closeUserMenu();
     toast.success(t('auth.logoutSuccess'));
     navigate('/');
-  }, [logout, closeMenu, t, navigate]);
+  }, [logout, closeMenu, closeUserMenu, t, navigate]);
 
   const toggleLanguage = useCallback(() => {
     const next = i18n.language?.startsWith('en') ? 'fr' : 'en';
@@ -148,19 +187,74 @@ const Navbar = () => {
             <ThemeIcon isDark={isDark} />
           </button>
 
-          <span className="mx-1 h-6 w-px bg-sand-200/30" aria-hidden="true" />
+          {isAuthenticated && (
+            <span className="mx-1 h-6 w-px bg-sand-200/30" aria-hidden="true" />
+          )}
 
           {isAuthenticated ? (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleLogout}
-              className="!border-sand-300 !text-sand-100 hover:!bg-sand-300 hover:!text-accent-800"
-            >
-              {t('nav.logout')}
-            </Button>
+            // Dropdown utilisateur : icône profil + menu Profil / Favoris / Déconnexion.
+            <div className="relative" ref={userMenuRef}>
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((open) => !open)}
+                aria-label={t('nav.profile')}
+                aria-haspopup="menu"
+                aria-expanded={userMenuOpen}
+                className={`h-9 w-9 inline-flex items-center justify-center transition-colors ${
+                  userMenuOpen
+                    ? 'bg-sand-300 text-accent-800'
+                    : 'text-sand-100 hover:bg-accent-600/60 hover:text-sand-50'
+                }`}
+              >
+                <UserIcon />
+              </button>
+
+              <AnimatePresence>
+                {userMenuOpen && (
+                  <motion.div
+                    role="menu"
+                    initial={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -6 }}
+                    animate={shouldReduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                    exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -6 }}
+                    transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute right-0 top-full mt-2 w-52 bg-neutral-0 dark:bg-neutral-900 border border-accent-700 dark:border-accent-300 shadow-modal"
+                  >
+                    {userMenuLinks.map((link) => (
+                      <NavLink
+                        key={link.to}
+                        to={link.to}
+                        onClick={closeUserMenu}
+                        role="menuitem"
+                        className={({ isActive }) =>
+                          `block px-4 py-3 text-2xs font-semibold uppercase tracking-[0.18em] transition-colors ${
+                            isActive
+                              ? 'text-accent-700 dark:text-accent-300 bg-sand-50 dark:bg-neutral-850'
+                              : 'text-ink dark:text-neutral-0 hover:bg-sand-50 dark:hover:bg-neutral-850'
+                          }`
+                        }
+                      >
+                        {link.label}
+                      </NavLink>
+                    ))}
+                    <span
+                      aria-hidden="true"
+                      className="block h-px w-full bg-neutral-200 dark:bg-neutral-800"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      role="menuitem"
+                      className="block w-full text-left px-4 py-3 text-2xs font-semibold uppercase tracking-[0.18em] text-error-light dark:text-error-dark hover:bg-error-light dark:hover:bg-error-dark hover:text-sand-50 dark:hover:text-sand-50 transition-colors"
+                    >
+                      {t('nav.logout')}
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           ) : (
             <>
+              <span className="mx-1 h-6 w-px bg-sand-200/30" aria-hidden="true" />
               <Button
                 as={NavLink}
                 to="/login"
@@ -234,6 +328,7 @@ const Navbar = () => {
           >
             <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-4 flex flex-col gap-1">
               {links.map(renderNavLink)}
+              {isAuthenticated && userMenuLinks.map(renderNavLink)}
 
               <span className="my-3 h-px w-full bg-sand-200/30" aria-hidden="true" />
 

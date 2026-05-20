@@ -6,10 +6,15 @@ import toast from 'react-hot-toast';
 import PageWrapper from '@/components/layout/PageWrapper';
 import Spinner from '@/components/ui/Spinner';
 import Button from '@/components/ui/Button';
+import Modal from '@/components/ui/Modal';
 import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
+import FavoriteButton from '@/components/favorites/FavoriteButton';
+import WordForm, { EMPTY_WORD } from '@/components/word/WordForm';
+import { ViewButton, EditButton, DeleteButton } from '@/components/ui/ActionButtons';
+import { useAuth } from '@/hooks/useAuth';
 import { useDebounce } from '@/hooks/useDebounce';
-import { getWords } from '@/services/word.service';
+import { getWords, updateWord, deleteWord } from '@/services/word.service';
 import { WORD_TYPES, VERB_TENSES, getTypeLabel } from '@/utils/morphology';
 
 const SELECT_CLASS =
@@ -56,6 +61,7 @@ const ActiveChip = ({ label, onRemove }) => (
 
 const Search = () => {
   const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuth();
 
   const [q, setQ] = useState('');
   const [type, setType] = useState('');
@@ -67,7 +73,25 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Modales d'édition / suppression d'un mot.
+  const [editWord, setEditWord] = useState(null);
+  const [editValues, setEditValues] = useState(EMPTY_WORD);
+  const [editSaving, setEditSaving] = useState(false);
+  const [wordToDelete, setWordToDelete] = useState(null);
+  const [wordDeleting, setWordDeleting] = useState(false);
+
   const debouncedQ = useDebounce(q, 400);
+
+  // L'utilisateur peut gérer un mot s'il est admin ou son créateur.
+  const canManage = useCallback(
+    (word) => {
+      if (!user) return false;
+      if (user.role === 'admin') return true;
+      const owner = word?.createdBy?._id ?? word?.createdBy;
+      return owner === user._id;
+    },
+    [user],
+  );
 
   const runSearch = useCallback(async () => {
     setLoading(true);
@@ -104,6 +128,61 @@ const Search = () => {
     setType((prev) => (prev === code ? '' : code));
     if (code !== 'VERB') setTense('');
     setPage(1);
+  };
+
+  // Ouvre la modale d'édition pré-remplie avec le mot sélectionné.
+  const openEdit = (w) => {
+    setEditValues({
+      arabic: w?.arabic ?? '',
+      transliteration: w?.transliteration ?? '',
+      translationFr: w?.translationFr ?? '',
+      translationEn: w?.translationEn ?? '',
+      type: w?.type ?? 'VERB',
+      tense: w?.tense ?? 'MADI',
+      pattern: w?.pattern ?? '',
+      example: w?.example ?? '',
+      notes: w?.notes ?? '',
+    });
+    setEditWord(w);
+  };
+
+  const submitEdit = async () => {
+    if (!editValues.arabic.trim() || !editValues.pattern.trim()) {
+      toast.error(t('errors.validation'));
+      return;
+    }
+    if (editValues.type === 'VERB' && !editValues.tense) {
+      toast.error(t('word.tenseRequired'));
+      return;
+    }
+    const payload = { ...editValues };
+    if (payload.type !== 'VERB') delete payload.tense;
+
+    setEditSaving(true);
+    try {
+      await updateWord(editWord._id, payload);
+      toast.success(t('word.updateSuccess'));
+      setEditWord(null);
+      runSearch();
+    } catch (err) {
+      toast.error(err?.message ?? t('errors.generic'));
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    setWordDeleting(true);
+    try {
+      await deleteWord(wordToDelete._id);
+      toast.success(t('word.deleteSuccess'));
+      setWordToDelete(null);
+      runSearch();
+    } catch (err) {
+      toast.error(err?.message ?? t('errors.generic'));
+    } finally {
+      setWordDeleting(false);
+    }
   };
 
   const words = results?.data ?? [];
@@ -313,6 +392,9 @@ const Search = () => {
                       <th className="px-5 py-3">{t('word.transliteration')}</th>
                       <th className="px-5 py-3">{t('explorer.type')}</th>
                       <th className="px-5 py-3">{t('word.translation')}</th>
+                      <th className="px-5 py-3 text-right">
+                        <span className="sr-only">Actions</span>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -341,6 +423,25 @@ const Search = () => {
                         <td className="px-5 py-3 text-sm text-neutral-700 dark:text-neutral-300">
                           {w.translationFr || w.translationEn || '—'}
                         </td>
+                        <td className="px-5 py-3 text-right">
+                          <div className="inline-flex items-center gap-2">
+                            {w._id && (
+                              <ViewButton
+                                to={`/words/${w._id}`}
+                                label={t('explorer.viewRoot')}
+                              />
+                            )}
+                            {isAuthenticated && (
+                              <FavoriteButton item={w._id} itemModel="Word" />
+                            )}
+                            {isAuthenticated && canManage(w) && (
+                              <>
+                                <EditButton onClick={() => openEdit(w)} label={t('common.edit')} />
+                                <DeleteButton onClick={() => setWordToDelete(w)} label={t('common.delete')} />
+                              </>
+                            )}
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -359,6 +460,67 @@ const Search = () => {
           )}
         </div>
       </section>
+
+      {/* Modale d'édition d'un mot */}
+      <Modal
+        isOpen={!!editWord}
+        onClose={() => setEditWord(null)}
+        title={t('word.editWord')}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setEditWord(null)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="primary"
+              onClick={submitEdit}
+              loading={editSaving}
+              disabled={editSaving}
+            >
+              {t('common.save')}
+            </Button>
+          </>
+        }
+      >
+        <WordForm values={editValues} onChange={setEditValues} />
+      </Modal>
+
+      {/* Modale de confirmation de suppression d'un mot */}
+      <Modal
+        isOpen={!!wordToDelete}
+        onClose={() => setWordToDelete(null)}
+        title={t('word.deleteWord')}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setWordToDelete(null)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="danger"
+              onClick={confirmDelete}
+              loading={wordDeleting}
+              disabled={wordDeleting}
+            >
+              {t('common.delete')}
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <p className="text-sm text-neutral-700 dark:text-neutral-300">
+            {t('word.deleteConfirm')}
+          </p>
+          {wordToDelete && (
+            <p
+              lang="ar"
+              dir="rtl"
+              className="font-arabic text-3xl font-bold text-ink dark:text-neutral-0"
+            >
+              {wordToDelete.arabic}
+            </p>
+          )}
+        </div>
+      </Modal>
     </PageWrapper>
   );
 };

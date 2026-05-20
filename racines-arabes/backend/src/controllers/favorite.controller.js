@@ -19,7 +19,11 @@ export const listFavorites = async (req, res) => {
       .skip(skip)
       .limit(limit)
       // Populate dynamique : item résolu vers Root ou Word via refPath.
-      .populate('item'),
+      // Pour les mots, peuple aussi la racine afin d'afficher un lien "Voir".
+      .populate({
+        path: 'item',
+        populate: { path: 'root', select: 'slug letters meaningFr transliteration' },
+      }),
     Favorite.countDocuments(filter),
   ]);
 
