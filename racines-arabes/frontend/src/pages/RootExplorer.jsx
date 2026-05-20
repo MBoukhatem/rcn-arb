@@ -22,7 +22,9 @@ const LABEL_CLASS =
 
 const RootExplorer = () => {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
+  // Politique de création : réservée aux administrateurs uniquement.
+  const isAdmin = user?.role === 'admin';
 
   const [letters, setLetters] = useState(['', '', '']);
   const complete = letters.every((l) => l && l.length > 0);
@@ -158,7 +160,7 @@ const RootExplorer = () => {
             <p className="mt-4 text-sm text-neutral-700 dark:text-neutral-300">
               {t('explorer.noRoot')}
             </p>
-            {isAuthenticated ? (
+            {isAdmin ? (
               <Button
                 variant="primary"
                 size="md"
@@ -169,7 +171,7 @@ const RootExplorer = () => {
               </Button>
             ) : (
               <p className="mt-4 text-2xs uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
-                {t('explorer.loginToCreate')}
+                {t('explorer.adminToCreate')}
               </p>
             )}
           </div>

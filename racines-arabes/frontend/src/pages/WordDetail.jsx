@@ -1,6 +1,6 @@
 // Page détail d'un mot — /words/:id. Présentation éditoriale du mot, sa morphologie,
 // le lien vers la racine, et les actions favoris / édition / suppression.
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import Spinner from '@/components/ui/Spinner';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import EmptyState from '@/components/ui/EmptyState';
+import BackLink from '@/components/ui/BackLink';
 import FavoriteButton from '@/components/favorites/FavoriteButton';
 import WordForm, { EMPTY_WORD } from '@/components/word/WordForm';
 import { useFetch } from '@/hooks/useFetch';
@@ -37,13 +38,8 @@ const WordDetail = () => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // Autorisation : admin OU créateur du mot.
-  const canManage = useCallback(() => {
-    if (!user || !word) return false;
-    if (user.role === 'admin') return true;
-    const owner = word.createdBy?._id ?? word.createdBy;
-    return owner === user._id;
-  }, [user, word]);
+  // Politique d'édition/suppression : réservée aux administrateurs uniquement.
+  const isAdmin = user?.role === 'admin';
 
   const openEdit = () => {
     setEditValues({
@@ -114,6 +110,9 @@ const WordDetail = () => {
   if (error || !word) {
     return (
       <PageWrapper>
+        <div className="mb-6">
+          <BackLink to="/search" label={t('nav.search')} />
+        </div>
         <EmptyState
           tone="error"
           eyebrow={t('common.error')}
@@ -131,6 +130,17 @@ const WordDetail = () => {
 
   return (
     <PageWrapper>
+      <div className="mb-6">
+        {root?.slug ? (
+          <BackLink
+            to={`/roots/${root.slug}`}
+            label={`Racine [ ${root.slug} ]`}
+          />
+        ) : (
+          <BackLink to="/search" label={t('nav.search')} />
+        )}
+      </div>
+
       {/* En-tête mot */}
       <motion.section
         initial={{ opacity: 0, y: 14 }}
@@ -248,7 +258,7 @@ const WordDetail = () => {
               </div>
             )}
 
-            {isAuthenticated && canManage() && (
+            {isAdmin && (
               <div className="mt-8 flex flex-wrap gap-2">
                 <Button variant="secondary" size="sm" onClick={openEdit}>
                   {t('word.editWord')}

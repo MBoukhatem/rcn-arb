@@ -48,16 +48,8 @@ const Favorites = () => {
   const roots = favorites.filter((f) => f?.itemModel === 'Root');
   const words = favorites.filter((f) => f?.itemModel === 'Word');
 
+  // Politique d'édition/suppression : réservée aux administrateurs uniquement.
   const isAdmin = user?.role === 'admin';
-  const canManage = useCallback(
-    (resource) => {
-      if (!user) return false;
-      if (isAdmin) return true;
-      const owner = resource?.createdBy?._id ?? resource?.createdBy;
-      return owner === user._id;
-    },
-    [user, isAdmin],
-  );
 
   // ────────── Édition / suppression de racines ──────────
   const [editRoot, setEditRoot] = useState(null);
@@ -273,7 +265,7 @@ const Favorites = () => {
                                 favoriteId={fav._id}
                                 onToggle={handleToggle}
                               />
-                              {canManage(r) && (
+                              {isAdmin && (
                                 <>
                                   <EditButton
                                     onClick={() => openEditRoot(r)}
@@ -373,7 +365,7 @@ const Favorites = () => {
                                 favoriteId={fav._id}
                                 onToggle={handleToggle}
                               />
-                              {canManage(w) && (
+                              {isAdmin && (
                                 <>
                                   <EditButton
                                     onClick={() => openEditWord(w)}

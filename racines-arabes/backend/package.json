@@ -8,6 +8,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed": "node src/seeds/seed.js",
+    "seed:admin": "node src/seeds/seedAdmin.js",
     "lint": "eslint src",
     "format": "prettier --write \"src/**/*.js\""
   },

@@ -1,5 +1,5 @@
 // Page détail d'une racine — /roots/:slug. Racine, mots dérivés, actions CRUD protégées.
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import Badge from '@/components/ui/Badge';
+import BackLink from '@/components/ui/BackLink';
 import WordTable from '@/components/root/WordTable';
 import WordForm, { EMPTY_WORD } from '@/components/word/WordForm';
 import FavoriteButton from '@/components/favorites/FavoriteButton';
@@ -25,7 +26,7 @@ import { joinLetters } from '@/utils/formatters';
 const RootDetail = () => {
   const { slug } = useParams();
   const { t } = useTranslation();
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const { data: root, loading, error, refetch } = useFetch(
@@ -52,15 +53,8 @@ const RootDetail = () => {
   const [wordToDelete, setWordToDelete] = useState(null);
   const [wordDeleting, setWordDeleting] = useState(false);
 
-  const canManage = useCallback(
-    (resource) => {
-      if (!user) return false;
-      if (user.role === 'admin') return true;
-      const owner = resource?.createdBy?._id ?? resource?.createdBy;
-      return owner === user._id;
-    },
-    [user],
-  );
+  // Politique d'édition/suppression : réservée aux administrateurs uniquement.
+  const isAdmin = user?.role === 'admin';
 
   const refreshAll = () => {
     refetch();
@@ -177,7 +171,7 @@ const RootDetail = () => {
         <ViewButton to={`/words/${word._id}`} label={t('explorer.viewRoot')} />
       )}
       <FavoriteButton item={word?._id} itemModel="Word" />
-      {canManage(word) && (
+      {isAdmin && (
         <>
           <EditButton onClick={() => openEditWord(word)} label={t('common.edit')} />
           <DeleteButton onClick={() => setWordToDelete(word)} label={t('common.delete')} />
@@ -199,6 +193,9 @@ const RootDetail = () => {
   if (error || !root) {
     return (
       <PageWrapper>
+        <div className="mb-6">
+          <BackLink to="/explorer" label={t('nav.explorer')} />
+        </div>
         <div className="bg-neutral-50 dark:bg-neutral-900 py-20 text-center">
           <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
             {error?.message ?? t('errors.notFound')}
@@ -210,6 +207,10 @@ const RootDetail = () => {
 
   return (
     <PageWrapper>
+      <div className="mb-6">
+        <BackLink to="/explorer" label={t('nav.explorer')} />
+      </div>
+
       {/* En-tête racine */}
       <motion.section
         initial={{ opacity: 0, y: 14 }}
@@ -288,7 +289,7 @@ const RootDetail = () => {
               </div>
             )}
 
-            {isAuthenticated && canManage(root) && (
+            {isAdmin && (
               <div className="mt-8 flex flex-wrap gap-2">
                 <Button variant="secondary" size="sm" onClick={openEditRoot}>
                   {t('root.editRoot')}
@@ -317,7 +318,7 @@ const RootDetail = () => {
               {t('root.derivedWords')}
             </h2>
           </div>
-          {isAuthenticated && (
+          {isAdmin && (
             <Button variant="primary" size="sm" onClick={openCreateWord}>
               + {t('root.addWord')}
             </Button>

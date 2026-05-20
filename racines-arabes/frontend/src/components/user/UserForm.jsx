@@ -3,14 +3,16 @@
 import { useTranslation } from 'react-i18next';
 import Input from '@/components/ui/Input';
 
-const SELECT_CLASS =
-  'w-full h-11 px-3.5 text-sm bg-neutral-0 text-ink ' +
+// Aligné sur le style du composant Input pour cohérence dans la modale.
+const FIELD_CLASS =
+  'w-full h-11 px-3.5 text-sm text-ink ' +
+  'bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-0 ' +
+  'placeholder:text-neutral-400 dark:placeholder:text-neutral-600 ' +
   'transition-colors duration-150 ' +
-  'focus:outline-none focus:ring-2 focus:ring-accent-500/30 ' +
-  'dark:bg-neutral-950 dark:text-neutral-0 ' +
-  'dark:focus:ring-accent-300/30 ' +
-  'disabled:cursor-not-allowed disabled:bg-neutral-100 disabled:text-neutral-400 ' +
-  'dark:disabled:bg-neutral-800 dark:disabled:text-neutral-600';
+  'focus:outline-none focus:ring-2 focus:ring-accent-500/50 ' +
+  'dark:focus:ring-accent-300/40 ' +
+  'disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 ' +
+  'dark:disabled:bg-neutral-900 dark:disabled:text-neutral-600';
 
 const LABEL_CLASS =
   'block text-2xs font-semibold uppercase tracking-[0.18em] text-ink dark:text-neutral-0 mb-2';
@@ -56,7 +58,7 @@ const UserForm = ({ values, onChange, disableRole = false }) => {
           rows={3}
           maxLength={280}
           placeholder={t('profile.bioPlaceholder')}
-          className={`${SELECT_CLASS} h-auto py-2.5 placeholder:text-neutral-400 dark:placeholder:text-neutral-600`}
+          className={`${FIELD_CLASS} h-auto py-2.5`}
         />
       </div>
 
@@ -77,7 +79,7 @@ const UserForm = ({ values, onChange, disableRole = false }) => {
           name="nativeLanguage"
           value={values.nativeLanguage}
           onChange={handle}
-          className={SELECT_CLASS}
+          className={FIELD_CLASS}
         >
           <option value="fr">{t('profile.nativeLanguageFr')}</option>
           <option value="en">{t('profile.nativeLanguageEn')}</option>
@@ -95,7 +97,7 @@ const UserForm = ({ values, onChange, disableRole = false }) => {
           value={values.role}
           onChange={handle}
           disabled={disableRole}
-          className={SELECT_CLASS}
+          className={FIELD_CLASS}
         >
           <option value="user">{t('admin.roles.user')}</option>
           <option value="admin">{t('admin.roles.admin')}</option>

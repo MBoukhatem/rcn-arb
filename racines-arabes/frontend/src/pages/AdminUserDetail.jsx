@@ -1,7 +1,7 @@
 // Page détail d'un utilisateur — /admin/users/:id (admin uniquement).
 // Présentation éditoriale du profil, actions modifier / supprimer.
 import { useState, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -11,6 +11,7 @@ import Spinner from '@/components/ui/Spinner';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import EmptyState from '@/components/ui/EmptyState';
+import BackLink from '@/components/ui/BackLink';
 import UserForm, { emptyUser } from '@/components/user/UserForm';
 import { useFetch } from '@/hooks/useFetch';
 import { useAuth } from '@/hooks/useAuth';
@@ -107,15 +108,13 @@ const AdminUserDetail = () => {
   if (error || !user) {
     return (
       <PageWrapper>
+        <div className="mb-6">
+          <BackLink to="/admin/users" label={t('admin.usersTitle')} />
+        </div>
         <EmptyState
           tone="error"
           eyebrow={t('common.error')}
           title={error?.message ?? t('errors.notFound')}
-          action={
-            <Button as={Link} to="/admin/users" variant="primary" size="sm">
-              ← {t('admin.usersTitle')}
-            </Button>
-          }
         />
       </PageWrapper>
     );
@@ -131,6 +130,10 @@ const AdminUserDetail = () => {
 
   return (
     <PageWrapper>
+      <div className="mb-6">
+        <BackLink to="/admin/users" label={t('admin.usersTitle')} />
+      </div>
+
       <motion.section
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
@@ -142,12 +145,6 @@ const AdminUserDetail = () => {
           <span className="font-mono text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
             — UTILISATEUR / {user._id?.slice(-6) ?? '—'}
           </span>
-          <Link
-            to="/admin/users"
-            className="text-2xs font-semibold uppercase tracking-[0.16em] text-accent-600 dark:text-sand-300 hover:underline"
-          >
-            ← {t('admin.usersTitle')}
-          </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12">

@@ -98,6 +98,7 @@
     "selectAllLetters": "Sélectionnez les trois lettres pour lancer la recherche.",
     "createRootPrompt": "Cette racine n'existe pas encore. Voulez-vous la créer ?",
     "loginToCreate": "Connectez-vous pour créer cette racine.",
+    "adminToCreate": "Seuls les administrateurs peuvent créer une racine.",
     "advancedSearch": "Recherche avancée des mots",
     "searchPlaceholder": "Mot, translittération ou traduction…",
     "allTypes": "Tous les types",

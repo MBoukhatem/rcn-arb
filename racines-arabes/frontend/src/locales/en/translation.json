@@ -98,6 +98,7 @@
     "selectAllLetters": "Select all three letters to start the search.",
     "createRootPrompt": "This root does not exist yet. Would you like to create it?",
     "loginToCreate": "Log in to create this root.",
+    "adminToCreate": "Only administrators can create a root.",
     "advancedSearch": "Advanced word search",
     "searchPlaceholder": "Word, transliteration or translation…",
     "allTypes": "All types",

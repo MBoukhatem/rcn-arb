@@ -82,16 +82,8 @@ const Search = () => {
 
   const debouncedQ = useDebounce(q, 400);
 
-  // L'utilisateur peut gérer un mot s'il est admin ou son créateur.
-  const canManage = useCallback(
-    (word) => {
-      if (!user) return false;
-      if (user.role === 'admin') return true;
-      const owner = word?.createdBy?._id ?? word?.createdBy;
-      return owner === user._id;
-    },
-    [user],
-  );
+  // Politique d'édition/suppression : réservée aux administrateurs uniquement.
+  const isAdmin = user?.role === 'admin';
 
   const runSearch = useCallback(async () => {
     setLoading(true);
@@ -434,7 +426,7 @@ const Search = () => {
                             {isAuthenticated && (
                               <FavoriteButton item={w._id} itemModel="Word" />
                             )}
-                            {isAuthenticated && canManage(w) && (
+                            {isAdmin && (
                               <>
                                 <EditButton onClick={() => openEdit(w)} label={t('common.edit')} />
                                 <DeleteButton onClick={() => setWordToDelete(w)} label={t('common.delete')} />
