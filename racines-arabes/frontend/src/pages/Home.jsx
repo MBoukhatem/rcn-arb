@@ -8,6 +8,7 @@ import PageWrapper from '@/components/layout/PageWrapper';
 import Button from '@/components/ui/Button';
 import PersianArch from '@/components/ui/PersianArch';
 import Ornament from '@/components/ui/Ornament';
+import AlphabetRail from '@/components/ui/AlphabetRail';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -37,7 +38,11 @@ const Home = () => {
   ];
 
   return (
-    <PageWrapper className="relative">
+    <PageWrapper className="relative isolate">
+      {/* Rails décoratifs : alphabet arabe défilant dans les marges (desktop only) */}
+      <AlphabetRail side="left" />
+      <AlphabetRail side="right" />
+
       {/* ═════════ HERO — composition centrée sous une arche persane ═════════ */}
       <motion.section
         variants={stagger}
@@ -133,7 +138,7 @@ const Home = () => {
       </motion.section>
 
       {/* ═════════ FONCTIONNALITÉS ═════════ */}
-      <section className="mt-12">
+      <section className="relative z-10 mt-12">
         <div className="flex flex-col items-center text-center">
           <Ornament />
           <p className="mt-5 text-2xs font-bold uppercase tracking-[0.3em] text-sand-600 dark:text-sand-300">
@@ -186,7 +191,7 @@ const Home = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-10%' }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="mt-24"
+        className="relative z-10 mt-24"
       >
         <div className="flex flex-col items-center text-center">
           <Ornament />
@@ -234,7 +239,7 @@ const Home = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-10%' }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="mt-24 bg-accent-800 px-6 py-16 sm:px-16 text-center"
+        className="relative z-10 mt-24 bg-accent-800 px-6 py-16 sm:px-16 text-center"
       >
         <div className="flex flex-col items-center">
           <Ornament />

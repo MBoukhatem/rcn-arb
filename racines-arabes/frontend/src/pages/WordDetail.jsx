@@ -23,7 +23,7 @@ import { joinLetters } from '@/utils/formatters';
 const WordDetail = () => {
   const { id } = useParams();
   const { t, i18n } = useTranslation();
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const isEnglish = i18n.language?.startsWith('en');
 
@@ -153,9 +153,7 @@ const WordDetail = () => {
           <span className="font-mono text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
             — MOT / {getTypeLabel(word.type, t)}
           </span>
-          {isAuthenticated && (
-            <FavoriteButton item={word._id} itemModel="Word" />
-          )}
+          <FavoriteButton item={word._id} itemModel="Word" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12">

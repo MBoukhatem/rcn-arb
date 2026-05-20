@@ -144,6 +144,14 @@ export default {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' },
         },
+        'marquee-y': {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(-50%)' },
+        },
+        'marquee-y-reverse': {
+          '0%': { transform: 'translateY(-50%)' },
+          '100%': { transform: 'translateY(0)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.25s ease-soft both',
@@ -152,6 +160,8 @@ export default {
         'spin-slow': 'spin-slow 0.7s linear infinite',
         shimmer: 'shimmer 1.6s ease-snappy infinite',
         marquee: 'marquee 28s linear infinite',
+        'marquee-y': 'marquee-y 60s linear infinite',
+        'marquee-y-reverse': 'marquee-y-reverse 60s linear infinite',
       },
     },
   },
