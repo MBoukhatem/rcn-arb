@@ -45,7 +45,7 @@ const Home = () => {
           `-mt-16` fait remonter le hero SOUS la navbar pour que celle-ci, en
           mode transparent (page d'accueil, scroll = 0), se superpose sur le
           fond sombre du hero — pas sur le fond clair du body. */}
-      <div className="relative bg-neutral-950 dark:bg-neutral-950 overflow-hidden w-full -mt-16 pt-16">
+      <div className="relative bg-neutral-950 dark:bg-neutral-950 overflow-hidden w-full -mt-16 pt-16 min-h-screen flex flex-col">
         {/* Constellation de lettres arabes éparpillées sur les bords, réactives
             au survol de la souris (effet de répulsion). Centre dégagé pour le
             titre et les CTA. */}
@@ -65,7 +65,7 @@ const Home = () => {
           variants={stagger}
           initial="hidden"
           animate="visible"
-          className="relative z-10 mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10 flex flex-col items-center text-center pt-16 lg:pt-20 pb-8 gap-5"
+          className="relative z-10 mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10 flex flex-1 flex-col items-center justify-center text-center py-12 gap-5"
         >
           {/* Eyebrow — petit label en haut, façon "WELCOME TO COSMOS" */}
           <motion.p
