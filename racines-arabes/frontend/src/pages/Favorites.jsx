@@ -161,7 +161,7 @@ const Favorites = () => {
   };
 
   return (
-    <PageWrapper title={t('favorites.title')} eyebrow="Bibliothèque · Personnelle">
+    <PageWrapper title={t('favorites.title')} eyebrow={t('favorites.eyebrow')}>
       {loading && (
         <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3">
           <Spinner size="lg" />
@@ -181,7 +181,7 @@ const Favorites = () => {
 
       {!loading && !error && favorites.length === 0 && (
         <EmptyState
-          eyebrow="Aucun favori"
+          eyebrow={t('favorites.emptyEyebrow')}
           title={t('favorites.empty')}
           action={
             <Button as={Link} to="/explorer" variant="primary">
@@ -199,14 +199,14 @@ const Favorites = () => {
               <header className="flex items-end justify-between gap-4 pb-4 mb-6">
                 <div>
                   <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-                    — 01 / Racines
+                    — {t('favorites.section01')}
                   </p>
                   <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
                     {t('favorites.roots')}
                   </h2>
                 </div>
                 <span className="font-mono text-2xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-                  {String(roots.length).padStart(2, '0')} entr.
+                  {String(roots.length).padStart(2, '0')} {t('common.entries')}
                 </span>
               </header>
 
@@ -215,7 +215,7 @@ const Favorites = () => {
                   <thead>
                     <tr className="bg-neutral-50 dark:bg-neutral-850 text-2xs font-bold uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400">
                       <th className="px-5 py-2.5">{t('root.letters')}</th>
-                      <th className="px-5 py-2.5">[ Slug ]</th>
+                      <th className="px-5 py-2.5">{t('root.slugLabel')}</th>
                       <th className="px-5 py-2.5">{t('root.meaningFr')}</th>
                       <th className="px-5 py-2.5">{t('root.meaningEn')}</th>
                       <th className="px-5 py-2.5 text-right">
@@ -294,14 +294,14 @@ const Favorites = () => {
               <header className="flex items-end justify-between gap-4 pb-4 mb-6">
                 <div>
                   <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-                    — 02 / Mots
+                    — {t('favorites.section02')}
                   </p>
                   <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
                     {t('favorites.words')}
                   </h2>
                 </div>
                 <span className="font-mono text-2xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-                  {String(words.length).padStart(2, '0')} entr.
+                  {String(words.length).padStart(2, '0')} {t('common.entries')}
                 </span>
               </header>
 

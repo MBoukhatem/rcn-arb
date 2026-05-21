@@ -91,7 +91,7 @@ const RootExplorer = () => {
   };
 
   return (
-    <PageWrapper title={t('explorer.title')} eyebrow="Explorateur · 01">
+    <PageWrapper title={t('explorer.title')} eyebrow={t('explorer.eyebrow')}>
       <p className="-mt-8 mb-12 mx-auto max-w-2xl text-center text-base text-neutral-700 dark:text-neutral-300">
         {t('explorer.subtitle')}
       </p>
@@ -105,7 +105,7 @@ const RootExplorer = () => {
       <section className="mt-14">
         {!complete && (
           <EmptyState
-            eyebrow="En attente"
+            eyebrow={t('explorer.waiting')}
             title={t('explorer.selectAllLetters')}
             className="!bg-neutral-0 dark:!bg-neutral-900 border border-accent-700 dark:border-accent-300"
           />
@@ -129,7 +129,7 @@ const RootExplorer = () => {
             {/* Racine identifiée */}
             <div className="mx-auto max-w-md">
               <p className="mb-3 text-2xs font-bold uppercase tracking-[0.24em] text-accent-600 dark:text-sand-300">
-                — Racine identifiée
+                — {t('explorer.rootIdentified')}
               </p>
               <RootCard root={root} interactive={false} />
               <Button
@@ -148,7 +148,7 @@ const RootExplorer = () => {
         {complete && !rootLoading && rootResolved && !root && (
           <div className="bg-neutral-50 dark:bg-neutral-900 p-10 text-center">
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-              — Aucune racine trouvée
+              — {t('explorer.noRootFound')}
             </p>
             <p
               lang="ar"

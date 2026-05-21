@@ -20,13 +20,14 @@ const stagger = {
 };
 
 // Dérivés de la racine ك-ت-ب pour la démonstration.
+// `meaningKey` pointe sur une clé i18n résolue à l'affichage.
 const KTB_DERIVED = [
-  { ar: 'كَاتِب', tr: 'kātib', meaning: 'écrivain' },
-  { ar: 'مَكْتَب', tr: 'maktab', meaning: 'bureau' },
-  { ar: 'كِتَاب', tr: 'kitāb', meaning: 'livre' },
-  { ar: 'كِتَابَة', tr: 'kitāba', meaning: 'écriture' },
-  { ar: 'مَكْتُوب', tr: 'maktūb', meaning: 'écrit' },
-  { ar: 'مَكْتَبَة', tr: 'maktaba', meaning: 'bibliothèque' },
+  { ar: 'كَاتِب', tr: 'kātib', meaningKey: 'home.ktbWriter' },
+  { ar: 'مَكْتَب', tr: 'maktab', meaningKey: 'home.ktbOffice' },
+  { ar: 'كِتَاب', tr: 'kitāb', meaningKey: 'home.ktbBook' },
+  { ar: 'كِتَابَة', tr: 'kitāba', meaningKey: 'home.ktbWriting' },
+  { ar: 'مَكْتُوب', tr: 'maktūb', meaningKey: 'home.ktbWritten' },
+  { ar: 'مَكْتَبَة', tr: 'maktaba', meaningKey: 'home.ktbLibrary' },
 ];
 
 const Home = () => {
@@ -69,7 +70,7 @@ const Home = () => {
           <PersianArch className="mx-auto h-[23rem] w-full text-accent-700 dark:text-accent-300">
             <div className="flex h-[23rem] flex-col items-center justify-center px-10">
               <span className="text-2xs font-semibold uppercase tracking-[0.34em] text-sand-600 dark:text-sand-300">
-                Racine · جَذْر
+                {t('home.rootEyebrow')}
               </span>
               <span
                 lang="ar"
@@ -83,7 +84,7 @@ const Home = () => {
                 k · t · b
               </span>
               <p className="mt-2 text-sm italic text-sand-600 dark:text-sand-300">
-                « écrire / inscrire »
+                {t('home.rootMeaning')}
               </p>
             </div>
           </PersianArch>
@@ -118,16 +119,16 @@ const Home = () => {
           className="mt-16 grid w-full max-w-2xl grid-cols-3 overflow-hidden bg-neutral-0 dark:bg-neutral-900 border border-accent-700/40 dark:border-sand-300/30 divide-x divide-accent-700/40 dark:divide-sand-300/30"
         >
           {[
-            { k: 'Racines', v: '10K+' },
-            { k: 'Schèmes', v: '47' },
-            { k: 'Dérivés', v: '∞' },
+            { key: 'home.statsRoots', v: '10K+' },
+            { key: 'home.statsPatterns', v: '47' },
+            { key: 'home.statsDerived', v: '∞' },
           ].map((s) => (
             <div
-              key={s.k}
+              key={s.key}
               className="flex flex-col items-center py-6"
             >
               <dt className="text-2xs font-semibold uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
-                {s.k}
+                {t(s.key)}
               </dt>
               <dd className="mt-2 font-arabic text-3xl font-bold text-accent-700 dark:text-accent-300">
                 {s.v}
@@ -142,7 +143,7 @@ const Home = () => {
         <div className="flex flex-col items-center text-center">
           <Ornament />
           <p className="mt-5 text-2xs font-bold uppercase tracking-[0.3em] text-sand-600 dark:text-sand-300">
-            02 · Le système
+            {t('home.section02')}
           </p>
           <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
             {t('home.featuresTitle')}
@@ -172,7 +173,7 @@ const Home = () => {
                 </svg>
               </span>
               <span className="font-mono text-2xs font-bold tracking-[0.22em] text-sand-600 dark:text-sand-300 group-hover:text-sand-200">
-                ÉTAPE {String(i + 1).padStart(2, '0')}
+                {t('home.stepLabel')} {String(i + 1).padStart(2, '0')}
               </span>
               <h3 className="mt-5 text-xl font-bold tracking-tight text-ink dark:text-neutral-0 group-hover:text-sand-50">
                 {f.title}
@@ -196,7 +197,7 @@ const Home = () => {
         <div className="flex flex-col items-center text-center">
           <Ornament />
           <p className="mt-5 text-2xs font-bold uppercase tracking-[0.3em] text-sand-600 dark:text-sand-300">
-            03 · Démonstration
+            {t('home.section03')}
           </p>
           <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
             {t('home.exampleTitle')}
@@ -226,7 +227,7 @@ const Home = () => {
                 {w.tr}
               </span>
               <span className="mt-3 text-2xs font-semibold uppercase tracking-[0.16em] text-sand-600 dark:text-sand-300">
-                {w.meaning}
+                {t(w.meaningKey)}
               </span>
             </article>
           ))}
@@ -244,14 +245,14 @@ const Home = () => {
         <div className="flex flex-col items-center">
           <Ornament />
           <p className="mt-5 text-2xs font-bold uppercase tracking-[0.32em] text-sand-300">
-            Prêt à explorer ?
+            {t('home.ctaFinalEyebrow')}
           </p>
           <h2 className="mt-4 max-w-2xl text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.1] text-sand-50">
-            Commencez par <span className="text-sand-300">trois lettres</span>.
+            {t('home.ctaFinalTitleStart')}{' '}
+            <span className="text-sand-300">{t('home.ctaFinalTitleHighlight')}</span>.
           </h2>
           <p className="mt-5 max-w-xl text-base text-sand-100/80">
-            Sélectionnez votre racine, parcourez ses dérivés, comprenez la
-            mécanique morphologique de la langue arabe.
+            {t('home.ctaFinalText')}
           </p>
           <Button
             as={Link}
@@ -260,7 +261,7 @@ const Home = () => {
             size="lg"
             className="mt-9 !bg-sand-300 !text-accent-900 hover:!bg-sand-200"
           >
-            Ouvrir l&apos;explorateur →
+            {t('home.ctaFinalButton')} →
           </Button>
         </div>
       </motion.section>

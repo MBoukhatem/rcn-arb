@@ -78,7 +78,7 @@ const LetterPicker = ({ value = ['', '', ''], onChange }) => {
       {/* Header info */}
       <div className="flex w-full items-center justify-between">
         <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
-          — Sélection / 3 lettres
+          — {t('explorer.letterSelection')}
         </p>
         <button
           type="button"
@@ -125,7 +125,7 @@ const LetterPicker = ({ value = ['', '', ''], onChange }) => {
       {/* Grille des 28 lettres arabes */}
       <div className="w-full max-w-2xl">
         <p className="mb-3 text-2xs font-bold uppercase tracking-[0.24em] text-ink dark:text-neutral-0">
-          — Alphabet · 28
+          — {t('explorer.alphabet')}
         </p>
         <div
           dir="rtl"

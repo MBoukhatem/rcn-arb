@@ -112,7 +112,7 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }) => {
               <header className="flex items-start justify-between gap-4 px-6 py-5">
                 <div className="flex flex-col gap-1">
                   <span className="text-2xs font-semibold uppercase tracking-[0.2em] text-accent-500 dark:text-accent-300">
-                    — Dialog
+                    — {t('common.dialog')}
                   </span>
                   <h2
                     id={titleId.current}

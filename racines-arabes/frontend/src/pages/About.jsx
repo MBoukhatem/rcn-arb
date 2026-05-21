@@ -25,7 +25,7 @@ const About = () => {
   const { t } = useTranslation();
 
   return (
-    <PageWrapper title={t('about.title')} eyebrow="Manifeste · Méthode">
+    <PageWrapper title={t('about.title')} eyebrow={t('about.eyebrow')}>
       {/* ───────── Introduction ───────── */}
       <motion.section
         variants={sectionVariants}
@@ -35,7 +35,7 @@ const About = () => {
       >
         <div className="lg:col-span-4 flex flex-col justify-center bg-accent-800 text-sand-50 p-8 sm:p-10">
           <p className="text-2xs font-bold uppercase tracking-[0.32em] text-sand-300">
-            — Introduction
+            — {t('about.introduction')}
           </p>
           <p
             lang="ar"
@@ -55,7 +55,7 @@ const About = () => {
 
           <div className="mt-10">
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-600 dark:text-sand-300">
-              — Morphologie
+              — {t('about.morphology')}
             </p>
             <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('about.morphologyTitle')}
@@ -67,7 +67,7 @@ const About = () => {
 
           <div className="mt-8">
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-600 dark:text-sand-300">
-              — Audience
+              — {t('about.audience')}
             </p>
             <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('about.audienceTitle')}
@@ -84,7 +84,7 @@ const About = () => {
         <div className="flex flex-col items-center text-center">
           <Ornament />
           <p className="mt-4 text-2xs font-bold uppercase tracking-[0.28em] text-accent-600 dark:text-sand-300">
-            Typologie · {String(WORD_TYPES.length).padStart(2, '0')} types
+            {t('morphology.typologyEyebrow', { count: String(WORD_TYPES.length).padStart(2, '0') })}
           </p>
           <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
             {t('morphology.title')}

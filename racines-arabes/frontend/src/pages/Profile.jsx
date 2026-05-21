@@ -106,7 +106,7 @@ const Profile = () => {
   };
 
   return (
-    <PageWrapper title={t('profile.title')} eyebrow="Compte · Utilisateur">
+    <PageWrapper title={t('profile.title')} eyebrow={t('profile.eyebrow')}>
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
@@ -118,7 +118,7 @@ const Profile = () => {
         {/* Mise à jour du profil */}
         <form onSubmit={submitProfile} className={`${SECTION} flex flex-col flex-1`}>
           <header className={SECTION_HEADER}>
-            <span className={SECTION_TITLE}>— 01 / Profil</span>
+            <span className={SECTION_TITLE}>— {t('profile.section01')}</span>
             <span className="font-mono text-2xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
               {user?.email}
             </span>
@@ -192,11 +192,10 @@ const Profile = () => {
             {/* Note de pied — occupe le vide bas, ancre éditoriale. */}
             <div className="mt-auto pt-6 border-t border-neutral-200 dark:border-neutral-800">
               <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
-                — Confidentialité
+                — {t('profile.privacyEyebrow')}
               </p>
               <p className="mt-2 text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">
-                La langue maternelle permet d&apos;adapter les traductions
-                affichées dans le dictionnaire.
+                {t('profile.nativeLanguageNote')}
               </p>
             </div>
           </div>
@@ -209,7 +208,7 @@ const Profile = () => {
           {/* Changement de mot de passe */}
           <form onSubmit={submitPassword} className={SECTION}>
             <header className={SECTION_HEADER}>
-              <span className={SECTION_TITLE}>— 02 / Sécurité</span>
+              <span className={SECTION_TITLE}>— {t('profile.section02')}</span>
             </header>
             <div className="p-6 sm:p-8 space-y-5">
               <h2 className="text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
@@ -248,7 +247,7 @@ const Profile = () => {
           <div className="bg-neutral-0 dark:bg-neutral-950 border border-accent-500 dark:border-accent-300 flex-1 flex flex-col">
             <header className="flex items-center justify-between px-6 py-3">
               <span className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-                — Zone critique
+                — {t('profile.criticalZone')}
               </span>
             </header>
             <div className="p-6 sm:p-8 space-y-4 flex-1 flex flex-col">

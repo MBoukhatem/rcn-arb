@@ -1,5 +1,6 @@
 // Spinner — indicateur de chargement animé, monochrome avec accent pourpre.
 // Design System §5.6.
+import { useTranslation } from 'react-i18next';
 
 const SIZES = {
   sm: 'h-4 w-4',
@@ -13,6 +14,7 @@ const SIZES = {
  * @param {string} [props.className]
  */
 const Spinner = ({ size = 'md', className = '' }) => {
+  const { t } = useTranslation();
   const dimension = SIZES[size] ?? SIZES.md;
 
   return (
@@ -21,7 +23,7 @@ const Spinner = ({ size = 'md', className = '' }) => {
       viewBox="0 0 24 24"
       fill="none"
       role="status"
-      aria-label="Chargement"
+      aria-label={t('common.loading')}
     >
       <circle
         className="opacity-25"

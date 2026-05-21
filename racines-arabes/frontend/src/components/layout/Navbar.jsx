@@ -164,7 +164,7 @@ const Navbar = () => {
         </NavLink>
 
         {/* Liens desktop */}
-        <nav className="hidden md:flex items-center gap-1" aria-label="Navigation principale">
+        <nav className="hidden md:flex items-center gap-1" aria-label={t('nav.mainNav')}>
           {links.map(renderNavLink)}
         </nav>
 
@@ -290,7 +290,7 @@ const Navbar = () => {
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
-            aria-label="Menu"
+            aria-label={t('nav.menu')}
             aria-expanded={menuOpen}
             className="h-9 w-9 inline-flex items-center justify-center text-sand-100"
           >
@@ -324,7 +324,7 @@ const Navbar = () => {
             exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="md:hidden bg-accent-700 dark:bg-accent-900"
-            aria-label="Navigation mobile"
+            aria-label={t('nav.mobileNav')}
           >
             <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-4 flex flex-col gap-1">
               {links.map(renderNavLink)}

@@ -134,7 +134,7 @@ const WordDetail = () => {
         {root?.slug ? (
           <BackLink
             to={`/roots/${root.slug}`}
-            label={`Racine [ ${root.slug} ]`}
+            label={t('root.rootBack', { slug: root.slug })}
           />
         ) : (
           <BackLink to="/search" label={t('nav.search')} />
@@ -151,7 +151,7 @@ const WordDetail = () => {
         {/* Barre supérieure */}
         <div className="flex items-center justify-between px-6 py-3 bg-neutral-0 dark:bg-neutral-900 border-b border-accent-700 dark:border-accent-300">
           <span className="font-mono text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-            — MOT / {getTypeLabel(word.type, t)}
+            — {t('word.wordPrefix')} / {getTypeLabel(word.type, t)}
           </span>
           <FavoriteButton item={word._id} itemModel="Word" />
         </div>
@@ -187,7 +187,7 @@ const WordDetail = () => {
           {/* Définitions à droite */}
           <div className="lg:col-span-7 p-8 sm:p-12 bg-neutral-0 dark:bg-neutral-900">
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-              — {isEnglish ? 'Sens · EN' : 'Sens · FR'}
+              — {isEnglish ? t('root.meaningEnShort') : t('root.meaningFrShort')}
             </p>
             <p className="mt-3 text-3xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {translation || '—'}
@@ -196,7 +196,7 @@ const WordDetail = () => {
             {altTranslation && (
               <div className="mt-6 pt-4">
                 <p className="text-2xs font-bold uppercase tracking-[0.24em] text-neutral-500 dark:text-neutral-400">
-                  — {isEnglish ? 'Sens · FR' : 'Sens · EN'}
+                  — {isEnglish ? t('root.meaningFrShort') : t('root.meaningEnShort')}
                 </p>
                 <p className="mt-2 text-lg text-neutral-700 dark:text-neutral-300">
                   {altTranslation}
@@ -279,7 +279,7 @@ const WordDetail = () => {
         <section className="mt-12">
           <div className="bg-neutral-0 dark:bg-neutral-900 border border-accent-700/40 dark:border-sand-300/30 p-8 sm:p-10">
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-              — Racine d&apos;origine
+              — {t('root.originRoot')}
             </p>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-6">
               <div className="flex items-baseline gap-6">

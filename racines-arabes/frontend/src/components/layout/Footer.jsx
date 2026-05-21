@@ -37,9 +37,9 @@ const Footer = () => {
         {/* Bloc nav */}
         <div className="md:col-span-3">
           <p className="text-2xs font-bold uppercase tracking-[0.24em] text-sand-50 mb-4">
-            — Index
+            — {t('nav.footerIndex')}
           </p>
-          <nav className="flex flex-col gap-3" aria-label="Liens du pied de page">
+          <nav className="flex flex-col gap-3" aria-label={t('nav.footerLinks')}>
             <Link to="/" className={FOOTER_LINK}>
               {t('nav.home')}
             </Link>
@@ -55,9 +55,9 @@ const Footer = () => {
         {/* Bloc compte */}
         <div className="md:col-span-4">
           <p className="text-2xs font-bold uppercase tracking-[0.24em] text-sand-50 mb-4">
-            — Compte
+            — {t('nav.footerAccount')}
           </p>
-          <nav className="flex flex-col gap-3" aria-label="Compte">
+          <nav className="flex flex-col gap-3" aria-label={t('nav.footerAccount')}>
             <Link to="/login" className={FOOTER_LINK}>
               {t('nav.login')}
             </Link>

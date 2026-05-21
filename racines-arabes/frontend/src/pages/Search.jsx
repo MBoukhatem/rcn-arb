@@ -202,7 +202,7 @@ const Search = () => {
   ].filter(Boolean);
 
   return (
-    <PageWrapper title={t('search.title')} eyebrow="Recherche · 01">
+    <PageWrapper title={t('search.title')} eyebrow={t('search.eyebrow')}>
       <p className="-mt-8 mb-12 mx-auto max-w-2xl text-center text-base text-neutral-700 dark:text-neutral-300">
         {t('search.subtitle')}
       </p>
@@ -212,7 +212,7 @@ const Search = () => {
         <div className="flex flex-wrap items-end justify-between gap-4 pb-6">
           <div>
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-600 dark:text-sand-300">
-              — 02 / Recherche
+              — {t('search.sectionEyebrow')}
             </p>
             <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('explorer.advancedSearch')}
@@ -324,7 +324,7 @@ const Search = () => {
           {activeFilters.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <span className="text-2xs font-semibold uppercase tracking-[0.16em] text-neutral-500 dark:text-neutral-400">
-                Filtres actifs :
+                {t('explorer.activeFilters')}
               </span>
               {activeFilters.map((f) => (
                 <ActiveChip key={f.key} label={f.label} onRemove={f.remove} />

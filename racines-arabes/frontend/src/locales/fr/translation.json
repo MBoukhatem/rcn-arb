@@ -9,7 +9,13 @@
     "profile": "Profil",
     "favorites": "Favoris",
     "logout": "Déconnexion",
-    "admin": "Admin"
+    "admin": "Admin",
+    "menu": "Menu",
+    "mainNav": "Navigation principale",
+    "mobileNav": "Navigation mobile",
+    "footerIndex": "Index",
+    "footerAccount": "Compte",
+    "footerLinks": "Liens du pied de page"
   },
   "common": {
     "loading": "Chargement…",
@@ -34,7 +40,9 @@
     "close": "Fermer",
     "submit": "Valider",
     "all": "Tous",
-    "optional": "Facultatif"
+    "optional": "Facultatif",
+    "entries": "entr.",
+    "dialog": "Dialog"
   },
   "validation": {
     "emailRequired": "L'adresse e-mail est obligatoire.",
@@ -62,13 +70,32 @@
     "registerSuccess": "Compte créé avec succès",
     "passwordMismatch": "Les mots de passe ne correspondent pas",
     "emailPlaceholder": "vous@exemple.com",
-    "passwordHint": "Au moins 8 caractères"
+    "passwordHint": "Au moins 8 caractères",
+    "session": "Session",
+    "newAccount": "Nouveau",
+    "welcomeBack": "Reprenez votre exploration.",
+    "joinUs": "Rejoignez le dictionnaire.",
+    "sectionLogin": "01 / Connexion",
+    "sectionRegister": "01 / Inscription"
   },
   "home": {
     "heroTitle": "Explorez les racines de la langue arabe",
     "heroSubtitle": "Un même noyau de trois consonnes engendre des familles entières de mots. Découvrez comment la morphologie arabe construit son lexique.",
     "cta": "Ouvrir l'explorateur",
     "ctaSecondary": "En savoir plus",
+    "rootEyebrow": "Racine · جَذْر",
+    "rootMeaning": "« écrire / inscrire »",
+    "statsRoots": "Racines",
+    "statsPatterns": "Schèmes",
+    "statsDerived": "Dérivés",
+    "section02": "02 · Le système",
+    "section03": "03 · Démonstration",
+    "stepLabel": "ÉTAPE",
+    "ctaFinalEyebrow": "Prêt à explorer ?",
+    "ctaFinalTitleStart": "Commencez par",
+    "ctaFinalTitleHighlight": "trois lettres",
+    "ctaFinalText": "Sélectionnez votre racine, parcourez ses dérivés, comprenez la mécanique morphologique de la langue arabe.",
+    "ctaFinalButton": "Ouvrir l'explorateur",
     "featuresTitle": "Comprendre la dérivation",
     "feature1Title": "Sélection interactive",
     "feature1": "Choisissez trois lettres arabes et modifiez-les librement pour former n'importe quelle racine.",
@@ -77,15 +104,28 @@
     "feature3Title": "Dictionnaire collaboratif",
     "feature3": "Créez, éditez et mettez en favori racines et mots pour enrichir le dictionnaire.",
     "exampleTitle": "Un exemple : la racine ك-ت-ب",
-    "exampleText": "De l'idée d'« écriture » naissent كَاتِب (écrivain), مَكْتَب (bureau), كِتَاب (livre) et كِتَابَة (l'écriture)."
+    "exampleText": "De l'idée d'« écriture » naissent كَاتِب (écrivain), مَكْتَب (bureau), كِتَاب (livre) et كِتَابَة (l'écriture).",
+    "ktbWriter": "écrivain",
+    "ktbOffice": "bureau",
+    "ktbBook": "livre",
+    "ktbWriting": "écriture",
+    "ktbWritten": "écrit",
+    "ktbLibrary": "bibliothèque"
   },
   "explorer": {
     "title": "Explorateur de racines",
     "subtitle": "Sélectionnez trois lettres pour découvrir les mots dérivés de la racine.",
+    "eyebrow": "Explorateur · 01",
+    "waiting": "En attente",
+    "rootIdentified": "Racine identifiée",
+    "noRootFound": "Aucune racine trouvée",
     "pickLetters": "Choisissez 3 lettres",
+    "letterSelection": "Sélection / 3 lettres",
+    "alphabet": "Alphabet · 28",
     "rootLabel": "Racine",
     "searchWords": "Rechercher des mots",
     "filters": "Filtres",
+    "activeFilters": "Filtres actifs :",
     "type": "Type morphologique",
     "tense": "Temps verbal",
     "sortBy": "Trier par",
@@ -106,12 +146,16 @@
   },
   "search": {
     "title": "Recherche de mots",
-    "subtitle": "Recherchez et filtrez les mots du dictionnaire par type, temps et tri."
+    "subtitle": "Recherchez et filtrez les mots du dictionnaire par type, temps et tri.",
+    "eyebrow": "Recherche · 01",
+    "sectionEyebrow": "02 / Recherche"
   },
   "admin": {
+    "eyebrow": "Administration · Utilisateurs",
     "usersTitle": "Gestion des utilisateurs",
     "usersSubtitle": "Consultez, modifiez et administrez les comptes utilisateurs de l'application.",
     "users": "Utilisateurs",
+    "userPrefix": "UTILISATEUR",
     "role": "Rôle",
     "you": "Vous",
     "createdAt": "Inscrit le",
@@ -131,6 +175,13 @@
     "meaningFr": "Sens (français)",
     "meaningEn": "Sens (anglais)",
     "meaningAr": "Sens (arabe)",
+    "meaningFrShort": "Sens · FR",
+    "meaningEnShort": "Sens · EN",
+    "meaningArShort": "Sens · AR",
+    "rootPrefix": "RACINE",
+    "section02": "02 / Dérivés",
+    "originRoot": "Racine d'origine",
+    "rootBack": "Racine [ {{slug}} ]",
     "words": "Mots dérivés",
     "wordsCount": "{{count}} mot",
     "wordsCount_plural": "{{count}} mots",
@@ -145,7 +196,8 @@
     "updateSuccess": "Racine mise à jour",
     "deleteSuccess": "Racine supprimée",
     "letters": "Lettres de la racine",
-    "noWords": "Aucun mot dérivé pour cette racine."
+    "noWords": "Aucun mot dérivé pour cette racine.",
+    "slugLabel": "[ Slug ]"
   },
   "word": {
     "arabic": "Mot arabe",
@@ -168,7 +220,8 @@
     "updateSuccess": "Mot mis à jour",
     "deleteSuccess": "Mot supprimé",
     "arabicPlaceholder": "اِكْتُبْ هُنَا",
-    "tenseRequired": "Le temps verbal est obligatoire pour un verbe."
+    "tenseRequired": "Le temps verbal est obligatoire pour un verbe.",
+    "wordPrefix": "MOT"
   },
   "morphology": {
     "patternLabel": "Schème",
@@ -176,6 +229,7 @@
     "intro": "À partir d'une racine, sept familles de mots dérivés se construisent selon le schème appliqué.",
     "example": "Exemple",
     "arabicName": "Nom arabe",
+    "typologyEyebrow": "Typologie · {{count}} types",
     "VERB": "Verbe",
     "MASDAR": "Masdar (nom d'action)",
     "ACTIVE_PART": "Nom d'agent",
@@ -209,6 +263,12 @@
   },
   "profile": {
     "title": "Mon profil",
+    "eyebrow": "Compte · Utilisateur",
+    "section01": "01 / Profil",
+    "section02": "02 / Sécurité",
+    "criticalZone": "Zone critique",
+    "privacyEyebrow": "Confidentialité",
+    "nativeLanguageNote": "La langue maternelle permet d'adapter les traductions affichées dans le dictionnaire.",
     "name": "Nom",
     "email": "Adresse e-mail",
     "bio": "Présentation",
@@ -230,6 +290,10 @@
   },
   "favorites": {
     "title": "Mes favoris",
+    "eyebrow": "Bibliothèque · Personnelle",
+    "section01": "01 / Racines",
+    "section02": "02 / Mots",
+    "emptyEyebrow": "Aucun favori",
     "empty": "Vous n'avez aucun favori pour l'instant.",
     "roots": "Racines favorites",
     "words": "Mots favoris",
@@ -239,6 +303,10 @@
   },
   "about": {
     "title": "À propos du projet",
+    "eyebrow": "Manifeste · Méthode",
+    "introduction": "Introduction",
+    "morphology": "Morphologie",
+    "audience": "Audience",
     "intro": "Le Dictionnaire de Racines Trilitères Arabes rend tangible le mécanisme central de la morphologie arabe : la dérivation.",
     "morphologyTitle": "La morphologie arabe",
     "morphologyText": "En arabe, presque tout le lexique se construit à partir de racines de trois consonnes auxquelles on applique des schèmes.",
@@ -269,6 +337,8 @@
   "notFound": {
     "title": "Page introuvable",
     "message": "La page que vous recherchez n'existe pas ou a été déplacée.",
-    "backHome": "Retour à l'accueil"
+    "backHome": "Retour à l'accueil",
+    "statusEyebrow": "Erreur / Status",
+    "pageNotFoundEyebrow": "Page introuvable"
   }
 }

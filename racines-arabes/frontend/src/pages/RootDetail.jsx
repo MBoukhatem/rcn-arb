@@ -221,7 +221,7 @@ const RootDetail = () => {
         {/* En-tête bar */}
         <div className="flex items-center justify-between px-6 py-3 bg-neutral-0 dark:bg-neutral-900 border-b border-accent-700 dark:border-accent-300">
           <span className="font-mono text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-            — RACINE / {root.slug}
+            — {t('root.rootPrefix')} / {root.slug}
           </span>
           <FavoriteButton item={root._id} itemModel="Root" />
         </div>
@@ -257,7 +257,7 @@ const RootDetail = () => {
           {/* Définitions à droite */}
           <div className="lg:col-span-7 p-8 sm:p-12 bg-neutral-0 dark:bg-neutral-950">
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-              — Sens · FR
+              — {t('root.meaningFrShort')}
             </p>
             <p className="mt-3 text-3xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {root.meaningFr}
@@ -266,7 +266,7 @@ const RootDetail = () => {
             {root.meaningEn && (
               <div className="mt-6 pt-4">
                 <p className="text-2xs font-bold uppercase tracking-[0.24em] text-neutral-500 dark:text-neutral-400">
-                  — Sens · EN
+                  — {t('root.meaningEnShort')}
                 </p>
                 <p className="mt-2 text-lg text-neutral-700 dark:text-neutral-300">
                   {root.meaningEn}
@@ -277,7 +277,7 @@ const RootDetail = () => {
             {root.meaningAr && (
               <div className="mt-4 pt-4">
                 <p className="text-2xs font-bold uppercase tracking-[0.24em] text-neutral-500 dark:text-neutral-400">
-                  — Sens · AR
+                  — {t('root.meaningArShort')}
                 </p>
                 <p
                   lang="ar"
@@ -312,7 +312,7 @@ const RootDetail = () => {
         <header className="flex flex-wrap items-end justify-between gap-4 pb-4 mb-10">
           <div>
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-              — 02 / Dérivés
+              — {t('root.section02')}
             </p>
             <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('root.derivedWords')}

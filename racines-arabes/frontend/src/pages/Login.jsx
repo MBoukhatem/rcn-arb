@@ -86,10 +86,10 @@ const Login = () => {
           />
           <div className="relative">
             <p className="text-2xs font-bold uppercase tracking-[0.32em] text-accent-300 dark:text-accent-500">
-              — Session
+              — {t('auth.session')}
             </p>
             <h2 className="mt-6 text-4xl font-extrabold tracking-tight">
-              Reprenez votre exploration.
+              {t('auth.welcomeBack')}
             </h2>
           </div>
           <div className="relative">
@@ -109,7 +109,7 @@ const Login = () => {
         {/* Formulaire */}
         <div className="p-8 sm:p-12">
           <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
-            — 01 / Connexion
+            — {t('auth.sectionLogin')}
           </p>
           <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
             {t('auth.loginTitle')}

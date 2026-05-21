@@ -92,7 +92,7 @@ const Register = () => {
         {/* Formulaire */}
         <div className="p-8 sm:p-12 order-2 lg:order-1">
           <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
-            — 01 / Inscription
+            — {t('auth.sectionRegister')}
           </p>
           <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
             {t('auth.registerTitle')}
@@ -178,10 +178,10 @@ const Register = () => {
           />
           <div className="relative">
             <p className="text-2xs font-bold uppercase tracking-[0.32em] text-accent-300 dark:text-accent-500">
-              — Nouveau
+              — {t('auth.newAccount')}
             </p>
             <h2 className="mt-6 text-4xl font-extrabold tracking-tight">
-              Rejoignez le dictionnaire.
+              {t('auth.joinUs')}
             </h2>
           </div>
           <div className="relative">

@@ -91,7 +91,7 @@ const AdminUsers = () => {
   );
 
   return (
-    <PageWrapper title={t('admin.usersTitle')} eyebrow="Administration · Utilisateurs">
+    <PageWrapper title={t('admin.usersTitle')} eyebrow={t('admin.eyebrow')}>
       <header className="-mt-6 mb-10 flex flex-wrap items-end justify-between gap-4">
         <p className="max-w-2xl text-base text-neutral-700 dark:text-neutral-300">
           {t('admin.usersSubtitle')}

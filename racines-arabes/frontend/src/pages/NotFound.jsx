@@ -23,7 +23,7 @@ const NotFound = () => {
             }}
           />
           <p className="relative text-2xs font-bold uppercase tracking-[0.32em] text-accent-300 dark:text-accent-500">
-            — Erreur / Status
+            — {t('notFound.statusEyebrow')}
           </p>
           <motion.p
             initial={{ opacity: 0, scale: 0.9 }}
@@ -45,7 +45,7 @@ const NotFound = () => {
         {/* Côté droit : message */}
         <div className="flex flex-col justify-center p-10 sm:p-14 bg-neutral-0 dark:bg-neutral-950">
           <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
-            — Page introuvable
+            — {t('notFound.pageNotFoundEyebrow')}
           </p>
           <h1 className="mt-4 text-5xl sm:text-6xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
             {t('notFound.title')}

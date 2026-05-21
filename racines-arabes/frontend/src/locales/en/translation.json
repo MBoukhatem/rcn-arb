@@ -9,7 +9,13 @@
     "profile": "Profile",
     "favorites": "Favorites",
     "logout": "Log out",
-    "admin": "Admin"
+    "admin": "Admin",
+    "menu": "Menu",
+    "mainNav": "Main navigation",
+    "mobileNav": "Mobile navigation",
+    "footerIndex": "Index",
+    "footerAccount": "Account",
+    "footerLinks": "Footer links"
   },
   "common": {
     "loading": "Loading…",
@@ -34,7 +40,9 @@
     "close": "Close",
     "submit": "Submit",
     "all": "All",
-    "optional": "Optional"
+    "optional": "Optional",
+    "entries": "entr.",
+    "dialog": "Dialog"
   },
   "validation": {
     "emailRequired": "Email address is required.",
@@ -62,13 +70,32 @@
     "registerSuccess": "Account created successfully",
     "passwordMismatch": "Passwords do not match",
     "emailPlaceholder": "you@example.com",
-    "passwordHint": "At least 8 characters"
+    "passwordHint": "At least 8 characters",
+    "session": "Session",
+    "newAccount": "New",
+    "welcomeBack": "Resume your exploration.",
+    "joinUs": "Join the dictionary.",
+    "sectionLogin": "01 / Log in",
+    "sectionRegister": "01 / Sign up"
   },
   "home": {
     "heroTitle": "Explore the roots of the Arabic language",
     "heroSubtitle": "A single core of three consonants generates entire families of words. Discover how Arabic morphology builds its lexicon.",
     "cta": "Open the explorer",
     "ctaSecondary": "Learn more",
+    "rootEyebrow": "Root · جَذْر",
+    "rootMeaning": "« write / inscribe »",
+    "statsRoots": "Roots",
+    "statsPatterns": "Patterns",
+    "statsDerived": "Derived",
+    "section02": "02 · The system",
+    "section03": "03 · Demonstration",
+    "stepLabel": "STEP",
+    "ctaFinalEyebrow": "Ready to explore?",
+    "ctaFinalTitleStart": "Start with",
+    "ctaFinalTitleHighlight": "three letters",
+    "ctaFinalText": "Pick your root, browse its derivatives, understand the morphological mechanics of the Arabic language.",
+    "ctaFinalButton": "Open the explorer",
     "featuresTitle": "Understanding derivation",
     "feature1Title": "Interactive selection",
     "feature1": "Pick three Arabic letters and change them freely to form any root.",
@@ -77,15 +104,28 @@
     "feature3Title": "Collaborative dictionary",
     "feature3": "Create, edit and bookmark roots and words to enrich the dictionary.",
     "exampleTitle": "An example: the root ك-ت-ب",
-    "exampleText": "From the idea of \"writing\" come كَاتِب (writer), مَكْتَب (office), كِتَاب (book) and كِتَابَة (writing)."
+    "exampleText": "From the idea of \"writing\" come كَاتِب (writer), مَكْتَب (office), كِتَاب (book) and كِتَابَة (writing).",
+    "ktbWriter": "writer",
+    "ktbOffice": "office",
+    "ktbBook": "book",
+    "ktbWriting": "writing",
+    "ktbWritten": "written",
+    "ktbLibrary": "library"
   },
   "explorer": {
     "title": "Root explorer",
     "subtitle": "Select three letters to discover the words derived from the root.",
+    "eyebrow": "Explorer · 01",
+    "waiting": "Waiting",
+    "rootIdentified": "Root identified",
+    "noRootFound": "No root found",
     "pickLetters": "Choose 3 letters",
+    "letterSelection": "Selection / 3 letters",
+    "alphabet": "Alphabet · 28",
     "rootLabel": "Root",
     "searchWords": "Search words",
     "filters": "Filters",
+    "activeFilters": "Active filters:",
     "type": "Morphological type",
     "tense": "Verb tense",
     "sortBy": "Sort by",
@@ -106,12 +146,16 @@
   },
   "search": {
     "title": "Word search",
-    "subtitle": "Search and filter dictionary words by type, tense and sort order."
+    "subtitle": "Search and filter dictionary words by type, tense and sort order.",
+    "eyebrow": "Search · 01",
+    "sectionEyebrow": "02 / Search"
   },
   "admin": {
+    "eyebrow": "Administration · Users",
     "usersTitle": "User management",
     "usersSubtitle": "Browse, edit and administrate user accounts of the application.",
     "users": "Users",
+    "userPrefix": "USER",
     "role": "Role",
     "you": "You",
     "createdAt": "Joined on",
@@ -131,6 +175,13 @@
     "meaningFr": "Meaning (French)",
     "meaningEn": "Meaning (English)",
     "meaningAr": "Meaning (Arabic)",
+    "meaningFrShort": "Meaning · FR",
+    "meaningEnShort": "Meaning · EN",
+    "meaningArShort": "Meaning · AR",
+    "rootPrefix": "ROOT",
+    "section02": "02 / Derivatives",
+    "originRoot": "Origin root",
+    "rootBack": "Root [ {{slug}} ]",
     "words": "Derived words",
     "wordsCount": "{{count}} word",
     "wordsCount_plural": "{{count}} words",
@@ -145,7 +196,8 @@
     "updateSuccess": "Root updated",
     "deleteSuccess": "Root deleted",
     "letters": "Root letters",
-    "noWords": "No derived words for this root."
+    "noWords": "No derived words for this root.",
+    "slugLabel": "[ Slug ]"
   },
   "word": {
     "arabic": "Arabic word",
@@ -168,7 +220,8 @@
     "updateSuccess": "Word updated",
     "deleteSuccess": "Word deleted",
     "arabicPlaceholder": "اِكْتُبْ هُنَا",
-    "tenseRequired": "Verb tense is required for a verb."
+    "tenseRequired": "Verb tense is required for a verb.",
+    "wordPrefix": "WORD"
   },
   "morphology": {
     "patternLabel": "Pattern",
@@ -176,6 +229,7 @@
     "intro": "From a root, seven families of derived words are built according to the pattern applied.",
     "example": "Example",
     "arabicName": "Arabic name",
+    "typologyEyebrow": "Typology · {{count}} types",
     "VERB": "Verb",
     "MASDAR": "Masdar (verbal noun)",
     "ACTIVE_PART": "Active participle",
@@ -209,6 +263,12 @@
   },
   "profile": {
     "title": "My profile",
+    "eyebrow": "Account · User",
+    "section01": "01 / Profile",
+    "section02": "02 / Security",
+    "criticalZone": "Critical zone",
+    "privacyEyebrow": "Privacy",
+    "nativeLanguageNote": "The native language tailors the translations displayed in the dictionary.",
     "name": "Name",
     "email": "Email address",
     "bio": "Bio",
@@ -230,6 +290,10 @@
   },
   "favorites": {
     "title": "My favorites",
+    "eyebrow": "Library · Personal",
+    "section01": "01 / Roots",
+    "section02": "02 / Words",
+    "emptyEyebrow": "No favorite",
     "empty": "You have no favorites yet.",
     "roots": "Favorite roots",
     "words": "Favorite words",
@@ -239,6 +303,10 @@
   },
   "about": {
     "title": "About the project",
+    "eyebrow": "Manifesto · Method",
+    "introduction": "Introduction",
+    "morphology": "Morphology",
+    "audience": "Audience",
     "intro": "The Arabic Triliteral Roots Dictionary makes the core mechanism of Arabic morphology tangible: derivation.",
     "morphologyTitle": "Arabic morphology",
     "morphologyText": "In Arabic, almost the entire lexicon is built from three-consonant roots to which patterns are applied.",
@@ -269,6 +337,8 @@
   "notFound": {
     "title": "Page not found",
     "message": "The page you are looking for does not exist or has been moved.",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "statusEyebrow": "Error / Status",
+    "pageNotFoundEyebrow": "Page not found"
   }
 }

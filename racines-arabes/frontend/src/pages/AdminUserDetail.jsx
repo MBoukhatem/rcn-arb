@@ -143,7 +143,7 @@ const AdminUserDetail = () => {
         {/* Barre supérieure */}
         <div className="flex items-center justify-between px-6 py-3 border-b border-accent-700 dark:border-accent-300">
           <span className="font-mono text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-            — UTILISATEUR / {user._id?.slice(-6) ?? '—'}
+            — {t('admin.userPrefix')} / {user._id?.slice(-6) ?? '—'}
           </span>
         </div>
 
