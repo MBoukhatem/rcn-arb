@@ -72,10 +72,10 @@ const Login = () => {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto grid w-full max-w-5xl grid-cols-1 lg:grid-cols-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-950 dark:border-neutral-0"
+        className="-mt-4 sm:-mt-6 lg:-mt-8 mx-auto grid w-full max-w-4xl grid-cols-1 lg:grid-cols-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-950 dark:border-neutral-0"
       >
-        {/* Panneau visuel */}
-        <aside className="relative hidden lg:flex flex-col justify-between bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950 p-10">
+        {/* Panneau visuel (desktop uniquement) — calligraphie + accroche */}
+        <aside className="relative hidden lg:flex flex-col justify-between bg-neutral-950 dark:bg-neutral-0 text-neutral-0 dark:text-neutral-950 p-5 lg:p-6 xl:p-8">
           <div
             aria-hidden="true"
             className="absolute inset-0 opacity-20"
@@ -88,34 +88,41 @@ const Login = () => {
             <p className="text-2xs font-bold uppercase tracking-[0.32em] text-accent-300 dark:text-accent-500">
               — {t('auth.session')}
             </p>
-            <h2 className="mt-6 text-4xl font-extrabold tracking-tight">
+            <h2
+              className="mt-3 font-extrabold tracking-tight leading-[1.1]"
+              style={{ fontSize: 'clamp(1.25rem, 1.8vw, 2rem)' }}
+            >
               {t('auth.welcomeBack')}
             </h2>
           </div>
-          <div className="relative">
+          <div className="relative mt-6">
             <p
               lang="ar"
               dir="rtl"
-              className="font-arabic text-7xl font-bold opacity-90"
+              className="font-arabic font-bold opacity-90 leading-none"
+              style={{ fontSize: 'clamp(2.5rem, 4vw, 4rem)' }}
             >
               أهلاً
             </p>
-            <p className="mt-3 text-2xs uppercase tracking-[0.28em] opacity-70">
+            <p className="mt-2 text-2xs uppercase tracking-[0.28em] opacity-70">
               ahlan · welcome
             </p>
           </div>
         </aside>
 
         {/* Formulaire */}
-        <div className="p-8 sm:p-12">
+        <div className="p-5 sm:p-6 lg:p-8">
           <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
             — {t('auth.sectionLogin')}
           </p>
-          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
+          <h1
+            className="mt-1.5 font-extrabold tracking-tight leading-[1.1] text-ink dark:text-neutral-0"
+            style={{ fontSize: 'clamp(1.375rem, 2.6vw, 1.75rem)' }}
+          >
             {t('auth.loginTitle')}
           </h1>
 
-          <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-5">
+          <form onSubmit={handleSubmit} noValidate className="mt-4 space-y-3">
             <Input
               label={t('auth.email')}
               name="email"
@@ -148,13 +155,13 @@ const Login = () => {
             </Button>
           </form>
 
-          <div className="mt-8 pt-6">
+          <div className="mt-4 pt-3 border-t border-neutral-200 dark:border-neutral-800">
             <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
               {t('auth.noAccount')}
             </p>
             <Link
               to="/register"
-              className="mt-2 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-accent-500 dark:text-accent-300 hover:underline underline-offset-4"
+              className="mt-1.5 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-accent-500 dark:text-accent-300 hover:underline underline-offset-4"
             >
               {t('auth.submitRegister')} →
             </Link>

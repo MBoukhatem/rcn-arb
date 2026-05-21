@@ -207,7 +207,7 @@ const Search = () => {
         {t('search.subtitle')}
       </p>
 
-      <section className="bg-neutral-0 dark:bg-neutral-900 px-6 sm:px-10 py-8 sm:py-10">
+      <section className="bg-neutral-0 dark:bg-neutral-900 border border-accent-700/40 dark:border-sand-300/30 px-6 sm:px-10 py-8 sm:py-10">
         {/* En-tête */}
         <div className="flex flex-wrap items-end justify-between gap-4 pb-6">
           <div>

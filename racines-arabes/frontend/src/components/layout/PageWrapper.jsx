@@ -31,17 +31,20 @@ const PageWrapper = ({ children, className = '', title, eyebrow }) => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className={`mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10 py-12 sm:py-16 lg:py-20 ${className}`}
+      className={`mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10 py-8 sm:py-10 lg:py-12 ${className}`}
     >
       {title && (
-        <header className="mb-12 flex flex-col items-center text-center">
+        <header className="mb-6 sm:mb-8 flex flex-col items-center text-center">
           <Ornament />
           {eyebrow && (
-            <p className="mt-4 text-2xs font-bold uppercase tracking-[0.3em] text-accent-600 dark:text-sand-300">
+            <p className="mt-3 text-2xs font-bold uppercase tracking-[0.3em] text-accent-600 dark:text-sand-300">
               {eyebrow}
             </p>
           )}
-          <h1 className="mt-3 text-4xl sm:text-5xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
+          <h1
+            className="mt-2 font-extrabold tracking-tight leading-[1.1] text-ink dark:text-neutral-0"
+            style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)' }}
+          >
             {title}
           </h1>
         </header>

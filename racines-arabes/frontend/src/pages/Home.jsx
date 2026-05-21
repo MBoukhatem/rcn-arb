@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next';
 
 import PageWrapper from '@/components/layout/PageWrapper';
 import Button from '@/components/ui/Button';
-import PersianArch from '@/components/ui/PersianArch';
 import Ornament from '@/components/ui/Ornament';
 import AlphabetRail from '@/components/ui/AlphabetRail';
+import FloatingLetters from '@/components/ui/FloatingLetters';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -39,107 +39,125 @@ const Home = () => {
   ];
 
   return (
-    <PageWrapper className="relative isolate">
+    <>
+      {/* ═════════ HERO — composition immersive style Cosmos, full-bleed ═════
+          Hors PageWrapper : occupe TOUTE la largeur du viewport.
+          `-mt-16` fait remonter le hero SOUS la navbar pour que celle-ci, en
+          mode transparent (page d'accueil, scroll = 0), se superpose sur le
+          fond sombre du hero — pas sur le fond clair du body. */}
+      <div className="relative bg-neutral-950 dark:bg-neutral-950 overflow-hidden w-full -mt-16 pt-16">
+        {/* Constellation de lettres arabes éparpillées sur les bords, réactives
+            au survol de la souris (effet de répulsion). Centre dégagé pour le
+            titre et les CTA. */}
+        <FloatingLetters count={50} />
+
+        {/* Voile dégradé radial pour adoucir le fond derrière le titre */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(ellipse at center, rgba(15, 79, 94, 0.5) 0%, transparent 70%)',
+          }}
+        />
+
+        <motion.section
+          variants={stagger}
+          initial="hidden"
+          animate="visible"
+          className="relative z-10 mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10 flex flex-col items-center text-center pt-16 lg:pt-20 pb-8 gap-5"
+        >
+          {/* Eyebrow — petit label en haut, façon "WELCOME TO COSMOS" */}
+          <motion.p
+            variants={fadeUp}
+            className="text-2xs font-bold uppercase tracking-[0.42em] text-sand-300/70"
+          >
+            {t('home.heroEyebrow')}
+          </motion.p>
+
+          {/* Titre monumental — gradient crème → sable doré, façon Cosmos */}
+          <motion.h1
+            variants={fadeUp}
+            className="max-w-5xl font-extrabold leading-[0.95] tracking-tight"
+            style={{
+              fontSize: 'clamp(2.25rem, 6.5vw, 5.5rem)',
+            }}
+          >
+            <span
+              className="bg-clip-text text-transparent"
+              style={{
+                backgroundImage:
+                  'linear-gradient(135deg, #FBF3DC 0%, #F5E4B6 35%, #E2BA5A 100%)',
+              }}
+            >
+              {t('home.heroTitle')}
+            </span>
+          </motion.h1>
+
+          {/* Sous-titre */}
+          <motion.p
+            variants={fadeUp}
+            className="max-w-xl text-sm sm:text-base leading-relaxed text-sand-100/75"
+          >
+            {t('home.heroSubtitle')}
+          </motion.p>
+
+          {/* CTA — deux boutons centrés. Effet d'agrandissement au survol. */}
+          <motion.div
+            variants={fadeUp}
+            className="mt-2 flex flex-wrap justify-center gap-3"
+          >
+            <Button
+              as={Link}
+              to="/explorer"
+              variant="primary"
+              size="lg"
+              className="!bg-sand-300 !text-accent-900 hover:!bg-sand-200 hover:scale-105 transition-transform duration-200 origin-center"
+            >
+              {t('home.cta')} →
+            </Button>
+            <Button
+              as={Link}
+              to="/about"
+              variant="secondary"
+              size="lg"
+              className="!bg-transparent !text-sand-50 !border-sand-50/40 hover:!bg-sand-50/10 hover:!text-sand-50 hover:scale-105 transition-transform duration-200 origin-center"
+            >
+              {t('home.ctaSecondary')}
+            </Button>
+          </motion.div>
+
+          {/* Statistiques flottantes en bas du hero */}
+          <motion.dl
+            variants={fadeUp}
+            className="mt-6 grid w-full max-w-2xl grid-cols-3 overflow-hidden bg-neutral-900/60 backdrop-blur-sm border border-sand-300/20 divide-x divide-sand-300/20"
+          >
+            {[
+              { key: 'home.statsRoots', v: '10K+' },
+              { key: 'home.statsPatterns', v: '47' },
+              { key: 'home.statsDerived', v: '∞' },
+            ].map((s) => (
+              <div key={s.key} className="flex flex-col items-center py-6">
+                <dt className="text-2xs font-semibold uppercase tracking-[0.22em] text-sand-100/60">
+                  {t(s.key)}
+                </dt>
+                <dd className="mt-2 font-arabic text-3xl font-bold text-sand-300">
+                  {s.v}
+                </dd>
+              </div>
+            ))}
+          </motion.dl>
+        </motion.section>
+      </div>
+
+      {/* ═════════ RESTE DE LA PAGE — dans le PageWrapper standard ═════════ */}
+      <PageWrapper className="relative isolate">
       {/* Rails décoratifs : alphabet arabe défilant dans les marges (desktop only) */}
       <AlphabetRail side="left" />
       <AlphabetRail side="right" />
 
-      {/* ═════════ HERO — composition centrée sous une arche persane ═════════ */}
-      <motion.section
-        variants={stagger}
-        initial="hidden"
-        animate="visible"
-        className="relative z-10 flex flex-col items-center text-center pt-4 pb-20"
-      >
-        <motion.h1
-          variants={fadeUp}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-[1.05] tracking-tight text-ink dark:text-neutral-0 whitespace-nowrap"
-        >
-          {t('home.heroTitle')}
-        </motion.h1>
-
-        <motion.p
-          variants={fadeUp}
-          className="mt-10 text-2xs font-bold uppercase tracking-[0.42em] text-sand-600 dark:text-sand-300"
-        >
-          نظام الجذور العربية
-        </motion.p>
-
-        {/* Arche persane encadrant la racine ك ت ب */}
-        <motion.div variants={fadeUp} className="mt-8 w-full max-w-md">
-          <PersianArch className="mx-auto h-[23rem] w-full text-accent-700 dark:text-accent-300">
-            <div className="flex h-[23rem] flex-col items-center justify-center px-10">
-              <span className="text-2xs font-semibold uppercase tracking-[0.34em] text-sand-600 dark:text-sand-300">
-                {t('home.rootEyebrow')}
-              </span>
-              <span
-                lang="ar"
-                dir="rtl"
-                className="mt-3 font-arabic text-5xl sm:text-6xl font-bold leading-[1.5] text-accent-700 dark:text-accent-200"
-                style={{ whiteSpace: 'nowrap', letterSpacing: '0.08em' }}
-              >
-                كتب
-              </span>
-              <span className="mt-4 font-mono text-2xs uppercase tracking-[0.3em] text-ink/60 dark:text-neutral-300">
-                k · t · b
-              </span>
-              <p className="mt-2 text-sm italic text-sand-600 dark:text-sand-300">
-                {t('home.rootMeaning')}
-              </p>
-            </div>
-          </PersianArch>
-        </motion.div>
-
-        <motion.div variants={fadeUp} className="mt-10">
-          <Ornament />
-        </motion.div>
-
-        <motion.p
-          variants={fadeUp}
-          className="mt-6 max-w-xl text-base sm:text-lg text-neutral-700 dark:text-neutral-300"
-        >
-          {t('home.heroSubtitle')}
-        </motion.p>
-
-        <motion.div
-          variants={fadeUp}
-          className="mt-9 flex flex-wrap justify-center gap-3"
-        >
-          <Button as={Link} to="/explorer" variant="primary" size="lg">
-            {t('home.cta')} →
-          </Button>
-          <Button as={Link} to="/about" variant="secondary" size="lg">
-            {t('home.ctaSecondary')}
-          </Button>
-        </motion.div>
-
-        {/* Statistiques */}
-        <motion.dl
-          variants={fadeUp}
-          className="mt-16 grid w-full max-w-2xl grid-cols-3 overflow-hidden bg-neutral-0 dark:bg-neutral-900 border border-accent-700/40 dark:border-sand-300/30 divide-x divide-accent-700/40 dark:divide-sand-300/30"
-        >
-          {[
-            { key: 'home.statsRoots', v: '10K+' },
-            { key: 'home.statsPatterns', v: '47' },
-            { key: 'home.statsDerived', v: '∞' },
-          ].map((s) => (
-            <div
-              key={s.key}
-              className="flex flex-col items-center py-6"
-            >
-              <dt className="text-2xs font-semibold uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
-                {t(s.key)}
-              </dt>
-              <dd className="mt-2 font-arabic text-3xl font-bold text-accent-700 dark:text-accent-300">
-                {s.v}
-              </dd>
-            </div>
-          ))}
-        </motion.dl>
-      </motion.section>
-
       {/* ═════════ FONCTIONNALITÉS ═════════ */}
-      <section className="relative z-10 mt-12">
+      <section className="relative z-10 mt-2">
         <div className="flex flex-col items-center text-center">
           <Ornament />
           <p className="mt-5 text-2xs font-bold uppercase tracking-[0.3em] text-sand-600 dark:text-sand-300">
@@ -148,6 +166,9 @@ const Home = () => {
           <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
             {t('home.featuresTitle')}
           </h2>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-neutral-700 dark:text-neutral-300">
+            {t('home.featuresIntro')}
+          </p>
         </div>
 
         <motion.div
@@ -265,7 +286,8 @@ const Home = () => {
           </Button>
         </div>
       </motion.section>
-    </PageWrapper>
+      </PageWrapper>
+    </>
   );
 };
 

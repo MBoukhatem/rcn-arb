@@ -25,22 +25,27 @@ const About = () => {
   const { t } = useTranslation();
 
   return (
-    <PageWrapper title={t('about.title')} eyebrow={t('about.eyebrow')}>
+    <PageWrapper
+      title={t('about.title')}
+      eyebrow={t('about.eyebrow')}
+      className="!pt-2 sm:!pt-3 lg:!pt-4"
+    >
       {/* ───────── Introduction ───────── */}
       <motion.section
         variants={sectionVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 lg:grid-cols-12 gap-4"
+        className="grid grid-cols-1 lg:grid-cols-12 border border-accent-700/40 dark:border-sand-300/30 overflow-hidden"
       >
-        <div className="lg:col-span-4 flex flex-col justify-center bg-accent-800 text-sand-50 p-8 sm:p-10">
+        {/* Colonne gauche — calligraphie sur fond turquoise foncé */}
+        <div className="lg:col-span-4 flex flex-col justify-center bg-accent-800 text-sand-50 p-8 sm:p-10 lg:border-r lg:border-accent-700/40 lg:dark:border-sand-300/30 border-b lg:border-b-0 border-accent-700/40 dark:border-sand-300/30">
           <p className="text-2xs font-bold uppercase tracking-[0.32em] text-sand-300">
             — {t('about.introduction')}
           </p>
           <p
             lang="ar"
             dir="rtl"
-            className="mt-6 font-arabic text-5xl font-bold leading-tight"
+            className="mt-6 font-arabic text-4xl sm:text-5xl font-bold leading-tight break-words"
           >
             الجذور الثلاثية
           </p>
@@ -48,31 +53,33 @@ const About = () => {
             al-juḏūr aṯ-ṯulāṯiyya · trilateral roots
           </p>
         </div>
-        <div className="lg:col-span-8 p-8 sm:p-12 bg-neutral-0 dark:bg-neutral-900">
-          <p className="text-lg leading-relaxed text-neutral-800 dark:text-neutral-200">
+
+        {/* Colonne droite — texte d'introduction */}
+        <div className="lg:col-span-8 p-8 sm:p-10 lg:p-12 bg-neutral-0 dark:bg-neutral-900">
+          <p className="text-base sm:text-lg leading-relaxed text-neutral-800 dark:text-neutral-200">
             {t('about.intro')}
           </p>
 
-          <div className="mt-10">
+          <div className="mt-8 sm:mt-10">
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-600 dark:text-sand-300">
               — {t('about.morphology')}
             </p>
-            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
+            <h2 className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('about.morphologyTitle')}
             </h2>
-            <p className="mt-3 text-base text-neutral-700 dark:text-neutral-300">
+            <p className="mt-3 text-sm sm:text-base text-neutral-700 dark:text-neutral-300">
               {t('about.morphologyText')}
             </p>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-6 sm:mt-8">
             <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-600 dark:text-sand-300">
               — {t('about.audience')}
             </p>
-            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
+            <h2 className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
               {t('about.audienceTitle')}
             </h2>
-            <p className="mt-3 text-base text-neutral-700 dark:text-neutral-300">
+            <p className="mt-3 text-sm sm:text-base text-neutral-700 dark:text-neutral-300">
               {t('about.audienceText')}
             </p>
           </div>
@@ -94,13 +101,14 @@ const About = () => {
           </p>
         </div>
 
-        {/* Les 7 types sur une seule ligne */}
+        {/* Les 7 types — grille responsive :
+              mobile : 2 colonnes  · sm : 3 · md : 4 · lg : 7 (ligne unique) */}
         <motion.div
           variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-10%' }}
-          className="mt-10 grid grid-cols-7 gap-2"
+          className="mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3"
         >
           {WORD_TYPES.map((code, i) => {
             const meta = TYPE_META[code];
@@ -108,7 +116,7 @@ const About = () => {
               <motion.article
                 key={code}
                 variants={sectionVariants}
-                className="flex flex-col items-center text-center bg-neutral-0 dark:bg-neutral-900 border border-accent-700/40 dark:border-sand-300/30 px-2 py-5"
+                className="flex flex-col items-center text-center bg-neutral-0 dark:bg-neutral-900 border border-accent-700/40 dark:border-sand-300/30 px-3 py-5 sm:py-6"
               >
                 <span className="font-mono text-2xs font-bold tracking-[0.16em] text-sand-600 dark:text-sand-300">
                   {String(i + 1).padStart(2, '0')}
@@ -123,11 +131,11 @@ const About = () => {
                 <span
                   lang="ar"
                   dir="rtl"
-                  className="mt-2 font-arabic text-xs text-neutral-500 dark:text-neutral-400"
+                  className="mt-2 font-arabic text-xs text-neutral-500 dark:text-neutral-400 text-center"
                 >
                   {meta?.arabicName}
                 </span>
-                <span className="mt-3 text-2xs font-bold uppercase leading-tight tracking-[0.12em] text-ink dark:text-neutral-0">
+                <span className="mt-3 text-2xs font-bold uppercase leading-tight tracking-[0.12em] text-ink dark:text-neutral-0 break-words">
                   {getTypeLabel(code, t)}
                 </span>
               </motion.article>

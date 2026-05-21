@@ -1,6 +1,6 @@
 // Navbar — barre éditoriale stricte : bordure pleine, typographie haute densité.
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -9,10 +9,11 @@ import { useTheme } from '@/hooks/useTheme';
 import Button from '@/components/ui/Button';
 
 const LINK_BASE =
-  'relative text-2xs font-semibold uppercase tracking-[0.18em] px-3 py-2 transition-colors';
-// Navbar sur fond vert sapin : liens en crème, actif en sable.
+  'relative text-2xs font-semibold uppercase tracking-[0.18em] px-3 py-2 transition-all duration-200';
+// Hover : passe au blanc pur avec une légère lueur (drop-shadow) pour un
+// effet "illumination". Au repos : crème transparent (sand-100/70).
 const LINK_INACTIVE =
-  'text-sand-100/70 hover:text-sand-50 hover:bg-accent-600/60';
+  'text-sand-100/70 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]';
 const LINK_ACTIVE = 'text-sand-200';
 
 const UserIcon = () => (
@@ -54,10 +55,27 @@ const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const shouldReduce = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
+
+  // État de scroll : la navbar passe en transparente quand l'utilisateur est
+  // tout en haut de la page d'accueil (par-dessus le hero immersif sombre).
+  // Dès que le scroll dépasse 16px OU qu'on quitte la home, on rebascule au
+  // style turquoise plein (sinon les liens crème seraient illisibles sur les
+  // pages au fond clair).
+  const [atTop, setAtTop] = useState(true);
+  useEffect(() => {
+    const handleScroll = () => setAtTop(window.scrollY < 16);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // La navbar n'est transparente que sur la page d'accueil + en haut du scroll.
+  const isTransparent = atTop && location.pathname === '/';
 
   const isAdmin = user?.role === 'admin';
   const closeMenu = useCallback(() => setMenuOpen(false), []);
@@ -137,7 +155,13 @@ const Navbar = () => {
   );
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-accent-700/95 dark:bg-accent-900/95 backdrop-blur">
+    <header
+      className={`sticky top-0 z-40 w-full transition-colors duration-300 ${
+        isTransparent
+          ? 'bg-transparent backdrop-blur-0'
+          : 'bg-accent-700/95 dark:bg-accent-900/95 backdrop-blur'
+      }`}
+    >
       <div className="mx-auto max-w-[1400px] h-16 px-4 sm:px-6 flex items-center justify-between gap-4">
         {/* Marque */}
         <NavLink
@@ -174,7 +198,7 @@ const Navbar = () => {
             type="button"
             onClick={toggleLanguage}
             aria-label={t('language.label')}
-            className="h-9 px-3 text-2xs font-bold uppercase tracking-[0.18em] text-sand-100 hover:bg-accent-600/60 hover:text-sand-50 transition-colors"
+            className="h-9 px-3 text-2xs font-bold uppercase tracking-[0.18em] text-sand-100 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-all duration-200"
           >
             {i18n.language?.startsWith('en') ? 'EN' : 'FR'}
           </button>
@@ -182,7 +206,7 @@ const Navbar = () => {
             type="button"
             onClick={toggleTheme}
             aria-label={t('theme.toggle')}
-            className="h-9 w-9 inline-flex items-center justify-center text-sand-100 hover:bg-accent-600/60 hover:text-sand-50 transition-colors"
+            className="h-9 w-9 inline-flex items-center justify-center text-sand-100 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-all duration-200"
           >
             <ThemeIcon isDark={isDark} />
           </button>
@@ -200,10 +224,10 @@ const Navbar = () => {
                 aria-label={t('nav.profile')}
                 aria-haspopup="menu"
                 aria-expanded={userMenuOpen}
-                className={`h-9 w-9 inline-flex items-center justify-center transition-colors ${
+                className={`h-9 w-9 inline-flex items-center justify-center transition-all duration-200 ${
                   userMenuOpen
                     ? 'bg-sand-300 text-accent-800'
-                    : 'text-sand-100 hover:bg-accent-600/60 hover:text-sand-50'
+                    : 'text-sand-100 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]'
                 }`}
               >
                 <UserIcon />
@@ -260,7 +284,7 @@ const Navbar = () => {
                 to="/login"
                 variant="ghost"
                 size="sm"
-                className="!text-sand-100 hover:!bg-accent-600/60 hover:!text-sand-50"
+                className="!text-sand-100 hover:!text-white hover:!bg-transparent hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-all duration-200"
               >
                 {t('nav.login')}
               </Button>

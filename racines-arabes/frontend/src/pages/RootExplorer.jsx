@@ -91,13 +91,25 @@ const RootExplorer = () => {
   };
 
   return (
-    <PageWrapper title={t('explorer.title')} eyebrow={t('explorer.eyebrow')}>
-      <p className="-mt-8 mb-12 mx-auto max-w-2xl text-center text-base text-neutral-700 dark:text-neutral-300">
+    <PageWrapper
+      title={t('explorer.title')}
+      eyebrow={t('explorer.eyebrow')}
+      className="!pt-2 sm:!pt-3 lg:!pt-4"
+    >
+      <p className="-mt-4 mb-3 sm:mb-4 mx-auto max-w-2xl text-center text-sm text-neutral-700 dark:text-neutral-300">
         {t('explorer.subtitle')}
       </p>
 
-      {/* Sélecteur de lettres */}
-      <section className="relative bg-neutral-0 dark:bg-neutral-900 border border-accent-700 dark:border-accent-300 p-6 sm:p-10">
+      {/* Sélecteur de lettres — taille fluide, card compacte.
+          Sur desktop la grille est en 14 colonnes (2 lignes pour 28 lettres),
+          ce qui limite drastiquement la hauteur totale. */}
+      <section
+        className="relative bg-neutral-0 dark:bg-neutral-900 border border-accent-700 dark:border-accent-300 mx-auto w-full"
+        style={{
+          maxWidth: 'min(100%, 56rem)',
+          padding: 'clamp(0.625rem, 1.6vw, 1.25rem)',
+        }}
+      >
         <LetterPicker value={letters} onChange={handleLettersChange} />
       </section>
 

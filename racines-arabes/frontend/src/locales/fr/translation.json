@@ -97,6 +97,7 @@
     "ctaFinalText": "Sélectionnez votre racine, parcourez ses dérivés, comprenez la mécanique morphologique de la langue arabe.",
     "ctaFinalButton": "Ouvrir l'explorateur",
     "featuresTitle": "Comprendre la dérivation",
+    "featuresIntro": "La langue arabe construit son lexique entier à partir d'un noyau de trois consonnes. Trois étapes pour saisir comment racines et schèmes engendrent des familles entières de mots.",
     "feature1Title": "Sélection interactive",
     "feature1": "Choisissez trois lettres arabes et modifiez-les librement pour former n'importe quelle racine.",
     "feature2Title": "Classification morphologique",
@@ -110,7 +111,14 @@
     "ktbBook": "livre",
     "ktbWriting": "écriture",
     "ktbWritten": "écrit",
-    "ktbLibrary": "bibliothèque"
+    "ktbLibrary": "bibliothèque",
+    "heroNumber": "01",
+    "heroNumberTotal": "05",
+    "heroEyebrow": "Une langue d'éternité",
+    "heroLeadTitle": "À la racine,\nle temps",
+    "heroLeadText": "Trois consonnes, et toute une langue se déploie. Comme le sable s'écoule, les mots se forment racine par racine, schème par schème.",
+    "heroBrandMark": "RACINES",
+    "heroDiscover": "Découvrir"
   },
   "explorer": {
     "title": "Explorateur de racines",

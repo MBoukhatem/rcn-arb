@@ -97,6 +97,7 @@
     "ctaFinalText": "Pick your root, browse its derivatives, understand the morphological mechanics of the Arabic language.",
     "ctaFinalButton": "Open the explorer",
     "featuresTitle": "Understanding derivation",
+    "featuresIntro": "Arabic builds its entire lexicon from a core of three consonants. Three steps to grasp how roots and patterns generate whole families of words.",
     "feature1Title": "Interactive selection",
     "feature1": "Pick three Arabic letters and change them freely to form any root.",
     "feature2Title": "Morphological classification",
@@ -110,7 +111,14 @@
     "ktbBook": "book",
     "ktbWriting": "writing",
     "ktbWritten": "written",
-    "ktbLibrary": "library"
+    "ktbLibrary": "library",
+    "heroNumber": "01",
+    "heroNumberTotal": "05",
+    "heroEyebrow": "A language of eternity",
+    "heroLeadTitle": "At the root,\ntime",
+    "heroLeadText": "Three consonants, and a whole language unfolds. Like sand flowing through time, words take shape root by root, pattern by pattern.",
+    "heroBrandMark": "ROOTS",
+    "heroDiscover": "Discover"
   },
   "explorer": {
     "title": "Root explorer",

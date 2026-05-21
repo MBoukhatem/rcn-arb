@@ -4,9 +4,11 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import alphabet from '@/assets/arabic-alphabet.json';
 
+// Style des cellules de l'alphabet. La taille du texte suit la taille de la
+// cellule via `1em` du fontSize parent (défini en clamp dans le JSX).
 const CELL_BASE =
   'aspect-square flex items-center justify-center font-arabic ' +
-  'text-2xl sm:text-3xl font-semibold cursor-pointer transition-all duration-150 ease-snappy ' +
+  'font-semibold cursor-pointer transition-all duration-150 ease-snappy ' +
   'select-none focus-visible:outline-none focus-visible:ring-2 ' +
   'focus-visible:ring-accent-500 dark:focus-visible:ring-accent-300';
 
@@ -22,9 +24,10 @@ const CELL_SELECTED =
 
 const CELL_DISABLED = 'opacity-30 pointer-events-none';
 
+// Slots des 3 lettres sélectionnées. Dimensions fluides via clamp() inline.
 const SLOT_BASE =
-  'h-24 w-24 sm:h-28 sm:w-28 flex items-center justify-center ' +
-  'font-arabic text-4xl sm:text-5xl font-bold transition-all duration-150 relative';
+  'flex items-center justify-center font-arabic font-bold ' +
+  'transition-all duration-150 relative';
 
 const SLOT_EMPTY =
   'text-neutral-300 dark:text-neutral-700 bg-neutral-0 dark:bg-neutral-850';
@@ -73,8 +76,22 @@ const LetterPicker = ({ value = ['', '', ''], onChange }) => {
   const hasAny = letters.some((l) => l);
   const allFilled = letters.every((l) => l);
 
+  // Dimensions fluides via clamp() pour que toute la card (header + 3 slots
+  // + alphabet 28 lettres en 4 lignes) tienne dans une fenêtre 1080p sans
+  // scroll, tout en restant lisible.
+  //   – Slots des 3 lettres : entre 3rem (48px) et 4.5rem (72px)
+  //   – Texte du slot       : entre 1.25rem (20px) et 2rem (32px)
+  //   – Cellules alphabet   : taille du texte fluide entre 0.875rem et 1.25rem
+  //     (chaque cellule a aspect-square donc sa hauteur suit son fontSize)
+  const slotSize = 'clamp(3rem, 5vw, 4.5rem)';
+  const slotFontSize = 'clamp(1.25rem, 2.5vw, 2rem)';
+  const alphabetFontSize = 'clamp(0.875rem, 1.5vw, 1.25rem)';
+
   return (
-    <div className="flex flex-col items-center gap-10">
+    <div
+      className="flex flex-col items-center"
+      style={{ gap: 'clamp(0.625rem, 1.4vw, 1rem)' }}
+    >
       {/* Header info */}
       <div className="flex w-full items-center justify-between">
         <p className="text-2xs font-bold uppercase tracking-[0.28em] text-accent-500 dark:text-accent-300">
@@ -90,10 +107,11 @@ const LetterPicker = ({ value = ['', '', ''], onChange }) => {
         </button>
       </div>
 
-      {/* Emplacements */}
+      {/* Emplacements des 3 lettres sélectionnées */}
       <div
         dir="rtl"
-        className="flex items-center justify-center gap-3 sm:gap-5"
+        className="flex items-center justify-center"
+        style={{ gap: 'clamp(0.75rem, 1.5vw, 1.5rem)' }}
         role="group"
         aria-label={t('root.letters')}
       >
@@ -106,6 +124,11 @@ const LetterPicker = ({ value = ['', '', ''], onChange }) => {
             className={`${SLOT_BASE} ${letter ? SLOT_FILLED : SLOT_EMPTY} ${
               activeSlot === index ? SLOT_ACTIVE : ''
             } focus-visible:outline-none`}
+            style={{
+              width: slotSize,
+              height: slotSize,
+              fontSize: slotFontSize,
+            }}
             animate={
               letter && !shouldReduce ? { scale: [0.85, 1] } : { scale: 1 }
             }
@@ -122,16 +145,20 @@ const LetterPicker = ({ value = ['', '', ''], onChange }) => {
         ))}
       </div>
 
-      {/* Grille des 28 lettres arabes */}
-      <div className="w-full max-w-2xl">
-        <p className="mb-3 text-2xs font-bold uppercase tracking-[0.24em] text-ink dark:text-neutral-0">
+      {/* Grille des 28 lettres arabes — beaucoup de colonnes pour limiter la
+          hauteur (2 lignes sur desktop = 14 colonnes ; sur mobile on en met
+          moins). Les cellules conservent `aspect-square` donc plus elles sont
+          étroites en largeur, moins elles prennent de hauteur. */}
+      <div className="w-full">
+        <p className="mb-2 text-2xs font-bold uppercase tracking-[0.24em] text-ink dark:text-neutral-0">
           — {t('explorer.alphabet')}
         </p>
         <div
           dir="rtl"
-          className="grid grid-cols-6 sm:grid-cols-7 gap-0"
+          className="grid grid-cols-7 sm:grid-cols-10 md:grid-cols-14 lg:grid-cols-14 gap-0"
           role="group"
           aria-label={t('explorer.pickLetters')}
+          style={{ fontSize: alphabetFontSize }}
         >
           {alphabet.map(({ char, name }) => {
             const isSelected = letters.includes(char);
