@@ -343,7 +343,21 @@
     "doneTitle": "Well done, you're finished!",
     "doneText": "You reviewed {{count}} card(s).",
     "again": "Again",
-    "backToList": "Back to list"
+    "backToList": "Back to list",
+    "rating": {
+      "miss": "Missed",
+      "hard": "Hard",
+      "medium": "Medium",
+      "easy": "Easy"
+    },
+    "howDidItGo": "How well did you remember?",
+    "sessionScore": "Session score",
+    "detailByRoot": "Detail by root",
+    "statsEyebrow": "Stats · Memory",
+    "statsTitle": "Your statistics",
+    "globalScore": "Global score",
+    "totalReviews": "{{count}} card(s) reviewed in total",
+    "distribution": "Distribution"
   },
   "about": {
     "title": "About the project",

@@ -70,16 +70,94 @@ export const addRevision = async (req, res) => {
   return created(res, { revision });
 };
 
-/** POST /api/revisions/session/complete — marque les révisions vues. */
+/** POST /api/revisions/session/complete — applique les ratings de la session.
+ *  Reçoit items: [{ id, rating }] où rating ∈ miss|hard|medium|easy.
+ *  Pour chaque item : incrémente le compteur de rating correspondant et
+ *  reviewCount, met à jour lastReviewedAt + lastRating. */
 export const completeSession = async (req, res) => {
-  const { ids } = req.body;
+  const { items } = req.body;
+  const now = new Date();
 
-  await Revision.updateMany(
-    { _id: { $in: ids }, user: req.user.id },
-    { $set: { lastReviewedAt: new Date() }, $inc: { reviewCount: 1 } },
-  );
+  // Une bulkWrite par item — chaque carte a son propre rating, donc on ne peut
+  // pas mutualiser l'update sur tout le batch.
+  const ops = items.map(({ id, rating }) => ({
+    updateOne: {
+      filter: { _id: id, user: req.user.id },
+      update: {
+        $set: { lastReviewedAt: now, lastRating: rating },
+        $inc: { reviewCount: 1, [`ratings.${rating}`]: 1 },
+      },
+    },
+  }));
 
-  return ok(res, { updated: ids.length });
+  const result = await Revision.bulkWrite(ops);
+  return ok(res, { updated: result.modifiedCount });
+};
+
+// Pondération des ratings — sert au calcul du score sur 100.
+const RATING_WEIGHTS = { miss: 0, hard: 1, medium: 2, easy: 3 };
+const MAX_WEIGHT = 3;
+
+const computeScore = (ratings = {}) => {
+  const total =
+    (ratings.miss ?? 0) +
+    (ratings.hard ?? 0) +
+    (ratings.medium ?? 0) +
+    (ratings.easy ?? 0);
+  if (total === 0) return null;
+  const weighted =
+    (ratings.miss ?? 0) * RATING_WEIGHTS.miss +
+    (ratings.hard ?? 0) * RATING_WEIGHTS.hard +
+    (ratings.medium ?? 0) * RATING_WEIGHTS.medium +
+    (ratings.easy ?? 0) * RATING_WEIGHTS.easy;
+  return Math.round((weighted / (total * MAX_WEIGHT)) * 100);
+};
+
+/** GET /api/revisions/stats — stats agrégées de l'utilisateur.
+ *  Renvoie : totaux par catégorie, score global, score par racine. */
+export const getStats = async (req, res) => {
+  const revisions = await Revision.find({ user: req.user.id }).populate({
+    path: 'root',
+    select: 'slug letters meaningFr transliteration',
+  });
+
+  const totals = { miss: 0, hard: 0, medium: 0, easy: 0 };
+  const perRoot = [];
+
+  for (const rev of revisions) {
+    const r = rev.ratings ?? {};
+    totals.miss += r.miss ?? 0;
+    totals.hard += r.hard ?? 0;
+    totals.medium += r.medium ?? 0;
+    totals.easy += r.easy ?? 0;
+
+    perRoot.push({
+      _id: rev._id,
+      root: rev.root,
+      reviewCount: rev.reviewCount,
+      lastReviewedAt: rev.lastReviewedAt,
+      lastRating: rev.lastRating,
+      ratings: {
+        miss: r.miss ?? 0,
+        hard: r.hard ?? 0,
+        medium: r.medium ?? 0,
+        easy: r.easy ?? 0,
+      },
+      score: computeScore(r),
+    });
+  }
+
+  const totalReviews =
+    totals.miss + totals.hard + totals.medium + totals.easy;
+  const globalScore = computeScore(totals);
+
+  return ok(res, {
+    totals,
+    totalReviews,
+    totalRoots: revisions.length,
+    globalScore,
+    perRoot,
+  });
 };
 
 /** DELETE /api/revisions/:id — retrait d'une révision de l'utilisateur. */

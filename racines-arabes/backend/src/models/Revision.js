@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 
 // Une revision lie un utilisateur à une racine qu'il souhaite réviser.
-// Modèle volontairement simple : pas de SRS complexe ; on garde un timestamp
-// du dernier passage pour pouvoir afficher l'ordre et, plus tard, prioriser.
+// Les compteurs `ratings.*` cumulent les jugements de mémorisation de
+// l'utilisateur sur cette racine — ils ne sont incrémentés qu'à la fin d'une
+// session via /revisions/session/complete. Si la racine est retirée de la
+// liste de révision, le document est supprimé : les stats s'auto-nettoient.
 const revisionSchema = new mongoose.Schema(
   {
     user: {
@@ -24,6 +26,19 @@ const revisionSchema = new mongoose.Schema(
       type: Number,
       default: 0,
       min: 0,
+    },
+    // Dernier rating attribué — utilisé pour afficher l'état courant.
+    lastRating: {
+      type: String,
+      enum: ['miss', 'hard', 'medium', 'easy'],
+      default: null,
+    },
+    // Compteurs cumulés par catégorie de rating.
+    ratings: {
+      miss: { type: Number, default: 0, min: 0 },
+      hard: { type: Number, default: 0, min: 0 },
+      medium: { type: Number, default: 0, min: 0 },
+      easy: { type: Number, default: 0, min: 0 },
     },
   },
   { timestamps: true }

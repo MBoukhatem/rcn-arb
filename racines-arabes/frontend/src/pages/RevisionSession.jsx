@@ -1,7 +1,9 @@
 // Page de session de révision — chrono + cartes recto/verso.
-// Recto : lettres arabes de la racine ; verso (au clic) : sens FR/EN/AR.
+// Recto : lettres arabes de la racine ; verso (au clic) : sens FR/EN/AR + 4
+// boutons d'auto-évaluation (raté / difficile / moyen / facile).
 // Une session se termine quand le chrono atteint 0 OU que toutes les cartes
-// ont été parcourues.
+// ont été notées. En fin de session, on affiche le score global et le détail
+// par racine.
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,11 +25,38 @@ import { joinLetters } from '@/utils/formatters';
 const SECONDS_PER_CARD = 30;
 const MIN_DURATION = 60;
 
+// Pondération identique au backend — garde le score local cohérent.
+const RATING_WEIGHTS = { miss: 0, hard: 1, medium: 2, easy: 3 };
+const MAX_WEIGHT = 3;
+
+// Couleurs Tailwind par rating : miss=rouge, hard=orange, medium=ambre, easy=vert.
+const RATING_STYLES = {
+  miss:
+    'bg-error-light text-sand-50 border-error-light hover:bg-error-light/90 dark:bg-error-dark dark:border-error-dark',
+  hard:
+    'bg-orange-500 text-sand-50 border-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:border-orange-600',
+  medium:
+    'bg-amber-500 !text-white border-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:border-amber-500',
+  easy:
+    'bg-emerald-600 text-sand-50 border-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:border-emerald-600',
+};
+
 const formatTime = (seconds) => {
   const safe = Math.max(0, Math.floor(seconds));
   const m = String(Math.floor(safe / 60)).padStart(2, '0');
   const s = String(safe % 60).padStart(2, '0');
   return `${m}:${s}`;
+};
+
+// Calcule un score sur 100 à partir d'une liste de ratings.
+const computeScore = (ratings) => {
+  if (!ratings || ratings.length === 0) return null;
+  const total = ratings.length;
+  const weighted = ratings.reduce(
+    (sum, r) => sum + (RATING_WEIGHTS[r] ?? 0),
+    0,
+  );
+  return Math.round((weighted / (total * MAX_WEIGHT)) * 100);
 };
 
 const RevisionSession = () => {
@@ -40,6 +69,8 @@ const RevisionSession = () => {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [finished, setFinished] = useState(false);
+  // Map id → rating accumulés pendant la session.
+  const [ratings, setRatings] = useState({});
 
   // Durée totale calculée une seule fois (pas à chaque rerender).
   const totalDuration = useMemo(() => {
@@ -50,6 +81,9 @@ const RevisionSession = () => {
   const [secondsLeft, setSecondsLeft] = useState(totalDuration);
   const [started, setStarted] = useState(false);
   const completedRef = useRef(false);
+  // Snapshot des ratings réellement envoyés (utile pour l'affichage post-session
+  // même si la map est ensuite réinitialisée).
+  const [sessionResult, setSessionResult] = useState(null);
 
   // Resync la durée quand les cartes arrivent.
   useEffect(() => {
@@ -57,13 +91,31 @@ const RevisionSession = () => {
   }, [totalDuration]);
 
   // ── Persistance côté serveur (une seule fois par session) ───────────────
+  // On utilise une ref pour lire l'état des ratings AU MOMENT de l'envoi,
+  // sans recréer la callback à chaque keystroke (évite les loops d'effet).
+  const ratingsRef = useRef(ratings);
+  useEffect(() => {
+    ratingsRef.current = ratings;
+  }, [ratings]);
+
   const persistCompletion = useCallback(async () => {
     if (completedRef.current) return;
     completedRef.current = true;
-    const ids = (cards ?? []).map((c) => c._id);
-    if (ids.length === 0) return;
+    const allCards = cards ?? [];
+    const currentRatings = ratingsRef.current;
+    const items = allCards
+      .filter((c) => currentRatings[c._id])
+      .map((c) => ({ id: c._id, rating: currentRatings[c._id] }));
+
+    // Snapshot pour l'écran de fin (ratings + carte associée).
+    setSessionResult({
+      items,
+      cardsById: Object.fromEntries(allCards.map((c) => [c._id, c])),
+    });
+
+    if (items.length === 0) return;
     try {
-      await completeRevisionSession(ids);
+      await completeRevisionSession(items);
     } catch (err) {
       // Non bloquant — la session est terminée côté UI quoi qu'il arrive.
       toast.error(err?.message ?? t('errors.generic'));
@@ -93,21 +145,34 @@ const RevisionSession = () => {
     setIndex(0);
     setFlipped(false);
     setFinished(false);
+    setRatings({});
+    setSessionResult(null);
     completedRef.current = false;
     setSecondsLeft(totalDuration);
   };
 
   const handleFlip = () => setFlipped((f) => !f);
 
-  const handleNext = useCallback(() => {
-    const total = cards?.length ?? 0;
-    if (index + 1 >= total) {
-      endSession();
-      return;
-    }
-    setIndex((i) => i + 1);
-    setFlipped(false);
-  }, [cards, index, endSession]);
+  // Sélection d'un rating : enregistre puis avance à la carte suivante (ou termine).
+  const handleRate = useCallback(
+    (rating) => {
+      const total = cards?.length ?? 0;
+      const currentCard = cards?.[index];
+      if (!currentCard) return;
+
+      const nextRatings = { ...ratingsRef.current, [currentCard._id]: rating };
+      ratingsRef.current = nextRatings;
+      setRatings(nextRatings);
+
+      if (index + 1 >= total) {
+        endSession();
+        return;
+      }
+      setIndex((i) => i + 1);
+      setFlipped(false);
+    },
+    [cards, index, endSession],
+  );
 
   // ── Vues ────────────────────────────────────────────────────────────────
   if (loading) {
@@ -191,21 +256,106 @@ const RevisionSession = () => {
     );
   }
 
-  // Écran de fin.
+  // Écran de fin — récap des ratings + score de la session.
   if (finished) {
+    const result = sessionResult ?? { items: [], cardsById: {} };
+    const ratingsList = result.items.map((it) => it.rating);
+    const sessionScore = computeScore(ratingsList);
+    const counts = ratingsList.reduce(
+      (acc, r) => {
+        acc[r] = (acc[r] ?? 0) + 1;
+        return acc;
+      },
+      { miss: 0, hard: 0, medium: 0, easy: 0 },
+    );
+
     return (
       <PageWrapper title={t('revisions.sessionTitle')} eyebrow={t('revisions.eyebrow')}>
-        <div className="bg-neutral-0 dark:bg-neutral-900 border border-accent-700 dark:border-accent-300 p-10 sm:p-14 text-center">
-          <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
-            — {t('revisions.done')}
-          </p>
-          <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
-            {t('revisions.doneTitle')}
-          </h2>
-          <p className="mt-4 text-sm text-neutral-700 dark:text-neutral-300">
-            {t('revisions.doneText', { count: cards.length })}
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <div className="bg-neutral-0 dark:bg-neutral-900 border border-accent-700 dark:border-accent-300 p-10 sm:p-14">
+          <div className="text-center">
+            <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+              — {t('revisions.done')}
+            </p>
+            <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-0">
+              {t('revisions.doneTitle')}
+            </h2>
+            <p className="mt-4 text-sm text-neutral-700 dark:text-neutral-300">
+              {t('revisions.doneText', { count: result.items.length })}
+            </p>
+          </div>
+
+          {/* Score global de la session */}
+          {sessionScore !== null && (
+            <div className="mt-10 flex flex-col items-center">
+              <p className="text-2xs font-bold uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400">
+                {t('revisions.sessionScore')}
+              </p>
+              <p className="mt-2 font-mono text-6xl font-extrabold tabular-nums text-accent-700 dark:text-accent-300">
+                {sessionScore}
+                <span className="text-2xl text-neutral-400 dark:text-neutral-500">/100</span>
+              </p>
+            </div>
+          )}
+
+          {/* Répartition par rating */}
+          <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {['miss', 'hard', 'medium', 'easy'].map((key) => (
+              <div
+                key={key}
+                className="border border-accent-700/40 dark:border-accent-300/30 px-4 py-5 text-center"
+              >
+                <p className="text-2xs font-bold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+                  {t(`revisions.rating.${key}`)}
+                </p>
+                <p className="mt-2 font-mono text-2xl font-bold tabular-nums text-ink dark:text-neutral-0">
+                  {String(counts[key]).padStart(2, '0')}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Détail par racine */}
+          {result.items.length > 0 && (
+            <div className="mt-10">
+              <p className="text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
+                — {t('revisions.detailByRoot')}
+              </p>
+              <div className="mt-4 border border-accent-700/40 dark:border-accent-300/30 divide-y divide-neutral-200 dark:divide-neutral-800">
+                {result.items.map((it) => {
+                  const card = result.cardsById[it.id];
+                  const root = card?.root ?? {};
+                  const letters =
+                    root.letters ?? (root.slug ? root.slug.split('-') : []);
+                  return (
+                    <div
+                      key={it.id}
+                      className="flex items-center justify-between gap-4 px-4 py-3"
+                    >
+                      <div className="flex items-center gap-4 min-w-0">
+                        <span
+                          lang="ar"
+                          dir="rtl"
+                          className="font-arabic text-2xl font-bold text-ink dark:text-neutral-0 shrink-0"
+                        >
+                          {joinLetters(letters)}
+                        </span>
+                        <span className="truncate text-sm text-neutral-700 dark:text-neutral-300">
+                          {root.meaningFr || '—'}
+                        </span>
+                      </div>
+                      <span
+                        className={`shrink-0 text-2xs font-bold uppercase tracking-[0.18em] px-3 py-1 border ${RATING_STYLES[it.rating]}`}
+                      >
+                        {t(`revisions.rating.${it.rating}`)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Button variant="primary" size="md" onClick={handleStart}>
               {t('revisions.again')}
             </Button>
@@ -271,20 +421,21 @@ const RevisionSession = () => {
         />
       </div>
 
-      {/* Carte */}
+      {/* Carte — au recto on clique pour retourner ; au verso les boutons rating
+          gèrent la transition vers la carte suivante. */}
       <div
         className="select-none"
         style={{ perspective: '1500px' }}
-        onClick={handleFlip}
+        onClick={!flipped ? handleFlip : undefined}
         onKeyDown={(e) => {
-          if (e.key === ' ' || e.key === 'Enter') {
+          if (!flipped && (e.key === ' ' || e.key === 'Enter')) {
             e.preventDefault();
             handleFlip();
           }
         }}
-        role="button"
-        tabIndex={0}
-        aria-label={flipped ? t('revisions.showFront') : t('revisions.showBack')}
+        role={!flipped ? 'button' : undefined}
+        tabIndex={!flipped ? 0 : undefined}
+        aria-label={!flipped ? t('revisions.showBack') : undefined}
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -293,7 +444,9 @@ const RevisionSession = () => {
             animate={{ rotateY: 0, opacity: 1 }}
             exit={{ rotateY: flipped ? 90 : -90, opacity: 0 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="relative bg-neutral-0 dark:bg-neutral-900 border border-accent-700 dark:border-accent-300 min-h-[50vh] flex flex-col items-center justify-center p-10 cursor-pointer"
+            className={`relative bg-neutral-0 dark:bg-neutral-900 border border-accent-700 dark:border-accent-300 min-h-[50vh] flex flex-col items-center justify-center p-10 ${
+              !flipped ? 'cursor-pointer' : ''
+            }`}
             style={{ transformStyle: 'preserve-3d' }}
           >
             {!flipped ? (
@@ -341,37 +494,47 @@ const RevisionSession = () => {
                     {r.meaningAr}
                   </p>
                 )}
+                <p className="mt-8 text-2xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+                  {t('revisions.howDidItGo')}
+                </p>
               </>
             )}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Actions */}
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
-        <Button
-          variant="ghost"
-          size="md"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleFlip();
-          }}
-        >
-          {flipped ? t('revisions.showFront') : t('revisions.showBack')}
-        </Button>
-        <Button
-          variant="primary"
-          size="md"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleNext();
-          }}
-        >
-          {index + 1 >= cards.length
-            ? t('revisions.finish')
-            : `${t('revisions.next')} →`}
-        </Button>
-      </div>
+      {/* Actions — au recto : bouton "voir le verso" ; au verso : 4 ratings.
+          On stoppe la propagation pour ne pas re-flipper la carte. */}
+      {!flipped ? (
+        <div className="mt-8 flex flex-wrap items-center justify-end gap-3">
+          <Button
+            variant="primary"
+            size="md"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleFlip();
+            }}
+          >
+            {t('revisions.showBack')} →
+          </Button>
+        </div>
+      ) : (
+        <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {['miss', 'hard', 'medium', 'easy'].map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRate(key);
+              }}
+              className={`h-12 border text-2xs font-bold uppercase tracking-[0.2em] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${RATING_STYLES[key]}`}
+            >
+              {t(`revisions.rating.${key}`)}
+            </button>
+          ))}
+        </div>
+      )}
     </PageWrapper>
   );
 };

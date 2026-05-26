@@ -3,6 +3,7 @@ import { Router } from 'express';
 import {
   listRevisions,
   getSession,
+  getStats,
   addRevision,
   completeSession,
   removeRevision,
@@ -19,6 +20,7 @@ const router = Router();
 
 router.get('/', protect, paginate, listRevisions);
 router.get('/session', protect, getSession);
+router.get('/stats', protect, getStats);
 router.post('/', protect, validate(createRevisionSchema), addRevision);
 router.post(
   '/session/complete',

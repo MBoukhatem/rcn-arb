@@ -11,9 +11,10 @@ import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
 import RevisionButton from '@/components/revisions/RevisionButton';
+import RevisionStats from '@/components/revisions/RevisionStats';
 import { ViewButton } from '@/components/ui/ActionButtons';
 import { useFetch } from '@/hooks/useFetch';
-import { getRevisions } from '@/services/revision.service';
+import { getRevisions, getRevisionStats } from '@/services/revision.service';
 import { joinLetters } from '@/utils/formatters';
 
 const Revisions = () => {
@@ -26,10 +27,18 @@ const Revisions = () => {
     [page],
   );
 
+  // Stats globales — rechargées indépendamment de la pagination pour qu'elles
+  // restent à jour quand on supprime une racine ou termine une session.
+  const { data: stats, refetch: refetchStats } = useFetch(
+    () => getRevisionStats(),
+    [],
+  );
+
   const handleToggle = useCallback(() => {
     toast.success(t('revisions.removeSuccess'));
     refetch();
-  }, [refetch, t]);
+    refetchStats();
+  }, [refetch, refetchStats, t]);
 
   const revisions = (data?.data ?? []).filter((r) => r?.root);
   const totalPages = data?.totalPages ?? 1;
@@ -67,6 +76,8 @@ const Revisions = () => {
 
       {!loading && !error && revisions.length > 0 && (
         <div className="space-y-10">
+          <RevisionStats stats={stats} />
+
           <section>
             <header className="flex flex-wrap items-end justify-between gap-4 pb-4 mb-6">
               <div>

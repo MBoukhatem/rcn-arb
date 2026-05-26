@@ -343,7 +343,21 @@
     "doneTitle": "Bravo, c'est terminé !",
     "doneText": "Vous avez parcouru {{count}} carte(s).",
     "again": "Recommencer",
-    "backToList": "Retour à la liste"
+    "backToList": "Retour à la liste",
+    "rating": {
+      "miss": "Raté",
+      "hard": "Difficile",
+      "medium": "Moyen",
+      "easy": "Facile"
+    },
+    "howDidItGo": "Comment l'avez-vous retenu ?",
+    "sessionScore": "Score de la session",
+    "detailByRoot": "Détail par racine",
+    "statsEyebrow": "Stats · Mémorisation",
+    "statsTitle": "Vos statistiques",
+    "globalScore": "Score global",
+    "totalReviews": "{{count}} carte(s) révisée(s) au total",
+    "distribution": "Répartition"
   },
   "about": {
     "title": "À propos du projet",

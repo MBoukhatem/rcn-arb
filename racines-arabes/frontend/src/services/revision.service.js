@@ -24,9 +24,17 @@ export const addRevision = async ({ root }) => {
   return payload?.revision ?? payload;
 };
 
-// Marque une session comme terminée — incrémente reviewCount, met à jour lastReviewedAt.
-export const completeRevisionSession = async (ids) => {
-  const res = await api.post('/revisions/session/complete', { ids });
+// Marque une session comme terminée — items: [{ id, rating }] avec
+// rating ∈ 'miss' | 'hard' | 'medium' | 'easy'. Incrémente les compteurs
+// ratings.<rating> et reviewCount, met à jour lastReviewedAt + lastRating.
+export const completeRevisionSession = async (items) => {
+  const res = await api.post('/revisions/session/complete', { items });
+  return res.data?.data;
+};
+
+// Stats agrégées de l'utilisateur courant.
+export const getRevisionStats = async () => {
+  const res = await api.get('/revisions/stats');
   return res.data?.data;
 };
 
