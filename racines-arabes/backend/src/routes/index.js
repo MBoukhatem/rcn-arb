@@ -5,6 +5,7 @@ import userRoutes from './user.routes.js';
 import rootRoutes from './root.routes.js';
 import wordRoutes from './word.routes.js';
 import favoriteRoutes from './favorite.routes.js';
+import revisionRoutes from './revision.routes.js';
 import { notFound } from '../middlewares/errorHandler.js';
 
 const router = Router();
@@ -27,6 +28,7 @@ router.use('/users', userRoutes);
 router.use('/roots', rootRoutes);
 router.use('/words', wordRoutes);
 router.use('/favorites', favoriteRoutes);
+router.use('/revisions', revisionRoutes);
 
 // Catch-all 404 — doit rester en dernier
 router.use(notFound);

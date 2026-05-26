@@ -95,6 +95,7 @@ const Navbar = () => {
   const userMenuLinks = [
     { to: '/profile', label: t('nav.profile') },
     { to: '/favorites', label: t('nav.favorites') },
+    { to: '/revisions', label: t('nav.revisions') },
   ];
 
   // Ferme le dropdown au clic extérieur ou touche Escape.

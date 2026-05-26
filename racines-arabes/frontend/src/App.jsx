@@ -15,6 +15,8 @@ import Login from '@/pages/Login.jsx';
 import Register from '@/pages/Register.jsx';
 import Profile from '@/pages/Profile.jsx';
 import Favorites from '@/pages/Favorites.jsx';
+import Revisions from '@/pages/Revisions.jsx';
+import RevisionSession from '@/pages/RevisionSession.jsx';
 import About from '@/pages/About.jsx';
 import AdminUsers from '@/pages/AdminUsers.jsx';
 import AdminUserDetail from '@/pages/AdminUserDetail.jsx';
@@ -49,6 +51,22 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <Favorites />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/revisions"
+              element={
+                <PrivateRoute>
+                  <Revisions />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/revisions/session"
+              element={
+                <PrivateRoute>
+                  <RevisionSession />
                 </PrivateRoute>
               }
             />

@@ -15,6 +15,7 @@ import BackLink from '@/components/ui/BackLink';
 import WordTable from '@/components/root/WordTable';
 import WordForm, { EMPTY_WORD } from '@/components/word/WordForm';
 import FavoriteButton from '@/components/favorites/FavoriteButton';
+import RevisionButton from '@/components/revisions/RevisionButton';
 import { ViewButton, EditButton, DeleteButton } from '@/components/ui/ActionButtons';
 import { useFetch } from '@/hooks/useFetch';
 import { useAuth } from '@/hooks/useAuth';
@@ -223,7 +224,10 @@ const RootDetail = () => {
           <span className="font-mono text-2xs font-bold uppercase tracking-[0.24em] text-accent-500 dark:text-accent-300">
             — {t('root.rootPrefix')} / {root.slug}
           </span>
-          <FavoriteButton item={root._id} itemModel="Root" />
+          <div className="flex items-center gap-2">
+            <FavoriteButton item={root._id} itemModel="Root" />
+            <RevisionButton root={root._id} />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12">

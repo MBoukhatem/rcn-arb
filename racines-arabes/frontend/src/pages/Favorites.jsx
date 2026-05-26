@@ -13,6 +13,7 @@ import Modal from '@/components/ui/Modal';
 import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
 import FavoriteButton from '@/components/favorites/FavoriteButton';
+import RevisionButton from '@/components/revisions/RevisionButton';
 import RootForm, { EMPTY_ROOT } from '@/components/root/RootForm';
 import WordForm, { EMPTY_WORD } from '@/components/word/WordForm';
 import {
@@ -265,6 +266,7 @@ const Favorites = () => {
                                 favoriteId={fav._id}
                                 onToggle={handleToggle}
                               />
+                              <RevisionButton root={r._id} />
                               {isAdmin && (
                                 <>
                                   <EditButton
