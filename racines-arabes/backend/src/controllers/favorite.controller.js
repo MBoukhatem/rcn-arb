@@ -20,9 +20,15 @@ export const listFavorites = async (req, res) => {
       .limit(limit)
       // Populate dynamique : item résolu vers Root ou Word via refPath.
       // Pour les mots, peuple aussi la racine afin d'afficher un lien "Voir".
+      // `strictPopulate: false` : `root` n'existe que sur Word, pas sur Root —
+      // Mongoose doit ignorer le sous-populate quand l'item est une Root.
       .populate({
         path: 'item',
-        populate: { path: 'root', select: 'slug letters meaningFr transliteration' },
+        populate: {
+          path: 'root',
+          select: 'slug letters meaningFr transliteration',
+          strictPopulate: false,
+        },
       }),
     Favorite.countDocuments(filter),
   ]);
