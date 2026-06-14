@@ -61,16 +61,20 @@ C'est exactement ce mécanisme que l'application matérialise : **racine + schè
 | 7 | Il met en favori racines et mots | `FavoriteButton` |
 | 8 | Il crée / édite / supprime racines et mots | `RootDetail`, modales |
 | 9 | Il consulte ses favoris et gère son profil | `Favorites`, `Profile` |
+| 10 | Il enregistre des racines pour les **réviser** sous forme de cartes | `Revisions`, `RevisionSession` |
+| 11 | Il consulte ses **statistiques** de mémorisation (score /100) | `Revisions` |
 
 ### 2.3 La fonctionnalité métier spécifique
 
 Le cœur fonctionnel — qui distingue ce projet d'un simple CRUD générique — est **l'exploration de racines avec classification morphologique automatique** :
 
 1. **Sélection interactive des 3 lettres** via le composant `LetterPicker` (alphabet arabe complet, 28 lettres).
-2. **Normalisation** des lettres saisies (suppression des diacritiques, unification des hamzas/alifs) afin de retrouver la racine quelle que soit la graphie.
-3. **Résolution de la racine** par son `slug` (3 lettres normalisées jointes par `-`, ex. `ك-ت-ب`).
-4. **Regroupement des mots dérivés par type** : l'interface affiche des sections distinctes (Verbes, Masdars, Noms d'agent…), chacune indiquant le schème.
-5. **Recherche avancée multi-filtres** sur les mots (lettres, type, temps, texte libre, tri, pagination).
+2. **Suggestion en rouge des lettres compatibles** : dès qu'une lettre est posée, l'API renvoie la liste des lettres qui, placées dans un slot vide, complètent une racine **existante** en base. L'utilisateur voit ainsi en temps réel les pistes valides (cf. D11).
+3. **Normalisation** des lettres saisies (suppression des diacritiques, unification des hamzas/alifs) afin de retrouver la racine quelle que soit la graphie.
+4. **Résolution de la racine** par son `slug` (3 lettres normalisées jointes par `-`, ex. `ك-ت-ب`).
+5. **Regroupement des mots dérivés par type** : l'interface affiche des sections distinctes (Verbes, Masdars, Noms d'agent…), chacune indiquant le schème.
+6. **Recherche avancée multi-filtres** sur les mots (lettres, type, temps, texte libre, tri, pagination).
+7. **Système de révision par cartes mémoire** (cf. D11) : l'utilisateur enregistre des racines, lance une session chronométrée, retourne chaque carte pour révéler le sens, et s'auto-évalue sur 4 niveaux (raté / difficile / moyen / facile). Les compteurs alimentent un **score global pondéré sur 100** et un détail par racine.
 
 ---
 
@@ -216,7 +220,7 @@ utils/         → AppError, normalisation arabe, format de réponse
 
 ## 6. Modèles de données
 
-Le projet définit **4 modèles Mongoose** : `User`, `Root`, `Word`, `Favorite`.
+Le projet définit **5 modèles Mongoose** : `User`, `Root`, `Word`, `Favorite`, `Revision`.
 
 ### 6.1 Modèle `User`
 
@@ -295,27 +299,57 @@ Le projet définit **4 modèles Mongoose** : `User`, `Root`, `Word`, `Favorite`.
 
 > **Décision D8 :** modèle **volontairement simple** — pas de polymorphisme à index partiels, pas de schémas séparés par cible. Un seul champ `item` + un discriminant `itemModel` suffisent.
 
-### 6.5 Schéma relationnel
+### 6.5 Modèle `Revision` (mémorisation d'une racine)
+
+| Champ | Type | Validations / Options | Notes |
+|-------|------|-----------------------|-------|
+| `user` | ObjectId | required, ref `User`, index | Propriétaire de la révision |
+| `root` | ObjectId | required, ref `Root` | Racine à réviser |
+| `lastReviewedAt` | Date | default `null` | Mis à jour à la fin de chaque session |
+| `reviewCount` | Number | default 0, min 0 | Nombre cumulé de passages |
+| `lastRating` | String | enum `['miss','hard','medium','easy']`, default `null` | Dernier rating attribué |
+| `ratings.miss` / `.hard` / `.medium` / `.easy` | Number | default 0, min 0 | Compteurs cumulés par catégorie |
+| `createdAt` / `updatedAt` | Date | `timestamps: true` | Automatiques |
+
+- **Index composé unique `{ user: 1, root: 1 }` :** une racine donnée n'apparaît qu'une fois dans la liste de révision d'un utilisateur.
+- **Auto-nettoyage des stats :** quand l'utilisateur retire une racine de sa liste de révision, le document `Revision` est supprimé — les compteurs `ratings.*` disparaissent avec lui et le **score global est recalculé automatiquement** à la prochaine requête `/api/revisions/stats`.
+
+**Calcul du score (pondération uniforme backend/frontend) :**
+
+| Rating | Poids |
+|--------|-------|
+| `miss` | 0 |
+| `hard` | 1 |
+| `medium` | 2 |
+| `easy` | 3 |
+
+Score = `(Σ poids × occurrences) / (Σ occurrences × 3) × 100`, arrondi. Retourné `null` si aucun rating n'a encore été enregistré.
+
+> **Décision D11 :** la révision est intentionnellement **sans SRS complexe** (pas d'algorithme SM-2/Anki). Les 4 compteurs `ratings.*` + un `lastRating` suffisent à dériver le score et la répartition par catégorie. Aucun champ stocké n'est dupliqué côté `User` — toutes les agrégations sont calculées à la demande dans `getStats` (cf. §8.1 et D8).
+
+### 6.6 Schéma relationnel
 
 ```
-        ┌─────────┐
-        │  User   │
-        └────┬────┘
-             │ createdBy / user
-   ┌─────────┼──────────────────┐
-   │         │                  │
-   ▼         ▼                  ▼
-┌──────┐  ┌──────┐         ┌──────────┐
-│ Root │  │ Word │         │ Favorite │
-└──┬───┘  └──┬───┘         └────┬─────┘
-   │         │ root (ref Root)  │ item (refPath itemModel)
-   │         ▼                  │
-   └────────┐│                  │
-   words ◀──┘│◀─────────────────┘  (Root | Word)
-   (virtuel inverse)
+                  ┌─────────┐
+                  │  User   │
+                  └────┬────┘
+                       │ createdBy / user
+   ┌──────────┬────────┼──────────────────┬──────────┐
+   │          │        │                  │          │
+   ▼          ▼        ▼                  ▼          ▼
+┌──────┐  ┌──────┐  ┌──────────┐    ┌──────────┐  (admin can manage all)
+│ Root │  │ Word │  │ Favorite │    │ Revision │
+└──┬───┘  └──┬───┘  └────┬─────┘    └────┬─────┘
+   │         │           │               │
+   │         │ root      │ item          │ root
+   │         ▼           │ (refPath)     ▼
+   │     (ref Root)      ▼          (ref Root)
+   │                (Root | Word)
+   │
+   ▼ words (virtuel inverse)
 ```
 
-### 6.6 Relations populate
+### 6.7 Relations populate
 
 | Relation | Source → Cible | Mécanisme |
 |----------|----------------|-----------|
@@ -323,7 +357,8 @@ Le projet définit **4 modèles Mongoose** : `User`, `Root`, `Word`, `Favorite`.
 | `Root.words` | Root → Word[] | Virtuel inverse (`localField`/`foreignField`) |
 | `Root.wordsCount` | Root → nombre | Virtuel `count` (D8, non stocké) |
 | `Favorite.item` | Favorite → Root \| Word | **`refPath: 'itemModel'`** (populate dynamique) |
-| `Root.createdBy` / `Word.createdBy` / `Favorite.user` | → User | `ref: 'User'` |
+| `Revision.root` | Revision → Root | `ref: 'Root'` — populate dans `listRevisions` / `getSession` / `getStats` |
+| `Root.createdBy` / `Word.createdBy` / `Favorite.user` / `Revision.user` | → User | `ref: 'User'` |
 
 ---
 
@@ -414,18 +449,24 @@ Toutes les routes sont préfixées par **`/api`**. Les réponses sont en **JSON*
 | PATCH | `/api/users/me` | Protégé | Mise à jour du profil (name, bio, avatarUrl, nativeLanguage) |
 | PATCH | `/api/users/me/password` | Protégé | Changement de mot de passe |
 | DELETE | `/api/users/me` | Protégé | Suppression / désactivation du compte |
-| GET | `/api/users` | Protégé (admin) | *Optionnel* — liste des utilisateurs |
-| DELETE | `/api/users/:id` | Protégé (admin) | *Optionnel* — suppression d'un utilisateur |
+| GET | `/api/users` | Protégé (admin) | Liste paginée des utilisateurs (console admin) |
+| GET | `/api/users/:id` | Protégé (admin) | Détail d'un utilisateur |
+| PATCH | `/api/users/:id` | Protégé (admin) | Mise à jour d'un utilisateur (rôle, activation, profil) |
+| DELETE | `/api/users/:id` | Protégé (admin) | Suppression d'un utilisateur |
 
 #### Racines (`Root`)
 
 | Méthode | Chemin | Accès | Description |
 |---------|--------|-------|-------------|
 | GET | `/api/roots` | **Public** | Liste paginée + recherche |
+| GET | `/api/roots/suggestions` | **Public** | **Suggestion de lettres** pour compléter une racine existante (cf. D11) — `?l0=ك&l1=ت&l2=ب` (toutes optionnelles) |
 | GET | `/api/roots/:slug` | **Public** | Détail d'une racine + `populate` des mots |
+| GET | `/api/roots/:slug/words` | **Public** | Mots d'une racine, optionnellement groupés par type |
 | POST | `/api/roots` | Protégé (JWT) | Création d'une racine |
 | PUT | `/api/roots/:slug` | Protégé + **ownership** | Modification |
-| DELETE | `/api/roots/:slug` | Protégé + **ownership** | Suppression |
+| DELETE | `/api/roots/:slug` | Protégé + **ownership** | Suppression (cascade : mots + favoris liés) |
+
+> **Format de `/api/roots/suggestions` :** retourne `{ suggestions: { 0?: [...], 1?: [...], 2?: [...] } }`. Pour chaque slot encore vide, la liste des lettres présentes à cette position dans les racines compatibles avec la sélection partielle. Si les 3 slots sont remplis, l'objet `suggestions` est vide. Route placée **avant** `/:slug` dans le routeur pour ne pas être interceptée.
 
 #### Mots (`Word`)
 
@@ -433,7 +474,6 @@ Toutes les routes sont préfixées par **`/api`**. Les réponses sont en **JSON*
 |---------|--------|-------|-------------|
 | GET | `/api/words` | **Public** | **Recherche avancée multi-filtres** + pagination |
 | GET | `/api/words/:id` | **Public** | Détail d'un mot |
-| GET | `/api/roots/:slug/words` | **Public** | Mots d'une racine (groupables par type) |
 | POST | `/api/words` | Protégé (JWT) | Création d'un mot |
 | PUT | `/api/words/:id` | Protégé + **ownership** | Modification |
 | DELETE | `/api/words/:id` | Protégé + **ownership** | Suppression |
@@ -446,6 +486,17 @@ Toutes les routes sont préfixées par **`/api`**. Les réponses sont en **JSON*
 | POST | `/api/favorites` | Protégé | Ajout d'un favori (racine ou mot) |
 | DELETE | `/api/favorites/:id` | Protégé | Retrait d'un favori |
 
+#### Révisions (`Revision`)
+
+| Méthode | Chemin | Accès | Description |
+|---------|--------|-------|-------------|
+| GET | `/api/revisions` | Protégé | Liste paginée des racines enregistrées pour révision |
+| GET | `/api/revisions/session` | Protégé | Cartes prêtes à présenter (mélangées Fisher-Yates) |
+| GET | `/api/revisions/stats` | Protégé | Stats agrégées : totaux par catégorie, score global /100, score par racine |
+| POST | `/api/revisions` | Protégé | Ajout d'une racine à la liste (corps : `{ root: ObjectId }`) |
+| POST | `/api/revisions/session/complete` | Protégé | Clôt une session — corps : `{ items: [{ id, rating }] }` (rating ∈ `miss`/`hard`/`medium`/`easy`), incrémente `ratings.<rating>` et `reviewCount`, met à jour `lastReviewedAt` et `lastRating` |
+| DELETE | `/api/revisions/:id` | Protégé | Retire la racine de la liste — supprime aussi ses ratings (auto-cleanup des stats) |
+
 #### Système
 
 | Méthode | Chemin | Accès | Description |
@@ -453,7 +504,7 @@ Toutes les routes sont préfixées par **`/api`**. Les réponses sont en **JSON*
 | GET | `/api/health` | Public | Sonde de santé `{ status: 'ok', uptime, timestamp }` |
 | ALL | `/api/*` (catch-all) | Public | **404 JSON** pour toute route API inconnue |
 
-> **Décision D3 (conformité majeure) :** la lecture de `Root` et `Word` est **publique** ; les opérations **CREATE / UPDATE / DELETE** sont accessibles à **tout utilisateur authentifié** — la route est protégée par un **JWT simple**, **pas réservée à un admin**. Le champ `createdBy` est conservé et un **contrôle d'ownership** s'applique : un utilisateur ne peut éditer/supprimer que ses propres entrées, tandis qu'un `admin` peut tout modifier. Le rôle `role` existe sur `User` mais **n'est pas requis** pour le CRUD de base. On obtient donc **3 ressources CRUD complètes** : `Root`, `Word`, `Favorite` (cette dernière scopée à l'utilisateur).
+> **Décision D3 (conformité majeure) :** la lecture de `Root` et `Word` est **publique** ; les opérations **CREATE / UPDATE / DELETE** sont accessibles à **tout utilisateur authentifié** — la route est protégée par un **JWT simple**, **pas réservée à un admin**. Le champ `createdBy` est conservé et un **contrôle d'ownership** s'applique : un utilisateur ne peut éditer/supprimer que ses propres entrées, tandis qu'un `admin` peut tout modifier. Le rôle `role` existe sur `User` mais **n'est pas requis** pour le CRUD de base. On obtient donc **4 ressources CRUD complètes** : `Root`, `Word`, `Favorite` et `Revision` (les deux dernières scopées à l'utilisateur). Une **console admin** (`/admin/users`) ajoute la gestion des utilisateurs (`GET /api/users`, `PATCH /:id`, `DELETE /:id`) — réservée au rôle `admin`.
 
 ### 8.2 Spécification de la pagination
 
@@ -601,37 +652,54 @@ Pour `Favorite`, toute opération est **scopée au `user`** : un utilisateur ne 
 
 SPA **React 18** servie par **Vite 6**. Routage **react-router-dom v6**, état global via **Context API**, requêtes via **axios**, styles **Tailwind v3**.
 
-### 10.2 Routes React Router (9 routes)
+### 10.2 Routes React Router (15 routes)
 
 | Chemin | Page | Accès |
 |--------|------|-------|
-| `/` | `Home` | Public — landing / présentation |
-| `/explorer` | `RootExplorer` | Public — sélection des 3 lettres + résultats |
-| `/roots/:slug` | `RootDetail` | Public — détail racine + mots dérivés |
+| `/` | `Home` | Public — landing / présentation immersive |
+| `/explorer` | `RootExplorer` | Public — sélection des 3 lettres + **suggestions rouges** + résultat |
+| `/search` | `Search` | Public — recherche avancée multi-filtres sur les mots |
+| `/roots/:slug` | `RootDetail` | Public — détail racine + mots dérivés groupés |
+| `/words/:id` | `WordDetail` | Public — détail d'un mot et sa racine d'origine |
+| `/about` | `About` | Public — manifeste & morphologie |
 | `/login` | `Login` | Public — redirige si déjà authentifié |
 | `/register` | `Register` | Public — redirige si déjà authentifié |
 | `/profile` | `Profile` | **Protégé** (`PrivateRoute`) |
-| `/favorites` | `Favorites` | **Protégé** (`PrivateRoute`) |
-| `/about` | `About` | Public |
+| `/favorites` | `Favorites` | **Protégé** — racines et mots favoris |
+| `/revisions` | `Revisions` | **Protégé** — liste à réviser + bloc stats |
+| `/revisions/session` | `RevisionSession` | **Protégé** — chrono + cartes recto/verso + ratings |
+| `/admin/users` | `AdminUsers` | **Admin** (`AdminRoute`) |
+| `/admin/users/:id` | `AdminUserDetail` | **Admin** |
 | `*` | `NotFound` | Public — page 404 |
 
 > `Home` et `RootExplorer` sont **bien distinctes** : `Home` est une page de présentation/landing ; `RootExplorer` est **l'outil interactif** de sélection des lettres (`LetterPicker`) affichant les résultats.
 
-### 10.3 Composants réutilisables (5+)
+### 10.3 Composants réutilisables
 
 **UI (`components/ui/`)** — tous codés en JSX/Tailwind maison (cf. D2) :
 
 | Composant | Rôle |
 |-----------|------|
-| `Button` | Bouton stylé (variants, états loading/disabled) |
+| `Button` | Bouton stylé (variants `primary`/`secondary`/`ghost`/`danger`, états loading/disabled) |
 | `Input` | Champ de formulaire avec libellé et message d'erreur |
-| `Spinner` | Indicateur de chargement |
-| `Badge` | Pastille (type morphologique, temps verbal) |
-| `Modal` | Fenêtre modale **maison** (overlay + focus) — création/édition/confirmation |
+| `Spinner` | Indicateur de chargement (tailles `sm`/`md`/`lg`) |
+| `Badge` | Pastille (type morphologique, temps verbal, statut) |
+| `Modal` | Fenêtre modale **maison** (overlay + focus-trap + Esc) |
 | `Pagination` | Contrôles de navigation entre pages |
+| `ActionButtons` | Triplet `ViewButton`/`EditButton`/`DeleteButton` pour les lignes de tableau |
+| `EmptyState` | État vide stylé (eyebrow + titre + action) |
+| `BackLink` | Lien de retour contextuel |
+| `AlphabetRail` | Marges décoratives — défilement vertical de l'alphabet |
+| `FloatingLetters` / `FloatingOrbs` / `Hourglass` / `Ornament` / `PersianArch` | Éléments décoratifs du hero `Home` |
 
-**Layout (`components/layout/`) :** `Navbar`, `Footer`, `PageWrapper`.
-**Métier :** `LetterPicker`, `RootCard`, `WordList` (`root/`), `WordCard` (`word/`), `FavoriteButton` (`favorites/`).
+**Layout (`components/layout/`)** : `Navbar`, `Footer`, `PageWrapper`.
+
+**Métier :**
+- `root/` : `LetterPicker` (avec **suggestions colorées** des lettres compatibles), `RootCard`, `RootForm`, `WordList`, `WordTable`.
+- `word/` : `WordCard`, `WordForm`.
+- `favorites/` : `FavoriteButton` (cœur rouge plein quand favori).
+- `revisions/` : `RevisionButton` (carte d'étude turquoise quand enregistrée), `RevisionStats` (bloc score global + répartition).
+- `user/` : `UserForm` (utilisé dans `Profile` et la console admin).
 
 ### 10.4 Contextes (Context API)
 
@@ -644,10 +712,17 @@ SPA **React 18** servie par **Vite 6**. Routage **react-router-dom v6**, état g
 
 | Hook | Rôle |
 |------|------|
-| `useAuth` | Accès au `AuthContext` |
-| `useTheme` | Accès au `ThemeContext` |
-| `useFetch` | Requête de données générique (états `data`, `loading`, `error`) |
+| `useAuth` | Accès au `AuthContext` (user, token, login, logout, register) |
+| `useTheme` | Accès au `ThemeContext` (isDark, toggleTheme) |
+| `useFetch` | Requête de données générique (états `data`, `loading`, `error`, `refetch`) |
 | `useDebounce` | Temporisation de la saisie (recherche avancée, cf. D6) |
+
+### 10.5b Gardes de routes
+
+| Garde | Rôle |
+|-------|------|
+| `PrivateRoute` | Bloque l'accès si non authentifié → redirection vers `/login` |
+| `AdminRoute` | Bloque l'accès si l'utilisateur n'est pas `admin` → redirection vers `/` |
 
 ### 10.6 Thème sombre / clair global
 
@@ -695,48 +770,57 @@ racines-arabes/
 backend/
 ├── src/
 │   ├── config/
-│   │   ├── db.js                  # Connexion Mongoose à MongoDB
-│   │   └── env.js                 # Chargement/validation des variables .env
+│   │   ├── db.js                       # Connexion Mongoose à MongoDB
+│   │   └── env.js                      # Chargement/validation des variables .env
 │   ├── models/
-│   │   ├── User.js                # Schéma User (+ hook bcrypt, comparePassword)
-│   │   ├── Root.js                # Schéma Root (+ slug, virtuels words/wordsCount)
-│   │   ├── Word.js                # Schéma Word (+ index composés)
-│   │   └── Favorite.js            # Schéma Favorite (refPath itemModel)
+│   │   ├── User.js                     # Schéma User (+ hook bcrypt, comparePassword)
+│   │   ├── Root.js                     # Schéma Root (+ slug, virtuels words/wordsCount)
+│   │   ├── Word.js                     # Schéma Word (+ index composés)
+│   │   ├── Favorite.js                 # Schéma Favorite (refPath itemModel)
+│   │   └── Revision.js                 # Schéma Revision (ratings + lastReviewedAt)
 │   ├── controllers/
-│   │   ├── auth.controller.js     # register / login / me
-│   │   ├── user.controller.js     # profil, mot de passe, suppression
-│   │   ├── root.controller.js     # CRUD racines (appelle Mongoose direct)
-│   │   ├── word.controller.js     # CRUD mots + recherche avancée
-│   │   └── favorite.controller.js # CRUD favoris scopés user
+│   │   ├── auth.controller.js          # register / login / me
+│   │   ├── user.controller.js          # profil, mot de passe + console admin
+│   │   ├── root.controller.js          # CRUD racines + getLetterSuggestions (D11)
+│   │   ├── word.controller.js          # CRUD mots + recherche avancée
+│   │   ├── favorite.controller.js      # CRUD favoris scopés user
+│   │   └── revision.controller.js      # CRUD révisions + completeSession + getStats (D11)
 │   ├── routes/
-│   │   ├── index.js               # Agrégateur de routes + health + 404 catch-all
+│   │   ├── index.js                    # Agrégateur + health + 404 catch-all
 │   │   ├── auth.routes.js
-│   │   ├── user.routes.js
-│   │   ├── root.routes.js
+│   │   ├── user.routes.js              # /me + endpoints admin (rôle vérifié dans controller)
+│   │   ├── root.routes.js              # /suggestions déclarée AVANT /:slug
 │   │   ├── word.routes.js
-│   │   └── favorite.routes.js
+│   │   ├── favorite.routes.js
+│   │   └── revision.routes.js          # /session + /session/complete + /stats
 │   ├── middlewares/
-│   │   ├── auth.middleware.js      # Vérification JWT
-│   │   ├── errorHandler.js         # Middleware d'erreur global UNIQUE
-│   │   ├── validate.middleware.js  # Application des schémas Joi
-│   │   └── paginate.middleware.js  # Pagination ?page=&limit=
+│   │   ├── auth.middleware.js          # Vérification JWT (protect)
+│   │   ├── errorHandler.js             # Middleware d'erreur global UNIQUE + notFound
+│   │   ├── validate.middleware.js      # Application des schémas Joi
+│   │   └── paginate.middleware.js      # Pagination ?page=&limit=
 │   ├── validators/
-│   │   ├── auth.validator.js       # Schémas Joi auth
-│   │   ├── root.validator.js       # Schémas Joi racine
-│   │   ├── word.validator.js       # Schémas Joi mot (tense conditionnel)
-│   │   └── favorite.validator.js   # Schémas Joi favori
+│   │   ├── auth.validator.js
+│   │   ├── user.validator.js           # updateProfile, adminUpdateUser, changePassword
+│   │   ├── root.validator.js
+│   │   ├── word.validator.js           # tense conditionnel
+│   │   ├── favorite.validator.js
+│   │   └── revision.validator.js       # createRevision + completeSession ratings
 │   ├── utils/
-│   │   ├── AppError.js             # Classe d'erreur opérationnelle
-│   │   ├── arabic.js               # Normalisation arabe + génération slug
-│   │   └── apiResponse.js          # Format de réponse uniforme
+│   │   ├── AppError.js                 # Classe d'erreur opérationnelle
+│   │   ├── arabic.js                   # Normalisation arabe + génération slug
+│   │   ├── apiResponse.js              # Format de réponse uniforme
+│   │   └── constants.js                # WORD_TYPES, VERB_TENSES, USER_ROLES, …
 │   ├── seeds/
-│   │   ├── seed.js                 # Script exécuté par npm run seed
-│   │   ├── roots.data.js           # >= 5 racines
-│   │   └── words.data.js           # >= 20 mots couvrant les 7 types
-│   ├── app.js                      # Instanciation Express + middlewares globaux
-│   └── server.js                   # Démarrage serveur + connexion DB
-├── .env                            # Variables (non versionné)
-├── .env.example                    # Modèle de variables
+│   │   ├── seed.js                     # Script exécuté par npm run seed
+│   │   ├── seedAdmin.js                # Script idempotent — promeut/crée l'admin
+│   │   ├── roots.data.js               # 102 racines avec vowelMadi/vowelMudari
+│   │   ├── words.data.js               # 36 mots curatés (6 racines originales)
+│   │   └── wordsGenerator.js           # Génère 9 dérivés par racine (864 mots) — cf. §14
+│   ├── app.js                          # Instanciation Express + middlewares globaux
+│   └── server.js                       # Démarrage serveur + connexion DB
+├── Dockerfile
+├── .env                                # Variables (non versionné)
+├── .env.example                        # Modèle de variables
 └── package.json
 ```
 
@@ -750,10 +834,11 @@ frontend/
 │   └── favicon.svg
 ├── src/
 │   ├── main.jsx                    # Point d'entrée React
-│   ├── App.jsx                     # Déclaration des 9 routes + providers
+│   ├── App.jsx                     # Déclaration des 15 routes + providers
 │   ├── i18n.js                     # Configuration i18next (fr/en)
 │   ├── routes/
-│   │   └── PrivateRoute.jsx        # Garde des routes protégées
+│   │   ├── PrivateRoute.jsx        # Garde des routes authentifiées
+│   │   └── AdminRoute.jsx          # Garde des routes admin
 │   ├── context/
 │   │   ├── AuthContext.jsx         # État d'authentification global
 │   │   └── ThemeContext.jsx        # Thème clair/sombre global
@@ -765,39 +850,39 @@ frontend/
 │   ├── services/
 │   │   ├── api.js                  # Instance axios + intercepteurs JWT
 │   │   ├── auth.service.js
-│   │   ├── root.service.js
+│   │   ├── user.service.js         # /me + console admin
+│   │   ├── root.service.js         # CRUD + getLetterSuggestions
 │   │   ├── word.service.js
-│   │   └── favorite.service.js
-│   ├── pages/
-│   │   ├── Home.jsx                # Landing / présentation
-│   │   ├── RootExplorer.jsx        # Outil de sélection des 3 lettres
-│   │   ├── RootDetail.jsx          # Détail racine + mots dérivés
+│   │   ├── favorite.service.js
+│   │   └── revision.service.js     # CRUD + getRevisionStats + completeSession
+│   ├── pages/                       # 13 pages (cf. §10.2)
+│   │   ├── Home.jsx
+│   │   ├── RootExplorer.jsx
+│   │   ├── Search.jsx
+│   │   ├── RootDetail.jsx
+│   │   ├── WordDetail.jsx
+│   │   ├── About.jsx
 │   │   ├── Login.jsx
 │   │   ├── Register.jsx
 │   │   ├── Profile.jsx
 │   │   ├── Favorites.jsx
-│   │   ├── About.jsx
+│   │   ├── Revisions.jsx
+│   │   ├── RevisionSession.jsx
+│   │   ├── AdminUsers.jsx
+│   │   ├── AdminUserDetail.jsx
 │   │   └── NotFound.jsx
 │   ├── components/
-│   │   ├── ui/
-│   │   │   ├── Button.jsx
-│   │   │   ├── Input.jsx
-│   │   │   ├── Spinner.jsx
-│   │   │   ├── Badge.jsx
-│   │   │   ├── Modal.jsx           # Modale maison (pas de @headlessui)
-│   │   │   └── Pagination.jsx
-│   │   ├── layout/
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── Footer.jsx
-│   │   │   └── PageWrapper.jsx
-│   │   ├── root/
-│   │   │   ├── LetterPicker.jsx    # Sélecteur des 3 lettres arabes
-│   │   │   ├── RootCard.jsx
-│   │   │   └── WordList.jsx        # Mots groupés par type
-│   │   ├── word/
-│   │   │   └── WordCard.jsx
-│   │   └── favorites/
-│   │       └── FavoriteButton.jsx
+│   │   ├── ui/                     # Button, Input, Spinner, Badge, Modal, Pagination,
+│   │   │                           # ActionButtons, EmptyState, BackLink, AlphabetRail,
+│   │   │                           # FloatingLetters, FloatingOrbs, Hourglass, Ornament,
+│   │   │                           # PersianArch
+│   │   ├── layout/                 # Navbar, Footer, PageWrapper
+│   │   ├── root/                   # LetterPicker (avec suggestions), RootCard, RootForm,
+│   │   │                           # WordList, WordTable
+│   │   ├── word/                   # WordCard, WordForm
+│   │   ├── favorites/              # FavoriteButton (cœur)
+│   │   ├── revisions/              # RevisionButton (carte), RevisionStats
+│   │   └── user/                   # UserForm
 │   ├── utils/
 │   │   ├── morphology.js           # Libellés/ordre des 7 types
 │   │   └── formatters.js
@@ -805,13 +890,13 @@ frontend/
 │   │   ├── fr/translation.json
 │   │   └── en/translation.json
 │   ├── styles/
-│   │   └── index.css               # Directives Tailwind
+│   │   └── index.css               # Directives Tailwind + base
 │   └── assets/
-│       ├── logo.svg
 │       └── arabic-alphabet.json    # 28 lettres pour LetterPicker
+├── Dockerfile
 ├── index.html
 ├── vite.config.js                  # Alias @/ + proxy /api
-├── tailwind.config.js              # darkMode 'class', polices arabes, palette
+├── tailwind.config.js              # darkMode 'class', palette turquoise/sable, no-radius
 ├── postcss.config.js
 ├── .env                            # (non versionné)
 ├── .env.example
@@ -869,14 +954,17 @@ VITE_API_URL=http://localhost:5000/api
 ```json
 {
   "scripts": {
-    "dev":    "nodemon src/server.js",
-    "start":  "node src/server.js",
-    "seed":   "node src/seeds/seed.js",
-    "lint":   "eslint src",
-    "format": "prettier --write \"src/**/*.js\""
+    "dev":        "nodemon src/server.js",
+    "start":      "node src/server.js",
+    "seed":       "node src/seeds/seed.js",
+    "seed:admin": "node src/seeds/seedAdmin.js",
+    "lint":       "eslint src",
+    "format":     "prettier --write \"src/**/*.js\""
   }
 }
 ```
+
+> `seed:admin` est idempotent : il crée le compte `admin@racines.app / admin1234`, ou s'il existe déjà, **réinitialise le mot de passe et promeut au rôle admin**.
 
 ### 13.2 Frontend — `package.json`
 
@@ -897,15 +985,40 @@ VITE_API_URL=http://localhost:5000/api
 
 ## 14. Données de seed
 
-Le script **`npm run seed`** (`backend/src/seeds/seed.js`) vide puis repeuple la base avec un jeu de données cohérent (cf. D9) :
+Le script **`npm run seed`** (`backend/src/seeds/seed.js`) vide puis repeuple la base avec un jeu de données **volumineux et morphologiquement cohérent** :
 
 | Élément | Quantité | Détail |
 |---------|----------|--------|
-| Racines | **≥ 5** | ex. ك-ت-ب, د-ر-س, ع-ل-م, ك-س-ر, ف-ت-ح |
-| Mots | **≥ 20** | Répartis de façon à **couvrir les 7 types** `WORD_TYPES` |
-| Utilisateur de démo | 1 | Compte permettant de tester le CRUD et les favoris |
+| Racines | **102** | 6 racines originales curatées + 96 racines courantes ajoutées (verbes du quotidien, religion, commerce, mouvement, perception, valeurs) |
+| Mots dérivés | **900** | 36 mots curatés à la main + 864 mots générés mécaniquement (9 par racine ajoutée) |
+| Utilisateur de démo | 1 | `demo@racines.app / demo1234` |
 
-Le jeu de mots couvre obligatoirement `VERB` (avec les 3 `tense` : `MADI`, `MUDARI`, `AMR`), `MASDAR`, `ACTIVE_PART`, `PASSIVE_PART`, `NOUN_PLACE`, `NOUN_TOOL` et `ELATIVE`. Les données brutes sont isolées dans `roots.data.js` et `words.data.js` ; le slug et la translittération sont (re)générés par les hooks Mongoose à l'insertion.
+Le jeu couvre obligatoirement `VERB` (avec les 3 `tense` : `MADI`, `MUDARI`, `AMR`), `MASDAR`, `ACTIVE_PART`, `PASSIVE_PART`, `NOUN_PLACE`, `NOUN_TOOL` et `ELATIVE`. Le slug et la translittération sont (re)générés par les hooks Mongoose à l'insertion.
+
+### 14.1 Architecture du seed
+
+Le seed combine deux sources :
+
+1. **`words.data.js`** — 36 mots **curatés manuellement** pour les 6 racines historiques (ك-ت-ب, د-ر-س, ع-ل-م, ك-س-ر, ف-ت-ح, ج-م-ل). Qualité lexicale vérifiée, traductions précises.
+2. **`wordsGenerator.js`** — pour chaque autre racine, génère **9 dérivés** en appliquant les schèmes classiques de la morphologie arabe :
+   - **VERB·MADI** فَعَلَ / فَعِلَ / فَعُلَ — selon `vowelMadi` de la racine
+   - **VERB·MUDARI** يَفْعُلُ / يَفْعِلُ / يَفْعَلُ — selon `vowelMudari`
+   - **VERB·AMR** اُفْعُلْ / اِفْعِلْ / اِفْعَلْ — préfixe vocalique aligné sur `vowelMudari`
+   - **MASDAR** فَعْل — masdar simple
+   - **ACTIVE_PART** فَاعِل
+   - **PASSIVE_PART** مَفْعُول
+   - **NOUN_PLACE** مَفْعَل / مَفْعِل — selon `vowelMudari`
+   - **NOUN_TOOL** مِفْعَل
+   - **ELATIVE** أَفْعَل
+
+Chaque racine porte deux métadonnées `vowelMadi` et `vowelMudari` (∈ `a` / `i` / `u`) qui guident le générateur. Une translittération scientifique correspondante est produite mécaniquement.
+
+> **Compromis assumé.** Le générateur traite les racines **régulières** sans gérer finement les irrégularités (verbes creux و/ي, défectueux, hamzés ء). Les formes produites restent **plausibles** sur la grande majorité des cas — suffisant pour peupler une base de démo et exercer le mécanisme morphologique. Les 6 racines historiques restent intactes pour démontrer la qualité maximale.
+
+### 14.2 Idempotence
+
+- `seed.js` vide systématiquement `users`, `roots`, `words`, `favorites`, `revisions` avant d'insérer — la base est dans un état déterministe à chaque exécution.
+- `seedAdmin.js` est, à l'inverse, **idempotent** : il crée OU promeut/réinitialise l'admin sans toucher au reste.
 
 ---
 
@@ -922,10 +1035,10 @@ Tableau exhaustif reliant **chaque exigence du cahier des charges** à sa réali
 | Connexion + JWT | `POST /api/auth/login` — retourne le token |
 | Middleware d'authentification | `middlewares/auth.middleware.js` |
 | Validation serveur (Joi) | `validators/*.validator.js` + `validate.middleware.js` |
-| 3+ modèles Mongoose | **4 modèles** : `User`, `Root`, `Word`, `Favorite` (§6) |
-| 1+ relation populate | `Word.root → Root` (exigée) + `Favorite.item` refPath + virtuel `Root.words` |
+| 3+ modèles Mongoose | **5 modèles** : `User`, `Root`, `Word`, `Favorite`, `Revision` (§6) |
+| 1+ relation populate | `Word.root → Root` (exigée) + `Favorite.item` refPath + `Revision.root` + virtuel `Root.words` |
 | Validation par schémas | Schémas Mongoose (types, enum, longueurs) + schémas Joi |
-| CRUD complet 2+ ressources | **3 ressources CRUD** : `Root`, `Word`, `Favorite` (D3) |
+| CRUD complet 2+ ressources | **4 ressources CRUD** : `Root`, `Word`, `Favorite`, `Revision` (D3, D11) |
 | Routes publiques + protégées | Lecture `Root`/`Word`/`health` publique ; reste protégé JWT |
 | Gestion d'erreurs + codes statut | `express-async-errors` + `errorHandler.js` + `AppError` ; codes 200→500 (§8.5) |
 | `.env` | `backend/.env` + `.env.example` (§12) |
@@ -935,7 +1048,11 @@ Tableau exhaustif reliant **chaque exigence du cahier des charges** à sa réali
 | Pagination | `?page=&limit=` → `{ data, total, page, totalPages }` (D9, §8.2) |
 | CORS whitelist | `cors` configuré sur `CLIENT_URL` (D9) |
 | Sécurité HTTP | `helmet` + `express-rate-limit` |
-| Seed | `npm run seed` — ≥ 5 racines, ≥ 20 mots, 7 types (D9, §14) |
+| Seed | `npm run seed` — **102 racines, 900 mots**, 7 types couverts (D9, §14) |
+| Système de révision | Modèle `Revision` + endpoints `/api/revisions/*` (D11) |
+| Suggestions de lettres | `GET /api/roots/suggestions` — guidage pédagogique en temps réel (D11) |
+| Console admin utilisateurs | Endpoints `GET/PATCH/DELETE /api/users[/:id]` + `AdminRoute` côté front |
+| Conteneurisation | `docker-compose.yml` + `Makefile` à la racine du repo |
 
 ### 15.2 Frontend
 
@@ -943,7 +1060,7 @@ Tableau exhaustif reliant **chaque exigence du cahier des charges** à sa réali
 |----------|----------------|
 | React via Vite | `vite` 6 + `@vitejs/plugin-react` (§3) |
 | 5+ composants réutilisables | `Button`, `Input`, `Spinner`, `Badge`, `Modal`, `Pagination` (+ layout/métier) |
-| React Router 4–5 routes | **9 routes** déclarées (§10.2) |
+| React Router 4–5 routes | **15 routes** déclarées (§10.2) |
 | Pages Login / Register | `pages/Login.jsx`, `pages/Register.jsx` |
 | Stockage du JWT | `localStorage` + intercepteur axios (D10) |
 | `PrivateRoute` | `routes/PrivateRoute.jsx` — protège `/profile`, `/favorites` |
@@ -976,34 +1093,49 @@ Tableau exhaustif reliant **chaque exigence du cahier des charges** à sa réali
 
 ## 16. Plan de mise en route
 
-### 16.1 Prérequis
+Deux modes : **Docker Compose** (recommandé, zéro dépendance locale) ou **Node local** (Node 22 + Mongo 7 installés).
 
-- **Node.js 22.x LTS** et **npm 10.x** installés.
-- **MongoDB 7.0** Community en cours d'exécution localement (ou URI Atlas).
+### 16.1 Docker Compose (recommandé)
 
-### 16.2 Étapes
+**Prérequis :** Docker Desktop démarré.
 
 ```bash
-# 1. Récupérer le monorepo
-cd racines-arabes
+cd rcn-arb            # racine du repo (où se trouve le Makefile)
+make build            # construit les images backend + frontend (1ère fois)
+make up               # démarre mongo + seed + backend + frontend
+```
 
-# 2. Backend — installation
-cd backend
+Le service `seed` (one-shot) peuple la base avant que le backend ne démarre.
+
+| Cible Make | Action |
+|-----------|--------|
+| `make up` / `make down` / `make restart` | Cycle de vie |
+| `make seed` | Relance le seed (102 racines / 900 mots) |
+| `make status` / `make logs` | Diagnostic |
+| `make clean` | Nettoyage complet (conteneurs + images + volume Mongo) |
+
+Création de l'admin :
+```bash
+docker exec racines-arabes-backend npm run seed:admin
+```
+
+### 16.2 Node local
+
+**Prérequis :** Node.js 22.x LTS + npm 10.x + MongoDB 7.0 démarré.
+
+```bash
+# 1. Backend
+cd racines-arabes/backend
 npm install
-cp .env.example .env          # puis renseigner les valeurs (JWT_SECRET, MONGO_URI...)
+cp .env.example .env          # renseigner JWT_SECRET, MONGO_URI...
+npm run seed                  # 102 racines, 900 mots, utilisateur démo
+npm run seed:admin            # (optionnel) crée admin@racines.app
+npm run dev                   # http://localhost:5000 (sonde /api/health)
 
-# 3. Peupler la base de données
-npm run seed                  # >= 5 racines, >= 20 mots, 7 types
-
-# 4. Lancer l'API en développement
-npm run dev                   # http://localhost:5000  (santé : /api/health)
-
-# 5. Frontend — installation (nouveau terminal)
-cd ../frontend
+# 2. Frontend (nouveau terminal)
+cd racines-arabes/frontend
 npm install
 cp .env.example .env          # VITE_API_URL=http://localhost:5000/api
-
-# 6. Lancer le frontend
 npm run dev                   # http://localhost:5173
 ```
 
@@ -1012,28 +1144,52 @@ npm run dev                   # http://localhost:5173
 | Vérification | Attendu |
 |--------------|---------|
 | `GET http://localhost:5000/api/health` | `{ "status": "ok", ... }` |
-| `GET http://localhost:5000/api/roots` | Liste paginée des racines seedées |
-| Ouvrir `http://localhost:5173` | Page `Home` ; `/explorer` permet de sélectionner 3 lettres |
-| S'inscrire puis se connecter | JWT stocké, accès à `/profile` et `/favorites` |
+| `GET http://localhost:5000/api/roots?limit=200` | Pagination contenant ~102 racines |
+| `GET http://localhost:5000/api/roots/suggestions?l0=ك` | `{ suggestions: { 1: [...], 2: [...] } }` |
+| Ouvrir http://localhost:5173 | Page `Home` immersive |
+| Aller sur `/explorer` et poser ك | Les lettres ت / س / ث / ب / ذ / ل s'illuminent en rouge |
+| Connexion `demo@racines.app / demo1234` | Accès à `/profile`, `/favorites`, `/revisions` |
+| Connexion `admin@racines.app / admin1234` | Accès à `/admin/users` |
 
 ### 16.4 Mise en production (résumé)
 
 - Backend : `NODE_ENV=production`, `npm start` (`morgan` désactivé).
 - Frontend : `npm run build` → contenu statique `dist/` à servir ; `npm run preview` pour valider localement.
+- Docker : les `Dockerfile` backend et frontend sont prêts pour un déploiement compose en environnement de production en ajustant les variables.
 
 ---
 
 ## 17. Périmètre des bonus
 
-> **Décision D9 :** un seul bonus est retenu.
+> **Décision D9 (revue D11) :** plusieurs bonus sont retenus pour densifier la valeur métier de l'application au-delà du minimum.
 
 | Bonus | Statut | Justification |
 |-------|--------|---------------|
 | **Validation des formulaires en temps réel** | ✅ **Inclus** | Retour immédiat à la saisie (champ par champ) côté frontend, en complément de la validation Joi serveur. |
-| Refresh token | ❌ Hors périmètre | JWT à durée de vie fixe (`JWT_EXPIRES_IN`) suffisant ; la rotation de token ajoute une complexité non justifiée pour un projet académique. |
+| **Suggestion de lettres compatibles (D11)** | ✅ **Inclus** | Endpoint `GET /api/roots/suggestions` + surlignage rouge dans `LetterPicker` : guidage pédagogique en temps réel pendant la sélection. |
+| **Système de révision par cartes mémoire (D11)** | ✅ **Inclus** | Modèle `Revision` + chrono + carte recto/verso + 4 ratings + score pondéré /100 + stats globales. Toutes les agrégations sont calculées à la demande (cohérent avec D8). |
+| **Console d'administration des utilisateurs** | ✅ **Inclus** | Pages `/admin/users` et `/admin/users/:id` réservées au rôle `admin` via `AdminRoute` + endpoints `GET/PATCH/DELETE /api/users[/:id]`. |
+| **Conteneurisation Docker Compose** | ✅ **Inclus** | 4 services (`mongo`, `seed`, `backend`, `frontend`) + `Makefile` raccourcissant `make build` / `make up` / `make seed` / `make clean`. |
+| Refresh token | ❌ Hors périmètre | JWT à durée de vie fixe (`JWT_EXPIRES_IN`) suffisant ; la rotation ajoute une complexité non justifiée. |
 | WebSockets (temps réel) | ❌ Hors périmètre | Aucune fonctionnalité collaborative en direct ; l'API REST couvre tous les besoins. |
-| Envoi d'e-mails (nodemailer) | ❌ Hors périmètre | Pas de confirmation d'inscription ni de réinitialisation par e-mail dans le cahier des charges. |
+| Envoi d'e-mails (nodemailer) | ❌ Hors périmètre | Pas de confirmation d'inscription ni de réinitialisation par e-mail. |
+
+### Décisions D1–D11 (résumé)
+
+| Décision | Sujet |
+|----------|-------|
+| **D1** | Monorepo `racines-arabes/` — dossiers `backend/` + `frontend/`. |
+| **D2** | Pas de bibliothèque UI tierce — modale/dropdown maison en JSX/Tailwind. |
+| **D3** | Lecture publique de `Root`/`Word` ; CRUD ouvert à tout utilisateur authentifié + ownership (admin override). |
+| **D4** | i18n d'interface = `fr` + `en` uniquement (LTR), pas de RTL d'interface. |
+| **D5** | `nativeLanguage` (profil) distinct de la locale i18n. |
+| **D6** | Recherche avancée multi-filtres sur `GET /api/words` + `useDebounce`. |
+| **D7** | Enum morphologique réduit à 7 types (`NOUN_TIME` et `ADJ_ASSIM` retirés). |
+| **D8** | Anti sur-ingénierie : pas de `services/`, pas de `catchAsync`, pas de champs dénormalisés (`wordsCount`, scores). |
+| **D9** | Cibles d'exécution et de seed standardisées. |
+| **D10** | JWT stocké en `localStorage` + intercepteur axios. |
+| **D11** | Système de révision (modèle `Revision` + ratings + score pondéré /100 + stats agrégées à la demande) + suggestions de lettres. |
 
 ---
 
-*Document de référence autosuffisant — un développeur peut démarrer le projet « Dictionnaire de Racines Trilitères Arabes » à partir de ce seul fichier. Toutes les décisions critiques D1 à D10 y sont appliquées.*
+*Document de référence autosuffisant — un développeur peut démarrer le projet « Dictionnaire de Racines Trilitères Arabes » à partir de ce seul fichier. Toutes les décisions critiques D1 à D11 y sont appliquées.*
