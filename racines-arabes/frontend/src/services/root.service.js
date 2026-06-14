@@ -37,6 +37,18 @@ export const getRootWords = async (slug, params = {}) => {
   return payload?.words ?? payload;
 };
 
+// Suggestions de lettres compatibles avec une sélection partielle.
+// letters : tableau de 3 entrées (chaîne vide ou lettre arabe).
+// Retourne { 0?: ['ك',...], 1?: [...], 2?: [...] } — uniquement pour les slots vides.
+export const getLetterSuggestions = async (letters = ['', '', '']) => {
+  const params = {};
+  letters.forEach((l, i) => {
+    if (l) params[`l${i}`] = l;
+  });
+  const res = await api.get('/roots/suggestions', { params });
+  return res.data?.data?.suggestions ?? {};
+};
+
 // Création d'une racine → racine créée.
 export const createRoot = async (payload) => {
   const res = await api.post('/roots', payload);

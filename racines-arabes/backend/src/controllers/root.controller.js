@@ -123,6 +123,61 @@ export const updateRoot = async (req, res) => {
   return ok(res, { root });
 };
 
+/** GET /api/roots/suggestions?l0=ك&l2=ب — propose les lettres compatibles.
+ *
+ *  L'utilisateur a sélectionné 1 ou 2 lettres (à des positions précises 0/1/2).
+ *  On retourne la liste des lettres qui, placées dans un slot encore vide,
+ *  forment une racine existante en base.
+ *
+ *  Exemple : l'utilisateur a déjà mis ك en position 0. On cherche toutes les
+ *  racines dont la 1ère lettre est ك, et on agrège les lettres trouvées aux
+ *  positions 1 et 2 — ce sont les suggestions à mettre en évidence dans l'UI.
+ *
+ *  Si aucune lettre n'est sélectionnée → toutes les premières lettres de
+ *  racines existantes sont retournées. Si les 3 lettres sont sélectionnées →
+ *  renvoie une liste vide (pas de suggestion à faire). */
+export const getLetterSuggestions = async (req, res) => {
+  // Normalise les lettres reçues (déjà arabes, mais on protège contre les
+  // variantes Unicode comme أ/إ/آ).
+  const slots = [0, 1, 2].map((i) => {
+    const raw = req.query[`l${i}`];
+    return raw ? normalizeArabic(String(raw).trim()) : null;
+  });
+
+  const filledSlots = slots
+    .map((l, i) => ({ l, i }))
+    .filter((s) => s.l);
+
+  // 3 lettres fixées → plus rien à suggérer.
+  if (filledSlots.length === 3) {
+    return ok(res, { suggestions: {} });
+  }
+
+  // Filtre Mongo : pour chaque slot rempli, contraint la lettre correspondante.
+  const filter = {};
+  for (const { l, i } of filledSlots) {
+    filter[`letters.${i}`] = l;
+  }
+
+  // On ne ramène que ce dont on a besoin pour aggréger côté JS — 102 racines
+  // c'est négligeable, pas la peine d'agrégation Mongo.
+  const matching = await Root.find(filter).select('letters').lean();
+
+  // Pour chaque slot vide, on collecte l'ensemble des lettres possibles.
+  const suggestions = {};
+  for (let i = 0; i < 3; i += 1) {
+    if (slots[i]) continue;
+    const set = new Set();
+    for (const r of matching) {
+      const candidate = r.letters?.[i];
+      if (candidate) set.add(candidate);
+    }
+    suggestions[i] = [...set];
+  }
+
+  return ok(res, { suggestions });
+};
+
 /** DELETE /api/roots/:slug — suppression d'une racine + mots et favoris liés. */
 export const deleteRoot = async (req, res) => {
   const root = await Root.findOne({ slug: req.params.slug });

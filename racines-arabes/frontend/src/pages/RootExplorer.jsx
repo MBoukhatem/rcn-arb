@@ -1,5 +1,5 @@
 // Page explorateur — cœur métier. Sélection des 3 lettres et racine dérivée.
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import LetterPicker from '@/components/root/LetterPicker';
 import RootCard from '@/components/root/RootCard';
 import { useAuth } from '@/hooks/useAuth';
-import { getRoot, createRoot } from '@/services/root.service';
+import { getRoot, createRoot, getLetterSuggestions } from '@/services/root.service';
 import { slugFromLetters, joinLetters } from '@/utils/formatters';
 
 const LABEL_CLASS =
@@ -29,6 +29,30 @@ const RootExplorer = () => {
   const [letters, setLetters] = useState(['', '', '']);
   const complete = letters.every((l) => l && l.length > 0);
   const slug = complete ? slugFromLetters(letters) : '';
+
+  // Suggestions par slot : { 0?: Set<lettre>, 1?: Set<lettre>, 2?: Set<lettre> }.
+  // Recalculé à chaque changement de lettres ; ignore les erreurs réseau —
+  // c'est une aide visuelle, jamais bloquante.
+  const [suggestions, setSuggestions] = useState({});
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const result = await getLetterSuggestions(letters);
+        if (cancelled) return;
+        // Convertit chaque liste en Set pour des lookups O(1) côté LetterPicker.
+        const asSets = Object.fromEntries(
+          Object.entries(result).map(([slot, list]) => [slot, new Set(list)]),
+        );
+        setSuggestions(asSets);
+      } catch {
+        if (!cancelled) setSuggestions({});
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [letters]);
 
   const [root, setRoot] = useState(null);
   const [rootLoading, setRootLoading] = useState(false);
@@ -110,7 +134,11 @@ const RootExplorer = () => {
           padding: 'clamp(0.625rem, 1.6vw, 1.25rem)',
         }}
       >
-        <LetterPicker value={letters} onChange={handleLettersChange} />
+        <LetterPicker
+          value={letters}
+          onChange={handleLettersChange}
+          suggestions={suggestions}
+        />
       </section>
 
       {/* Résultat de la racine */}

@@ -22,6 +22,14 @@ const CELL_SELECTED =
   'bg-accent-500 text-neutral-0 ' +
   'dark:bg-accent-300 dark:text-neutral-950';
 
+// Lettre qui peut compléter une racine existante avec la sélection actuelle.
+// Rouge vif + bordure pour bien ressortir de la grille au repos.
+const CELL_SUGGESTED =
+  'bg-error-light/15 text-error-light border border-error-light ' +
+  'hover:bg-error-light hover:text-sand-50 ' +
+  'dark:bg-error-dark/20 dark:text-error-dark dark:border-error-dark ' +
+  'dark:hover:bg-error-dark dark:hover:text-sand-50';
+
 const CELL_DISABLED = 'opacity-30 pointer-events-none';
 
 // Slots des 3 lettres sélectionnées. Dimensions fluides via clamp() inline.
@@ -36,7 +44,7 @@ const SLOT_FILLED =
 const SLOT_ACTIVE =
   'ring-2 ring-offset-2 ring-accent-500 dark:ring-accent-300 ring-offset-neutral-0 dark:ring-offset-neutral-900';
 
-const LetterPicker = ({ value = ['', '', ''], onChange }) => {
+const LetterPicker = ({ value = ['', '', ''], onChange, suggestions = {} }) => {
   const { t } = useTranslation();
   const shouldReduce = useReducedMotion();
 
@@ -46,6 +54,16 @@ const LetterPicker = ({ value = ['', '', ''], onChange }) => {
     () => [value[0] ?? '', value[1] ?? '', value[2] ?? ''],
     [value],
   );
+
+  // Union des lettres suggérées pour le slot actif. Si le slot actif est déjà
+  // rempli (ou n'a pas de suggestions), on ne propose rien — on évite ainsi
+  // d'éclairer des lettres qui ne mèneraient à aucune racine pour ce slot.
+  const suggestedSet = useMemo(() => {
+    const slotSuggestions = suggestions?.[activeSlot];
+    if (slotSuggestions instanceof Set) return slotSuggestions;
+    if (Array.isArray(slotSuggestions)) return new Set(slotSuggestions);
+    return new Set();
+  }, [suggestions, activeSlot]);
 
   const pickLetter = useCallback(
     (char) => {
@@ -163,6 +181,12 @@ const LetterPicker = ({ value = ['', '', ''], onChange }) => {
           {alphabet.map(({ char, name }) => {
             const isSelected = letters.includes(char);
             const isDisabled = allFilled && !isSelected;
+            const isSuggested = !isSelected && suggestedSet.has(char);
+
+            // Priorité : sélectionnée > suggérée > état neutre.
+            let cellState = CELL_REST;
+            if (isSelected) cellState = CELL_SELECTED;
+            else if (isSuggested) cellState = CELL_SUGGESTED;
 
             return (
               <motion.button
@@ -174,9 +198,9 @@ const LetterPicker = ({ value = ['', '', ''], onChange }) => {
                 aria-pressed={isSelected}
                 aria-label={name}
                 whileTap={shouldReduce || isDisabled ? undefined : { scale: 0.92 }}
-                className={`${CELL_BASE} -ml-px -mt-px ${
-                  isSelected ? CELL_SELECTED : CELL_REST
-                } ${isDisabled ? CELL_DISABLED : ''}`}
+                className={`${CELL_BASE} -ml-px -mt-px ${cellState} ${
+                  isDisabled ? CELL_DISABLED : ''
+                }`}
               >
                 {char}
               </motion.button>

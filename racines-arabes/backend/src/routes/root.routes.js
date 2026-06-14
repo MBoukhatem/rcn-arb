@@ -4,6 +4,7 @@ import {
   listRoots,
   getRoot,
   getRootWords,
+  getLetterSuggestions,
   createRoot,
   updateRoot,
   deleteRoot,
@@ -17,6 +18,8 @@ const router = Router();
 
 // Lecture publique
 router.get('/', paginate, listRoots);
+// Important : déclarée AVANT `/:slug` pour ne pas être interceptée.
+router.get('/suggestions', getLetterSuggestions);
 router.get('/:slug', getRoot);
 router.get('/:slug/words', getRootWords);
 
